@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import vn.bookstore.app.model.response.RestResponse;
+import vn.bookstore.app.dto.response.RestResponse;
 
 @RestControllerAdvice
 public class GlobalException {
