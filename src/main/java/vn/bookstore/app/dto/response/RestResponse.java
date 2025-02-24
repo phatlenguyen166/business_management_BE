@@ -1,4 +1,4 @@
-package vn.bookstore.app.model.response;
+package vn.bookstore.app.dto.response;
 
 public class RestResponse<T> {
     private int statusCode;

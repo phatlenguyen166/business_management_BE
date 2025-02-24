@@ -1,4 +1,4 @@
-package vn.bookstore.app.model.request;
+package vn.bookstore.app.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;

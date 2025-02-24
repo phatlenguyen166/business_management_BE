@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.bookstore.app.model.Account;
-import vn.bookstore.app.model.request.LoginDTO;
+import vn.bookstore.app.dto.request.LoginDTO;
 import vn.bookstore.app.service.impl.AccountServiceImpl;
 import vn.bookstore.app.util.error.IdInvalidException;
 
