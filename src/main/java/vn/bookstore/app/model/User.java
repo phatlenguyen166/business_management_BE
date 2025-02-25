@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import vn.bookstore.app.util.constant.GenderEnum;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -22,13 +23,16 @@ public class User {
     private LocalDate dateOfBirth;
     private String address;
     private GenderEnum gender;
-
-    @OneToOne
-    @JoinColumn(name = "account_id", nullable = false)
-    private Account account;
+    private String username;
+    private String password;
+    private Instant lastLogin;
+    private Instant createdAt;
+    private Instant updatedAt;
+    private String refreshToken;
+    private int status;
 
     @ManyToOne
-    @JoinColumn(name = "seniority_level_id", nullable = false)
+    @JoinColumn(name = "seniority_level_id")
     private SeniorityLevel seniorityLevel;
 
     @OneToMany(mappedBy = "user")
@@ -45,4 +49,14 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Attendance> attendances;
+
+    @PrePersist
+    public void handleBeforeCreate() {
+        this.createdAt = Instant.now();
+    }
+
+    @PreUpdate
+    public void handleBeforeUpdate() {
+        this.updatedAt = Instant.now();
+    }
 }
