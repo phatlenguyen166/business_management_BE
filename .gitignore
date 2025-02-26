@@ -31,3 +31,68 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# 💡 Ignore Maven target directory
+/target/
+!*/src/main/resources/static/**
+
+# 💡 Ignore Gradle build directories
+/build/
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+
+# 💡 Ignore IDE settings
+/.idea/
+/*.iml
+*.log
+*.pyc
+*.swp
+*.swo
+*.swn
+*.DS_Store
+*.class
+
+# 💡 Ignore Java & Spring Boot logs
+*.log
+/log/
+/logs/
+/nohup.out
+
+# 💡 Ignore temporary files
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# 💡 Ignore environment & configuration files (🔴 Bảo vệ thông tin nhạy cảm)
+.env
+*.properties
+*.yml
+*.yaml
+!src/main/resources/application.properties
+!src/main/resources/application.yml
+
+# 💡 Ignore database files
+*.db
+*.sqlite
+*.h2.db
+*.mv.db
+*.pgdata
+
+# 💡 Ignore package managers (Maven, Gradle, Node.js)
+/node_modules/
+/.npm/
+.pnpm-debug.log
+package-lock.json
+yarn.lock
+
+# 💡 Ignore Docker files
+/docker/
+/docker-compose.yml
+*.tar
+
+# 💡 Ignore generated files & caches
+/.classpath
+/.project
+/.settings/
+
