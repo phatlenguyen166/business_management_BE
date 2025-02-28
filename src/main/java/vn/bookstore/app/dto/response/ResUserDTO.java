@@ -1,15 +1,17 @@
-package vn.bookstore.app.dto.request;
+package vn.bookstore.app.dto.response;
 
 import lombok.Getter;
 import lombok.Setter;
 import vn.bookstore.app.util.constant.GenderEnum;
 
-import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
-public class ReqUserDTO {
-
+public class ResUserDTO {
+    private Long id;
+    private String idString;
     private String fullName;
     private String phoneNumber;
     private String email;
@@ -17,5 +19,6 @@ public class ReqUserDTO {
     private String address;
     private GenderEnum gender;
     private String username;
-    private String password;
+    private LocalDateTime createdAt;
+    private int status;
 }

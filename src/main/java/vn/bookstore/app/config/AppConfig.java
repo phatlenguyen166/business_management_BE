@@ -42,7 +42,7 @@ public class AppConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedMethods("GET", "POST", "PUT", "D    ELETE")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedOrigins("http://localhost:5173")
                         .allowedHeaders("*")
                         .allowCredentials(false)
@@ -60,7 +60,10 @@ public class AppConfig {
     public SecurityFilterChain configure(@NonNull HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests.requestMatchers(WHITE_LIST).permitAll().anyRequest().authenticated())
+                        authorizeRequests
+                                .requestMatchers(WHITE_LIST)
+                                .permitAll()
+                                .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(provider()).addFilterBefore(prefilter,
                         UsernamePasswordAuthenticationFilter.class);

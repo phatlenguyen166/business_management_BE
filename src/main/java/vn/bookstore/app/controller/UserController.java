@@ -3,8 +3,8 @@ package vn.bookstore.app.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import vn.bookstore.app.dto.request.LoginDTO;
 import vn.bookstore.app.dto.request.ReqUserDTO;
+import vn.bookstore.app.dto.response.ResUserDTO;
 import vn.bookstore.app.model.User;
 import vn.bookstore.app.service.impl.UserServiceImpl;
 import vn.bookstore.app.util.error.IdInvalidException;
@@ -19,39 +19,44 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<User>> fetchAllUsers() {
+    public ResponseEntity<List<ResUserDTO>> fetchAllUsers() {
         return ResponseEntity.ok().body(this.userService.handleFetchAllUser());
     }
 
     @PostMapping("/users")
-    public ResponseEntity<User> createUser(@RequestBody User reqUser) throws IdInvalidException {
+    public ResponseEntity<ResUserDTO> createUser(@RequestBody ReqUserDTO reqUser) throws IdInvalidException {
         if (userService.isExistUsername(reqUser.getUsername())) {
             throw new IdInvalidException("Tài khoản đã tồn tại trong hệ thống");
         }
-       User newUser =  this.userService.handleCreateUser(reqUser);
+       ResUserDTO newUser =  this.userService.handleCreateUser(reqUser);
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<User> fetchUserById(@PathVariable Long id) throws IdInvalidException {
-        User user = this.userService.handleFetchUserById(id);
+    public ResponseEntity<ResUserDTO> fetchUserById(@PathVariable Long id) throws IdInvalidException {
+        ResUserDTO user = this.userService.handleFetchUserById(id);
         if (user == null) {
             throw new IdInvalidException("Người dùng không tồn tại");
         }
         return ResponseEntity.ok().body(user);
     }
 
-    @PutMapping("/users")
-    public ResponseEntity<User> updateUser(@RequestBody User updateUser) throws IdInvalidException {
-        if (this.userService.handleFetchUserById(updateUser.getId()) == null) {
+    @PutMapping("/users/{id}")
+    public ResponseEntity<ResUserDTO> updateUser(@RequestBody ReqUserDTO updateUser, @PathVariable Long id) throws IdInvalidException {
+        if (this.userService.handleFetchUserById(id) == null) {
             throw new IdInvalidException("Người dùng không tồn tại trong hệ thống");
         }
-        return ResponseEntity.ok().body(this.userService.handleUpdateUser(updateUser));
+        return ResponseEntity.ok().body(this.userService.handleUpdateUser(updateUser,id));
     }
 
-    @DeleteMapping("/users/{id}")
-    public ResponseEntity<Void> deleteUserById(@PathVariable Long id) {
+    @PatchMapping("/users/{id}")
+    public ResponseEntity<Void> deleteUserById(@PathVariable Long id) throws IdInvalidException {
+        if (this.userService.handleFetchUserById(id) == null || !this.userService.isActive(id)) {
+            throw new IdInvalidException("Người dùng không tồn tại trong hệ thống");
+        }
         this.userService.handleDeleteUser(id);
         return ResponseEntity.ok().body(null);
     }
+
+
 }

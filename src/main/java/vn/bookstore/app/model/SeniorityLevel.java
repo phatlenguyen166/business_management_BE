@@ -1,15 +1,19 @@
 package vn.bookstore.app.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
 @Table(name = "seniority_levels")
+@Getter
+@Setter
 public class SeniorityLevel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     private int level;
     private String levelName;
     @Column(columnDefinition = "MEDIUMTEXT")
