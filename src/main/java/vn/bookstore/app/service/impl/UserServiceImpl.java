@@ -1,5 +1,6 @@
 package vn.bookstore.app.service.impl;
 
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -33,8 +34,8 @@ public class UserServiceImpl implements UserService {
     
     @Override
     public UserDetailsService userDetailsService() {
-        return username -> userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(
-                "Username not found"));
+        return username -> userRepository.findByUsernameAndStatus(username, 1).orElseThrow(() -> new UsernameNotFoundException(
+                "Username not found or user is not active"));
     }
     
     public List<ResUserDTO> handleFetchAllUser() {
@@ -76,24 +77,24 @@ public class UserServiceImpl implements UserService {
             currentUser.get().setGender(updateUser.getGender());
             currentUser.get().setPhoneNumber(updateUser.getPhoneNumber());
             currentUser.get().setPassword(hashPassWord);
-           this.userRepository.save(currentUser.get());
+            this.userRepository.save(currentUser.get());
             return this.userConverter.convertToResUserDTO(currentUser.get());
         }
         return null;
     }
     
     public void handleDeleteUser(Long id) {
-       Optional<User> currentUser = this.userRepository.findById(id);
-      if (currentUser.isPresent()) {
-          currentUser.get().setStatus(0);
-          this.userRepository.save(currentUser.get());
-      }
+        Optional<User> currentUser = this.userRepository.findById(id);
+        if (currentUser.isPresent()) {
+            currentUser.get().setStatus(0);
+            this.userRepository.save(currentUser.get());
+        }
     }
     
     public boolean isExistUsername(String username) {
         return userRepository.existsByUsername(username);
     }
-
+    
     public boolean isActive(Long id) {
         Optional<User> currentUser = this.userRepository.findById(id);
         if (currentUser.isPresent()) {

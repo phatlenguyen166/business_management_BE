@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -38,6 +40,7 @@ public class GlobalException {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
     }
     
+    
     @ExceptionHandler(value = {Exception.class})
     public ResponseEntity<RestResponse<Object>> handleAllExceptions(Exception exception) {
         RestResponse<Object> res = new RestResponse<>();
@@ -46,14 +49,7 @@ public class GlobalException {
         res.setError("Internal Server Error");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
     }
-    
-    /**
-     * Handle exception when the data is conflicted
-     *
-     * @param e
-     * @param request
-     * @return
-     */
+
     @ExceptionHandler(InvalidDataException.class)
     @ResponseStatus(CONFLICT)
     @ApiResponses(value = {
@@ -82,5 +78,14 @@ public class GlobalException {
         res.setMessage(e.getMessage());
         
         return ResponseEntity.status(HttpStatus.CONFLICT).body(res);
+    }
+    
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<RestResponse<Object>> handleBadCredentialsException(BadCredentialsException exception) {
+        RestResponse<Object> res = new RestResponse<>();
+        res.setStatusCode(HttpStatus.UNAUTHORIZED.value());
+        res.setError("Username or password incorrect ");
+        res.setMessage(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
     }
 }
