@@ -41,7 +41,7 @@ public class AuthenticationService {
                 signInRequest.getPassword()));
         
         var user =
-                userRepository.findByUsername(signInRequest.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Username or password incorrect"));
+                userRepository.findByUsernameAndStatus(signInRequest.getUsername(), 1).orElseThrow(() -> new UsernameNotFoundException("Username or password incorrect"));
         
         String accessToken = jwtService.generateToken(user);
         
@@ -53,7 +53,7 @@ public class AuthenticationService {
     }
     
     public TokenResponse refresh(HttpServletRequest request) {
-        String refreshToken = request.getHeader("x-token");
+        String refreshToken = request.getHeader(AUTHORIZATION);
         if (StringUtils.isBlank(refreshToken)) {
             throw new InvalidDataException("Token must be not blank");
         }
@@ -62,7 +62,7 @@ public class AuthenticationService {
         
         System.out.println("userName = " + userName);
         // check it into db
-        Optional<User> user = userRepository.findByUsername(userName);
+        Optional<User> user = userRepository.findByUsernameAndStatus(userName, 1);
         System.out.println("userID = " + user.get().getId());
         
         if (!jwtService.isValid(refreshToken, REFRESH_TOKEN, user.get())) {
@@ -71,10 +71,7 @@ public class AuthenticationService {
         
         String accessToken = jwtService.generateToken(user.get());
         
-        return TokenResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .userId(user.get().getId()).build();
+        return TokenResponse.builder().accessToken(accessToken).refreshToken(refreshToken).userId(user.get().getId()).build();
         
     }
     
