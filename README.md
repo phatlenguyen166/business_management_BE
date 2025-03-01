@@ -1,1 +1,3 @@
-business_management_BE
+- Tạo DB có tên business_management;
+- Vào file application.properties đổi password, username của DB trong máy
+- Vào link để lấy xem api (http://localhost:8080/swagger-ui/index.html#/)
