@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
     
     public List<ResUserDTO> handleFetchAllUser() {
         List<ResUserDTO> resUserDTOS = new ArrayList<>();
-        for (User user : userRepository.findAll()) {
+        for (User user : userRepository.findAllByStatus(1)) {
             ResUserDTO resUserDTO = this.userConverter.convertToResUserDTO(user);
             resUserDTO.setIdString("NV-" + user.getId());
             resUserDTOS.add(resUserDTO);
