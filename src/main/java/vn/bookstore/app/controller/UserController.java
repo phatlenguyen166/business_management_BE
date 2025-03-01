@@ -51,12 +51,12 @@ public class UserController {
     }
 
     @PatchMapping("/users/{id}")
-    public ResponseEntity<Void> deleteUserById(@PathVariable Long id) throws IdInvalidException {
+    public ResponseEntity<String> deleteUserById(@PathVariable Long id) throws IdInvalidException {
         if (this.userService.handleFetchUserById(id) == null || !this.userService.isActive(id)) {
             throw new IdInvalidException("Người dùng không tồn tại trong hệ thống");
         }
         this.userService.handleDeleteUser(id);
-        return ResponseEntity.ok().body(null);
+        return ResponseEntity.ok().body("Xóa người dùng thành công");
     }
 
 

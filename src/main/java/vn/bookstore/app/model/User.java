@@ -1,5 +1,6 @@
 package vn.bookstore.app.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,7 +38,8 @@ public class User implements UserDetails {
     @ManyToOne
     @JoinColumn(name = "seniority_level_id")
     private SeniorityLevel seniorityLevel;
-    
+
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Contract> contracts;
     
