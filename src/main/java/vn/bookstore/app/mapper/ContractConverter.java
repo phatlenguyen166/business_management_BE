@@ -32,6 +32,7 @@ public class ContractConverter {
     public ResContractDTO convertToResContractDTO(Contract contract) {
         ResContractDTO resContractDTO = modelMapper.map(contract, ResContractDTO.class);
         resContractDTO.getUser().setIdString("NV-" + contract.getUser().getId());
+        resContractDTO.getUser().setRoleId(contract.getRole().getId());
         return resContractDTO ;
     }
 

@@ -12,6 +12,7 @@ import vn.bookstore.app.dto.request.ReqUserDTO;
 import vn.bookstore.app.dto.response.ResUserDTO;
 import vn.bookstore.app.mapper.UserConverter;
 import vn.bookstore.app.model.Contract;
+import vn.bookstore.app.model.Role;
 import vn.bookstore.app.model.User;
 import vn.bookstore.app.repository.UserRepository;
 import vn.bookstore.app.service.UserService;
@@ -106,18 +107,7 @@ public class UserServiceImpl implements UserService {
         return false;
     }
 
-    @Override
-    public Contract getActiveContract(List<Contract> contracts) {
-        if (contracts == null || contracts.isEmpty()) {
-            return null;
-        }
-        for (Contract contract : contracts) {
-            if (contract != null && contract.getStatus() == 1) {
-                return contract;
-            }
-        }
-        return null;
-    }
+
 
 
 }

@@ -43,7 +43,7 @@ UserService userService;
             contractRepository.save(contract);
             return contractConverter.convertToResContractDTO(contract);
         } else {
-            Contract currentContract = userService.getActiveContract(user.getContracts());
+            Contract currentContract = getActiveContract(user.getContracts());
             currentContract.setStatus(0);
             contractRepository.save(currentContract);
             Contract contract =  contractConverter.convertToContract(newContract);
@@ -64,5 +64,18 @@ UserService userService;
             resContractDTOS.add(resContractDTO);
         }
         return resContractDTOS;
+    }
+
+    @Override
+    public Contract getActiveContract(List<Contract> contracts) {
+        if (contracts == null || contracts.isEmpty()) {
+            return null;
+        }
+        for (Contract contract : contracts) {
+            if (contract != null && contract.getStatus() == 1) {
+                return contract;
+            }
+        }
+        return null;
     }
 }

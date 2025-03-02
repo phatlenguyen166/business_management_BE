@@ -10,4 +10,5 @@ import java.util.List;
 public interface ContractService {
     public ResContractDTO handleCreateContract(ReqContractDTO contract);
     public List<ResContractDTO> handleGetAllContracts();
+    public Contract getActiveContract(List<Contract> contracts);
 }

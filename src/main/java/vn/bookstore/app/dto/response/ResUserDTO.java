@@ -20,5 +20,6 @@ public class ResUserDTO {
     private GenderEnum gender;
     private String username;
     private LocalDateTime createdAt;
+    private Long roleId;
     private int status;
 }
