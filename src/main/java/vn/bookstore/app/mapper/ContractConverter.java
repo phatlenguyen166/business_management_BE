@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component;
 import vn.bookstore.app.dto.request.ReqContractDTO;
 import vn.bookstore.app.dto.response.ResContractDTO;
 import vn.bookstore.app.model.Contract;
-
-
+import vn.bookstore.app.model.Role;
+import vn.bookstore.app.model.User;
 
 
 @Component
@@ -30,7 +30,9 @@ public class ContractConverter {
     }
 
     public ResContractDTO convertToResContractDTO(Contract contract) {
-        return modelMapper.map(contract, ResContractDTO.class);
+        ResContractDTO resContractDTO = modelMapper.map(contract, ResContractDTO.class);
+        resContractDTO.getUser().setIdString("NV-" + contract.getUser().getId());
+        return resContractDTO ;
     }
 
 

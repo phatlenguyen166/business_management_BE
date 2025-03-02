@@ -54,6 +54,17 @@ public class User implements UserDetails {
     
     @OneToMany(mappedBy = "user")
     private List<Attendance> attendances;
+
+
+    @PrePersist
+    public void handleBeforeCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void handleBeforeUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
     
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

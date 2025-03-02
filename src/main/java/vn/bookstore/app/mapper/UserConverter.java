@@ -22,6 +22,7 @@ public class UserConverter {
 
     public ResUserDTO convertToResUserDTO(User user) {
         ResUserDTO result = modelMapper.map(user, ResUserDTO.class);
+        result.setIdString("NV-" + user.getId());
         return result;
     }
 
