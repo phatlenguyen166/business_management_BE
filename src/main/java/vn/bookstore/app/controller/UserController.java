@@ -5,9 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.bookstore.app.dto.request.ReqUserDTO;
+import vn.bookstore.app.dto.request.ReqUserWithContractDTO;
 import vn.bookstore.app.dto.response.ResUserDTO;
 import vn.bookstore.app.dto.response.RestResponse;
-import vn.bookstore.app.model.User;
 import vn.bookstore.app.service.impl.UserServiceImpl;
 import vn.bookstore.app.util.error.IdInvalidException;
 import java.util.List;
@@ -34,7 +34,7 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity<RestResponse<ResUserDTO>> createUser(@Valid @RequestBody ReqUserDTO reqUser) throws IdInvalidException {
+    public ResponseEntity<RestResponse<ResUserDTO>> createUser(@Valid @RequestBody ReqUserWithContractDTO reqUser) throws IdInvalidException {
         if (userService.isExistUsername(reqUser.getUsername())) {
             throw new IdInvalidException("Tài khoản đã tồn tại trong hệ thống");
         }

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import vn.bookstore.app.util.constant.GenderEnum;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -20,6 +21,6 @@ public class ResUserDTO {
     private GenderEnum gender;
     private String username;
     private LocalDateTime createdAt;
-    private Long roleId;
     private int status;
+    private ResContractDTO resContractDTO;
 }

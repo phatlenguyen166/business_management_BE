@@ -1,39 +1,52 @@
 package vn.bookstore.app.service.impl;
 
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import vn.bookstore.app.config.AppConfig;
-import vn.bookstore.app.controller.UserController;
 import vn.bookstore.app.dto.request.ReqUserDTO;
+import vn.bookstore.app.dto.request.ReqUserWithContractDTO;
+import vn.bookstore.app.dto.response.ResContractDTO;
 import vn.bookstore.app.dto.response.ResUserDTO;
+import vn.bookstore.app.mapper.ContractConverter;
 import vn.bookstore.app.mapper.UserConverter;
 import vn.bookstore.app.model.Contract;
-import vn.bookstore.app.model.Role;
 import vn.bookstore.app.model.User;
 import vn.bookstore.app.repository.UserRepository;
 import vn.bookstore.app.service.UserService;
 
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+//@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private UserRepository userRepository;
-    private UserConverter userConverter;
-    private PasswordEncoder passwordEncoder;
-    
-    public UserServiceImpl(UserRepository userRepository, UserConverter userConverter) {
+//    private final UserRepository userRepository;
+//    private final UserConverter userConverter;
+//    private final PasswordEncoder passwordEncoder;
+//    private final ContractServiceImpl contractService;
+
+    private  UserRepository userRepository;
+    private  UserConverter userConverter;
+    private  PasswordEncoder passwordEncoder;
+    private  ContractServiceImpl contractService;
+    private ContractConverter contractConverter;
+    public UserServiceImpl (UserRepository userRepository,
+                            UserConverter userConverter,
+                            @Lazy
+                            PasswordEncoder passwordEncoder,
+                            @Lazy
+                            ContractServiceImpl contractService,
+                            ContractConverter contractConverter){
+        this.contractService =contractService;
         this.userRepository = userRepository;
-        this.userConverter = userConverter;
-        this.passwordEncoder = new BCryptPasswordEncoder();
+        this.passwordEncoder = passwordEncoder;
+        this.userConverter =userConverter;
+        this.contractConverter = contractConverter;
     }
-    
+
     @Override
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findByUsernameAndStatus(username, 1).orElseThrow(() -> new UsernameNotFoundException(
@@ -43,26 +56,36 @@ public class UserServiceImpl implements UserService {
     public List<ResUserDTO> handleFetchAllUser() {
         List<ResUserDTO> resUserDTOS = new ArrayList<>();
         for (User user : userRepository.findAllByStatus(1)) {
-            ResUserDTO resUserDTO = this.userConverter.convertToResUserDTO(user);
+            ResContractDTO resContractDTO = contractConverter.convertToResContractDTO(contractService.getActiveContract(user.getContracts()));
+            ResUserDTO resUserDTO = this.userConverter.convertToResUserDTO(user, resContractDTO);
             resUserDTOS.add(resUserDTO);
         }
         return resUserDTOS;
     }
     
     
-    public ResUserDTO handleCreateUser(ReqUserDTO reqUser) {
+    public ResUserDTO handleCreateUser(ReqUserWithContractDTO reqUser) {
         String hashPassWord = this.passwordEncoder.encode(reqUser.getPassword());
         reqUser.setPassword(hashPassWord);
         User newUser = this.userConverter.convertToUser(reqUser);
         newUser.setStatus(1);
         this.userRepository.save(newUser);
-        return this.userConverter.convertToResUserDTO(newUser);
+        try {
+            Contract contract = this.contractService.handleCreateContractWithUser(reqUser, newUser.getId());
+            ResContractDTO resContractDTO = contractConverter.convertToResContractDTO(contract);
+            return this.userConverter.convertToResUserDTO(newUser, resContractDTO);
+        } catch (Exception e) {
+            this.userRepository.delete(newUser);
+            throw new RuntimeException("Lỗi khi tạo hợp đồng, user đã bị xóa!", e);
+        }
+
     }
     
     public ResUserDTO handleFetchUserById(Long id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isPresent()) {
-            return this.userConverter.convertToResUserDTO(user.get());
+            ResContractDTO contractDTO = contractConverter.convertToResContractDTO(contractService.getActiveContract(user.get().getContracts()));
+            return this.userConverter.convertToResUserDTO(user.get(), contractDTO);
         }
         return null;
     }
@@ -79,7 +102,8 @@ public class UserServiceImpl implements UserService {
             currentUser.get().setPhoneNumber(updateUser.getPhoneNumber());
             currentUser.get().setPassword(hashPassWord);
             this.userRepository.save(currentUser.get());
-            return this.userConverter.convertToResUserDTO(currentUser.get());
+            ResContractDTO contractDTO = contractConverter.convertToResContractDTO(contractService.getActiveContract(currentUser.get().getContracts()));
+            return this.userConverter.convertToResUserDTO(currentUser.get(), contractDTO);
         }
         return null;
     }

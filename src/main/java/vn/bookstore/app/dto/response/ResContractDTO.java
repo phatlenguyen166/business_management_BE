@@ -16,5 +16,6 @@ public class ResContractDTO {
     private LocalDate startDate;
     private LocalDate endDate;
     private LocalDate expiryDate;
-    private ResUserDTO user;
+    private String roleName;
+    private Long userId;
 }

@@ -3,6 +3,7 @@ package vn.bookstore.app.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.bookstore.app.dto.request.ReqContractDTO;
+import vn.bookstore.app.dto.request.ReqUserWithContractDTO;
 import vn.bookstore.app.dto.response.ResContractDTO;
 import vn.bookstore.app.mapper.ContractConverter;
 import vn.bookstore.app.model.Contract;
@@ -19,29 +20,45 @@ import java.util.List;
 
 @Service
 public class ContractServiceImpl implements ContractService {
-@Autowired
-ContractRepository contractRepository;
-@Autowired
-UserRepository userRepository;
-@Autowired
-RoleRepository roleRepository;
-@Autowired
-ContractConverter contractConverter;
-@Autowired
-UserService userService;
+    @Autowired
+    ContractRepository contractRepository;
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    RoleRepository roleRepository;
+    @Autowired
+    ContractConverter contractConverter;
+    @Autowired
+    UserService userService;
 
     @Override
     public ResContractDTO handleCreateContract(ReqContractDTO newContract) {
         User user = userRepository.findUserByIdAndStatus(newContract.getUserId(), 1).orElseThrow(() -> new RuntimeException("User không tồn tại!"));
         Role role = roleRepository.findRoleById(newContract.getRoleId())
                 .orElseThrow(() -> new RuntimeException("Role không tồn tại!"));
+        Contract contract = saveContract(user, newContract, role);
+        return contractConverter.convertToResContractDTO(contract);
+
+    }
+
+
+    @Override
+    public Contract handleCreateContractWithUser(ReqUserWithContractDTO reqUserWithContractDTO, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User không tồn tại!"));
+        Role role = roleRepository.findRoleById(reqUserWithContractDTO.getReqContract().getRoleId()).orElseThrow(() -> new RuntimeException("Role không tồn tại!"));
+        ReqContractDTO reqContractDTO = contractConverter.convertToReqContractDTO(reqUserWithContractDTO.getReqContract(), userId);
+       return saveContract(user,reqContractDTO,role);
+    }
+
+    @Override
+    public Contract saveContract(User user, ReqContractDTO newContract, Role role) {
         if (!contractRepository.existsContractByUser(user)) {
             Contract contract =  contractConverter.convertToContract(newContract);
             contract.setUser(user);
             contract.setRole(role);
             contract.setStatus(1);
             contractRepository.save(contract);
-            return contractConverter.convertToResContractDTO(contract);
+            return  contract;
         } else {
             Contract currentContract = getActiveContract(user.getContracts());
             currentContract.setStatus(0);
@@ -51,7 +68,7 @@ UserService userService;
             contract.setRole(role);
             contract.setStatus(1);
             contractRepository.save(contract);
-            return contractConverter.convertToResContractDTO(contract);
+            return contract;
         }
     }
 
@@ -79,3 +96,5 @@ UserService userService;
         return null;
     }
 }
+
+
