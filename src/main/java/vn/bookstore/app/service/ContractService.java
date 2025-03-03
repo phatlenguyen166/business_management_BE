@@ -15,4 +15,7 @@ public interface ContractService {
     public Contract getActiveContract(List<Contract> contracts);
     public Contract handleCreateContractWithUser(ReqUserWithContractDTO reqUserWithContractDTO, Long userId);
     public Contract saveContract(User user, ReqContractDTO newContract, Role role );
+    public ResContractDTO getContractById(Long id);
+    public ResContractDTO handleUpdatedContract(ReqContractDTO contract, Long id);
+    public void handleDeleteContract(Long id);
 }

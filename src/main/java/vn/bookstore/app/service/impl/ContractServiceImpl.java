@@ -17,19 +17,26 @@ import vn.bookstore.app.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ContractServiceImpl implements ContractService {
-    @Autowired
-    ContractRepository contractRepository;
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    RoleRepository roleRepository;
-    @Autowired
-    ContractConverter contractConverter;
-    @Autowired
-    UserService userService;
+    private ContractRepository contractRepository;
+    private UserRepository userRepository;
+    private RoleRepository roleRepository;
+    private ContractConverter contractConverter;
+
+
+    public ContractServiceImpl(ContractRepository contractRepository,
+                               UserRepository userRepository,
+                               RoleRepository roleRepository,
+                               ContractConverter contractConverter) {
+        this.contractRepository = contractRepository;
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.contractConverter = contractConverter;
+    }
+
 
     @Override
     public ResContractDTO handleCreateContract(ReqContractDTO newContract) {
@@ -52,24 +59,54 @@ public class ContractServiceImpl implements ContractService {
 
     @Override
     public Contract saveContract(User user, ReqContractDTO newContract, Role role) {
-        if (!contractRepository.existsContractByUser(user)) {
-            Contract contract =  contractConverter.convertToContract(newContract);
+        Contract currentContract = getActiveContract(user.getContracts());
+        if (currentContract == null) {
+            Contract contract =  contractConverter.convertToContract(new Contract(),newContract);
             contract.setUser(user);
             contract.setRole(role);
             contract.setStatus(1);
             contractRepository.save(contract);
             return  contract;
         } else {
-            Contract currentContract = getActiveContract(user.getContracts());
+
             currentContract.setStatus(0);
             contractRepository.save(currentContract);
-            Contract contract =  contractConverter.convertToContract(newContract);
+            Contract contract =  contractConverter.convertToContract(new Contract(),newContract);
             contract.setUser(user);
             contract.setRole(role);
             contract.setStatus(1);
             contractRepository.save(contract);
             return contract;
         }
+    }
+
+    @Override
+    public ResContractDTO getContractById(Long id) {
+        Optional<Contract> contract = this.contractRepository.findContractByIdAndStatus(id,1);
+        if (contract.isPresent()) {
+            return contractConverter.convertToResContractDTO(contract.get());
+        }
+        return null;
+    }
+
+    @Override
+    public ResContractDTO handleUpdatedContract(ReqContractDTO updateContract, Long id) {
+        Contract currentContract = this.contractRepository.findContractByIdAndStatus(id,1).get();
+        Contract  updatedContract = this.contractConverter.convertToContract(currentContract, updateContract);
+        updatedContract.setUser(currentContract.getUser());
+        updatedContract.setRole(currentContract.getRole());
+        this.contractRepository.save(updatedContract);
+        return contractConverter.convertToResContractDTO(updatedContract);
+    }
+
+    @Override
+    public void handleDeleteContract(Long id) {
+        Contract contract = this.contractRepository.findContractByIdAndStatus(id,1).get();
+        User user = contract.getUser();
+        contract.setStatus(0);
+        user.setStatus(0);
+        this.contractRepository.save(contract);
+        this.userRepository.save(user);
     }
 
     @Override
