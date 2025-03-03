@@ -1,6 +1,7 @@
 package vn.bookstore.app.controller;
 
 import jakarta.validation.Valid;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +10,8 @@ import vn.bookstore.app.dto.request.ReqUserWithContractDTO;
 import vn.bookstore.app.dto.response.ResUserDTO;
 import vn.bookstore.app.dto.response.RestResponse;
 import vn.bookstore.app.service.impl.UserServiceImpl;
-import vn.bookstore.app.util.error.IdInvalidException;
+import vn.bookstore.app.util.error.ExistingIdException;
+import vn.bookstore.app.util.error.NotFoundException;
 import java.util.List;
 
 @RestController
@@ -34,9 +36,9 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity<RestResponse<ResUserDTO>> createUser(@Valid @RequestBody ReqUserWithContractDTO reqUser) throws IdInvalidException {
+    public ResponseEntity<RestResponse<ResUserDTO>> createUser(@Valid @RequestBody ReqUserWithContractDTO reqUser) throws ExistingIdException  {
         if (userService.isExistUsername(reqUser.getUsername())) {
-            throw new IdInvalidException("Tài khoản đã tồn tại trong hệ thống");
+            throw new ExistingIdException("Tài khoản đã tồn tại trong hệ thống");
         }
        ResUserDTO newUser =  this.userService.handleCreateUser(reqUser);
         return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -50,10 +52,10 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<RestResponse<ResUserDTO>> fetchUserById(@PathVariable Long id) throws IdInvalidException {
+    public ResponseEntity<RestResponse<ResUserDTO>> fetchUserById(@PathVariable Long id) throws NotFoundException {
         ResUserDTO user = this.userService.handleFetchUserById(id);
         if (user == null || !this.userService.isActive(id)) {
-            throw new IdInvalidException("Người dùng không tồn tại");
+            throw new NotFoundException("Người dùng không tồn tại");
         }
         return ResponseEntity.ok().body(
                 new RestResponse<>(
@@ -66,9 +68,9 @@ public class UserController {
     }
 
     @PutMapping("/users/{id}")
-    public ResponseEntity<RestResponse<ResUserDTO>> updateUser(@Valid @RequestBody ReqUserDTO updateUser, @PathVariable Long id) throws IdInvalidException {
+    public ResponseEntity<RestResponse<ResUserDTO>> updateUser(@Valid @RequestBody ReqUserDTO updateUser, @PathVariable Long id) throws NotFoundException {
         if (this.userService.handleFetchUserById(id) == null || !this.userService.isActive(id)) {
-            throw new IdInvalidException("Người dùng không tồn tại trong hệ thống");
+            throw new NotFoundException("Người dùng không tồn tại trong hệ thống");
         }
         ResUserDTO updatedUser = this.userService.handleUpdateUser(updateUser,id);
         return ResponseEntity.ok().body(
@@ -82,9 +84,9 @@ public class UserController {
     }
 
     @PatchMapping("/users/{id}")
-    public ResponseEntity<RestResponse> deleteUserById(@PathVariable Long id) throws IdInvalidException {
+    public ResponseEntity<RestResponse> deleteUserById(@PathVariable Long id) throws NotFoundException {
         if (this.userService.handleFetchUserById(id) == null || !this.userService.isActive(id)) {
-            throw new IdInvalidException("Người dùng không tồn tại trong hệ thống");
+            throw new NotFoundException("Người dùng không tồn tại trong hệ thống");
         }
         this.userService.handleDeleteUser(id);
         return ResponseEntity.ok().body(

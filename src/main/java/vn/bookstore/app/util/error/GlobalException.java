@@ -8,14 +8,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import vn.bookstore.app.dto.response.RestResponse;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,13 +23,22 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestControllerAdvice
 public class GlobalException {
     
-    @ExceptionHandler(value = {IdInvalidException.class})
-    public ResponseEntity<RestResponse<Object>> handleIdException(IdInvalidException exception) {
+    @ExceptionHandler(value = {NotFoundException.class})
+    public ResponseEntity<RestResponse<Object>> handleIdException(NotFoundException exception) {
         RestResponse<Object> res = new RestResponse<>();
-        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        res.setStatusCode(HttpStatus.NOT_FOUND.value());
         res.setError(exception.getMessage());
-        res.setMessage("IdInvalidException");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+        res.setMessage("NotFoundException");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+    }
+
+    @ExceptionHandler(value = {ExistingIdException.class})
+    public ResponseEntity<RestResponse<Object>> handleIdException(ExistingIdException exception) {
+        RestResponse<Object> res = new RestResponse<>();
+        res.setStatusCode(CONFLICT.value());
+        res.setError(exception.getMessage());
+        res.setMessage("ExistingIdException  ");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(res);
     }
     
     @ExceptionHandler(value = {ResourceNotFoundException.class})

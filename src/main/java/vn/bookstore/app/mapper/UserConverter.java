@@ -9,18 +9,23 @@ import vn.bookstore.app.dto.response.ResContractDTO;
 import vn.bookstore.app.dto.response.ResUserDTO;
 import vn.bookstore.app.model.Contract;
 import vn.bookstore.app.model.User;
+import vn.bookstore.app.repository.SeniorityLevelRepository;
 import vn.bookstore.app.service.impl.ContractServiceImpl;
+import vn.bookstore.app.service.impl.SeniorityLevelServiceImpl;
 
 @Component
 public class UserConverter {
     private ModelMapper modelMapper;
     private ContractServiceImpl contractService;
+    private SeniorityLevelServiceImpl seniorityLevelService;
 
     public UserConverter(  ModelMapper modelMapper,
                            @Lazy
-                           ContractServiceImpl contractService) {
+                           ContractServiceImpl contractService,
+                           SeniorityLevelServiceImpl seniorityLevelService) {
         this.modelMapper = modelMapper;
         this.contractService = contractService;
+        this.seniorityLevelService = seniorityLevelService;
     }
 
 
@@ -28,6 +33,8 @@ public class UserConverter {
 
     public User convertToUser(ReqUserWithContractDTO requestDTO) {
         User result = modelMapper.map(requestDTO, User.class);
+        result.setId(null);
+        result.setSeniorityLevel(this.seniorityLevelService.handleGetSeniorityById(requestDTO.getSeniorityId()));
         return result;
     }
 

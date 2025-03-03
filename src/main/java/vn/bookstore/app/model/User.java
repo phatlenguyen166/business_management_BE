@@ -36,7 +36,7 @@ public class User implements UserDetails {
     private int status;
     
     @ManyToOne
-    @JoinColumn(name = "seniority_level_id")
+    @JoinColumn(name = "seniority_level_id", nullable = false)
     private SeniorityLevel seniorityLevel;
 
     @JsonIgnore

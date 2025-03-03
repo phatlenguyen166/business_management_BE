@@ -2,6 +2,7 @@ package vn.bookstore.app.dto.response;
 
 import lombok.Getter;
 import lombok.Setter;
+import vn.bookstore.app.model.SeniorityLevel;
 import vn.bookstore.app.util.constant.GenderEnum;
 
 import java.math.BigDecimal;
@@ -23,4 +24,5 @@ public class ResUserDTO {
     private LocalDateTime createdAt;
     private int status;
     private ResContractDTO resContractDTO;
+    private SeniorityLevel seniorityLevel;
 }

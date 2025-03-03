@@ -7,9 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import vn.bookstore.app.dto.request.ReqContractDTO;
 import vn.bookstore.app.dto.response.ResContractDTO;
 import vn.bookstore.app.dto.response.RestResponse;
-import vn.bookstore.app.model.Contract;
 import vn.bookstore.app.service.ContractService;
-import vn.bookstore.app.util.error.IdInvalidException;
+import vn.bookstore.app.util.error.NotFoundException;
 
 import java.util.List;
 
@@ -31,10 +30,10 @@ public class ContractController {
     }
 
     @GetMapping("/contracts/{id}")
-    public ResponseEntity<RestResponse<ResContractDTO>> getContractById(@PathVariable Long id) throws IdInvalidException {
+    public ResponseEntity<RestResponse<ResContractDTO>> getContractById(@PathVariable Long id) throws NotFoundException {
         ResContractDTO resContractDTO = this.contractService.getContractById(id);
         if(resContractDTO == null) {
-            throw new IdInvalidException("Hợp đồng không tồn tại");
+            throw new NotFoundException("Hợp đồng không tồn tại");
         } else {
             return ResponseEntity.ok().body(
                     new RestResponse<>(
@@ -48,9 +47,9 @@ public class ContractController {
     }
 
     @PutMapping("/contracts/{id}")
-    public ResponseEntity<RestResponse<ResContractDTO>> updateContract(@Valid @RequestBody ReqContractDTO contract, @PathVariable Long id) throws IdInvalidException {
+    public ResponseEntity<RestResponse<ResContractDTO>> updateContract(@Valid @RequestBody ReqContractDTO contract, @PathVariable Long id) throws NotFoundException {
         if(this.contractService.getContractById(id) == null) {
-            throw new IdInvalidException("Hợp đồng không tồn tại");
+            throw new NotFoundException("Hợp đồng không tồn tại");
         }
         ResContractDTO updatedContract = this.contractService.handleUpdatedContract(contract, id);
         return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -64,9 +63,9 @@ public class ContractController {
     }
 
     @PatchMapping("/contracts/{id}")
-    public ResponseEntity<RestResponse> deleteContractById(@PathVariable Long id) throws IdInvalidException {
+    public ResponseEntity<RestResponse> deleteContractById(@PathVariable Long id) throws NotFoundException {
         if(this.contractService.getContractById(id) == null) {
-            throw new IdInvalidException("Hợp đồng không tồn tại");
+            throw new NotFoundException("Hợp đồng không tồn tại");
         }
         this.contractService.handleDeleteContract(id);
         return ResponseEntity.ok().body(
