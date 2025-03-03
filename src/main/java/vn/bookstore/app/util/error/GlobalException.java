@@ -38,8 +38,8 @@ public class GlobalException {
     public ResponseEntity<RestResponse<Object>> handleResourceNotFoundException(ResourceNotFoundException exception) {
         RestResponse<Object> res = new RestResponse<>();
         res.setStatusCode(HttpStatus.NOT_FOUND.value());
-        res.setError(exception.getMessage());
-        res.setMessage("ResourceNotFoundException");
+        res.setMessage(exception.getMessage());
+        res.setError("ResourceNotFoundException");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
     }
     
