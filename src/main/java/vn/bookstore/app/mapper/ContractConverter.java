@@ -18,8 +18,7 @@ public class ContractConverter {
 
 
 
-    public Contract convertToContract(ReqContractDTO reqContractDTO) {
-        Contract contract = new Contract();
+    public Contract convertToContract( Contract contract,ReqContractDTO reqContractDTO) {
         contract.setBaseSalary(reqContractDTO.getBaseSalary());
         contract.setStandardWorkingDay(reqContractDTO.getStandardWorkingDay());
         contract.setStartDate(reqContractDTO.getStartDate());

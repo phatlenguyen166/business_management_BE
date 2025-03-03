@@ -3,14 +3,13 @@ package vn.bookstore.app.controller;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import vn.bookstore.app.dto.request.ReqContractDTO;
 import vn.bookstore.app.dto.response.ResContractDTO;
+import vn.bookstore.app.dto.response.RestResponse;
 import vn.bookstore.app.model.Contract;
 import vn.bookstore.app.service.ContractService;
+import vn.bookstore.app.util.error.IdInvalidException;
 
 import java.util.List;
 
@@ -29,6 +28,55 @@ public class ContractController {
     @GetMapping("/contracts")
     public ResponseEntity<List<ResContractDTO>> getAllContracts() {
         return ResponseEntity.ok().body(this.contractService.handleGetAllContracts());
+    }
+
+    @GetMapping("/contracts/{id}")
+    public ResponseEntity<RestResponse<ResContractDTO>> getContractById(@PathVariable Long id) throws IdInvalidException {
+        ResContractDTO resContractDTO = this.contractService.getContractById(id);
+        if(resContractDTO == null) {
+            throw new IdInvalidException("Hợp đồng không tồn tại");
+        } else {
+            return ResponseEntity.ok().body(
+                    new RestResponse<>(
+                            200,
+                            null,
+                            "Get contract successfully",
+                            resContractDTO
+                    )
+            );
+        }
+    }
+
+    @PutMapping("/contracts/{id}")
+    public ResponseEntity<RestResponse<ResContractDTO>> updateContract(@Valid @RequestBody ReqContractDTO contract, @PathVariable Long id) throws IdInvalidException {
+        if(this.contractService.getContractById(id) == null) {
+            throw new IdInvalidException("Hợp đồng không tồn tại");
+        }
+        ResContractDTO updatedContract = this.contractService.handleUpdatedContract(contract, id);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new RestResponse<>(
+                        201,
+                        null,
+                        "Create contract successfully",
+                        updatedContract
+                )
+        );
+    }
+
+    @PatchMapping("/contracts/{id}")
+    public ResponseEntity<RestResponse> deleteContractById(@PathVariable Long id) throws IdInvalidException {
+        if(this.contractService.getContractById(id) == null) {
+            throw new IdInvalidException("Hợp đồng không tồn tại");
+        }
+        this.contractService.handleDeleteContract(id);
+        return ResponseEntity.ok().body(
+                new RestResponse<>(
+                        200,
+                        null,
+                        "Delete contract successfully",
+                        null
+                )
+        );
     }
 
 }

@@ -7,9 +7,12 @@ import vn.bookstore.app.model.Contract;
 import vn.bookstore.app.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ContractRepository extends JpaRepository<Contract, Long>, JpaSpecificationExecutor<Contract> {
 List<Contract> getAllByStatus(int status);
 boolean existsContractByUser(User user);
+Optional<Contract> findContractByIdAndStatus(Long id, int status);
+//
 }
