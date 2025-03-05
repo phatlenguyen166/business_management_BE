@@ -31,7 +31,7 @@ public class GlobalException {
         res.setMessage("NotFoundException");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
     }
-
+    
     @ExceptionHandler(value = {ExistingIdException.class})
     public ResponseEntity<RestResponse<Object>> handleIdException(ExistingIdException exception) {
         RestResponse<Object> res = new RestResponse<>();
@@ -59,7 +59,7 @@ public class GlobalException {
         res.setError("Internal Server Error");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
     }
-
+    
     @ExceptionHandler(InvalidDataException.class)
     @ResponseStatus(CONFLICT)
     @ApiResponses(value = {
@@ -98,21 +98,31 @@ public class GlobalException {
         res.setMessage(exception.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
     }
-
+    
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<RestResponse<Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(error -> {
             errors.put(error.getField(), error.getDefaultMessage());
         });
-
+        
         RestResponse<Object> res = new RestResponse<>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
         res.setError("Validation Error");
         res.setMessage("Dữ liệu đầu vào không hợp lệ");
-        res.setData(errors); // Trả về lỗi dưới dạng Map
-
+        res.setData(errors);
+        
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
-
+    
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<RestResponse<Object>> handleIllegalArgumentException(IllegalArgumentException exception) {
+        RestResponse<Object> res = new RestResponse<>();
+        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        res.setError("Invalid Argument");
+        res.setMessage(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
+    
+    
 }
