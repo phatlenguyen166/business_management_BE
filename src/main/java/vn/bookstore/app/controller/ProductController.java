@@ -1,9 +1,12 @@
 package vn.bookstore.app.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import vn.bookstore.app.dto.request.ReqProductDTO;
 import vn.bookstore.app.dto.response.ResProductDTO;
 import vn.bookstore.app.dto.response.RestResponse;
 import vn.bookstore.app.service.ProductService;
@@ -13,21 +16,22 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/product")
+@Validated
 public class ProductController {
     
     private final ProductService productService;
     
     @PostMapping("/add")
-    public ResponseEntity<RestResponse<ResProductDTO>> addProduct(@RequestBody ResProductDTO resProductDTO) {
-        ResProductDTO newProduct = productService.addProduct(resProductDTO);
+    public ResponseEntity<RestResponse<ResProductDTO>> addProduct(@RequestBody ReqProductDTO reqProductDTO) {
+        ResProductDTO newProduct = productService.addProduct(reqProductDTO);
         RestResponse<ResProductDTO> response = RestResponse.success("Thêm sản phẩm thành công", newProduct);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     
     @PutMapping("/{productId}")
     public ResponseEntity<RestResponse<ResProductDTO>> updateProduct(@PathVariable Long productId,
-                                                                     @RequestBody ResProductDTO resProductDTO) {
-        ResProductDTO updatedProduct = productService.updateProduct(resProductDTO, productId);
+                                                                     @RequestBody ReqProductDTO reqProductDTO) {
+        ResProductDTO updatedProduct = productService.updateProduct(reqProductDTO, productId);
         RestResponse<ResProductDTO> response = RestResponse.success("Cập nhật sản phẩm thành công", updatedProduct);
         return ResponseEntity.ok(response);
     }

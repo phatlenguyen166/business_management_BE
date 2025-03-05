@@ -3,6 +3,7 @@ package vn.bookstore.app.service.impl;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import vn.bookstore.app.dto.request.ReqProductDTO;
 import vn.bookstore.app.dto.response.ResProductDTO;
 import vn.bookstore.app.mapper.ProductMapper;
 import vn.bookstore.app.model.Product;
@@ -20,18 +21,11 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
     
     @Override
-    public ResProductDTO addProduct(ResProductDTO resProductDTO) {
-        if (productRepository.existsByName(resProductDTO.getName())) {
-            throw new IllegalArgumentException("Sản phẩm với tên '" + resProductDTO.getName() + "' đã tồn tại.");
+    public ResProductDTO addProduct(ReqProductDTO reqProductDTO) {
+        if (productRepository.existsByName(reqProductDTO.getName())) {
+            throw new IllegalArgumentException("Sản phẩm với tên '" + reqProductDTO.getName() + "' đã tồn tại.");
         }
-        
-        Product product = new Product();
-        product.setName(resProductDTO.getName());
-        product.setImage(resProductDTO.getImage());
-        product.setQuantity(resProductDTO.getQuantity());
-        product.setPrice(resProductDTO.getPrice());
-        product.setStatus(resProductDTO.getStatus());
-        
+        Product product = productMapper.toProduct(reqProductDTO);
         // Lưu sản phẩm vào database
         Product savedProduct = productRepository.save(product);
         
@@ -41,16 +35,17 @@ public class ProductServiceImpl implements ProductService {
     
     
     @Override
-    public ResProductDTO updateProduct(ResProductDTO resProductDTO, Long productId) {
+    public ResProductDTO updateProduct(ReqProductDTO reqProductDTO, Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm với ID: " + productId));
         
-        if (productRepository.existsByName(resProductDTO.getName())) {
-            throw new IllegalArgumentException("Tên sản phẩm '" + resProductDTO.getName() + "' đã tồn tại.");
+        // Kiểm tra nếu tên sản phẩm đã tồn tại nhưng không phải của sản phẩm đang cập nhật
+        if (productRepository.existsByName(reqProductDTO.getName()) && !product.getName().equals(reqProductDTO.getName())) {
+            throw new IllegalArgumentException("Tên sản phẩm '" + reqProductDTO.getName() + "' đã tồn tại.");
         }
         
-        
-        productMapper.updateProductFromDto(resProductDTO, product);
+        // Cập nhật thông tin sản phẩm từ DTO
+        productMapper.updateProductFromDto(reqProductDTO, product);
         Product updatedProduct = productRepository.save(product);
         
         return productMapper.toResProductDTO(updatedProduct);
