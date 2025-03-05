@@ -24,5 +24,5 @@ public class ResUserDTO {
     private LocalDateTime createdAt;
     private int status;
     private ResContractDTO resContractDTO;
-    private SeniorityLevel seniorityLevel;
+
 }

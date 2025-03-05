@@ -34,10 +34,6 @@ public class User implements UserDetails {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private int status;
-    
-    @ManyToOne
-    @JoinColumn(name = "seniority_level_id", nullable = false)
-    private SeniorityLevel seniorityLevel;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user")

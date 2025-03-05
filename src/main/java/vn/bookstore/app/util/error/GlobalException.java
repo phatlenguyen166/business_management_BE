@@ -37,7 +37,7 @@ public class GlobalException {
         RestResponse<Object> res = new RestResponse<>();
         res.setStatusCode(CONFLICT.value());
         res.setError(exception.getMessage());
-        res.setMessage("ExistingIdException  ");
+        res.setMessage("ExistingIdException");
         return ResponseEntity.status(HttpStatus.CONFLICT).body(res);
     }
     
@@ -105,7 +105,10 @@ public class GlobalException {
         ex.getBindingResult().getFieldErrors().forEach(error -> {
             errors.put(error.getField(), error.getDefaultMessage());
         });
+<<<<<<< HEAD
         
+=======
+>>>>>>> d73af9a (Update Model User, Contract, SeniorityLevel, Role)
         RestResponse<Object> res = new RestResponse<>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
         res.setError("Validation Error");

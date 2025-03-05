@@ -28,13 +28,9 @@ public class UserConverter {
         this.seniorityLevelService = seniorityLevelService;
     }
 
-
-
-
     public User convertToUser(ReqUserWithContractDTO requestDTO) {
         User result = modelMapper.map(requestDTO, User.class);
         result.setId(null);
-        result.setSeniorityLevel(this.seniorityLevelService.handleGetSeniorityById(requestDTO.getSeniorityId()));
         return result;
     }
 

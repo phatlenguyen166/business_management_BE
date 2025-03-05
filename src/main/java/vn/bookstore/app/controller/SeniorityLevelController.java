@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.bookstore.app.dto.request.ReqSeniorityLevelDTO;
 import vn.bookstore.app.dto.response.RestResponse;
 import vn.bookstore.app.model.SeniorityLevel;
 import vn.bookstore.app.service.impl.SeniorityLevelServiceImpl;
@@ -22,7 +23,7 @@ public class SeniorityLevelController {
     }
     
     @PostMapping("/seniorityLevels")
-    public ResponseEntity<RestResponse<SeniorityLevel>> createSeniorityLevel(@Valid @RequestBody SeniorityLevel reqSeniorityLevel) {
+    public ResponseEntity<RestResponse<SeniorityLevel>> createSeniorityLevel(@Valid @RequestBody ReqSeniorityLevelDTO reqSeniorityLevel) {
         SeniorityLevel newSeniorityLevel = this.seniorityLevelService.handleCreateSeniorityLevel(reqSeniorityLevel);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 new RestResponse<>(
@@ -64,7 +65,7 @@ public class SeniorityLevelController {
     }
     
     @PutMapping("/seniorityLevels/{id}")
-    public ResponseEntity<RestResponse<SeniorityLevel>> updateSeniorityLevel(@Valid @RequestBody SeniorityLevel reqSeniorityLevel, @PathVariable Long id) throws NotFoundException {
+    public ResponseEntity<RestResponse<SeniorityLevel>> updateSeniorityLevel(@Valid @RequestBody ReqSeniorityLevelDTO reqSeniorityLevel, @PathVariable Long id) throws NotFoundException {
         if (this.seniorityLevelService.handleGetSeniorityById(id) == null) {
             throw new NotFoundException("Cấp bậc không tồn tại");
         }

@@ -35,6 +35,7 @@ public class AppConfig {
     
     private String[] WHITE_LIST = {
             "/auth/**",
+            "/users"
 
         
     };
