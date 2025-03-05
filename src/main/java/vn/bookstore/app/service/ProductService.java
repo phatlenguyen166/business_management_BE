@@ -12,4 +12,8 @@ public interface ProductService {
     ResProductDTO getProductById(Long id);
     
     void deleteProduct(Long id);
+    
+    ResProductDTO updateProduct(ResProductDTO resProductDTO, Long productId);
+    
+    ResProductDTO addProduct(ResProductDTO resProductDTO); // Thêm phương thức tạo sản phẩm
 }
