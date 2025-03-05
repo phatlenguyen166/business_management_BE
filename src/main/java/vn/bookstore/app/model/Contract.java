@@ -28,6 +28,6 @@ public class Contract {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "role_id", nullable = false)
-    private Role role;
+    @JoinColumn(name = "seniority_level", nullable = false)
+    private SeniorityLevel seniorityLevel;
 }

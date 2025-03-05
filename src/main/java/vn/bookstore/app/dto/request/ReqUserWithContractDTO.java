@@ -48,8 +48,4 @@ public class ReqUserWithContractDTO {
     @Size(min = 8, message = "Mật khẩu phải có ít nhất 8 ký tự")
     private String password;
     private ReqContractUserDTO reqContract;
-    private Long seniorityId;
-
-
-
 }

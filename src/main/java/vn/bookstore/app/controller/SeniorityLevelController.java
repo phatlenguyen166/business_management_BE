@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.bookstore.app.dto.request.ReqSeniorityLevelDTO;
 import vn.bookstore.app.dto.response.RestResponse;
 import vn.bookstore.app.model.SeniorityLevel;
 import vn.bookstore.app.service.impl.SeniorityLevelServiceImpl;
@@ -20,7 +21,7 @@ public class SeniorityLevelController {
 
 
     @PostMapping("/seniorityLevels")
-    public ResponseEntity<RestResponse<SeniorityLevel>> createSeniorityLevel(@Valid @RequestBody SeniorityLevel reqSeniorityLevel) {
+    public ResponseEntity<RestResponse<SeniorityLevel>> createSeniorityLevel(@Valid @RequestBody ReqSeniorityLevelDTO reqSeniorityLevel) {
         SeniorityLevel newSeniorityLevel = this.seniorityLevelService.handleCreateSeniorityLevel(reqSeniorityLevel);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 new RestResponse<>(
@@ -35,6 +36,19 @@ public class SeniorityLevelController {
     @GetMapping("/seniorityLevels")
     public ResponseEntity<RestResponse<List<SeniorityLevel>>> getAllSeniorityLevels() {
         List<SeniorityLevel> seniorityLevels = this.seniorityLevelService.handleGetAllSeniority();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new RestResponse<>(
+                        200,
+                        null,
+                        "Get all seniorityLevels successfully",
+                        seniorityLevels
+                )
+        );
+    }
+
+    @GetMapping("/seniorityLevels/role/{roleId}")
+    public ResponseEntity<RestResponse<List<SeniorityLevel>>> getAllSeniorityLevelsByRoleId(@PathVariable Long roleId) {
+        List<SeniorityLevel> seniorityLevels = this.seniorityLevelService.handleGetAllSeniorityByRoleId(roleId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new RestResponse<>(
                         200,
@@ -62,7 +76,7 @@ public class SeniorityLevelController {
     }
 
     @PutMapping("/seniorityLevels/{id}")
-    public ResponseEntity<RestResponse<SeniorityLevel>> updateSeniorityLevel(@Valid @RequestBody SeniorityLevel reqSeniorityLevel, @PathVariable Long id) throws NotFoundException {
+    public ResponseEntity<RestResponse<SeniorityLevel>> updateSeniorityLevel(@Valid @RequestBody ReqSeniorityLevelDTO reqSeniorityLevel, @PathVariable Long id) throws NotFoundException {
         if (this.seniorityLevelService.handleGetSeniorityById(id) == null) {
             throw new NotFoundException("Cấp bậc không tồn tại");
         }

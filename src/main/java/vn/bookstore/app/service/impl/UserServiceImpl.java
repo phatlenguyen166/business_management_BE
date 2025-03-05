@@ -9,12 +9,13 @@ import vn.bookstore.app.dto.request.ReqUserDTO;
 import vn.bookstore.app.dto.request.ReqUserWithContractDTO;
 import vn.bookstore.app.dto.response.ResContractDTO;
 import vn.bookstore.app.dto.response.ResUserDTO;
-import vn.bookstore.app.mapper.ContractConverter;
+import vn.bookstore.app.mapper.ContractMapper;
 import vn.bookstore.app.mapper.UserConverter;
 import vn.bookstore.app.model.Contract;
 import vn.bookstore.app.model.User;
 import vn.bookstore.app.repository.UserRepository;
 import vn.bookstore.app.service.UserService;
+import vn.bookstore.app.util.error.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,19 +33,19 @@ public class UserServiceImpl implements UserService {
     private  UserConverter userConverter;
     private  PasswordEncoder passwordEncoder;
     private  ContractServiceImpl contractService;
-    private ContractConverter contractConverter;
+    private ContractMapper contractMapper;
     public UserServiceImpl (UserRepository userRepository,
                             UserConverter userConverter,
                             @Lazy
                             PasswordEncoder passwordEncoder,
                             @Lazy
                             ContractServiceImpl contractService,
-                            ContractConverter contractConverter){
+                            ContractMapper contractMapper){
         this.contractService =contractService;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userConverter =userConverter;
-        this.contractConverter = contractConverter;
+        this.contractMapper = contractMapper;
     }
 
     @Override
@@ -56,7 +57,7 @@ public class UserServiceImpl implements UserService {
     public List<ResUserDTO> handleFetchAllUser() {
         List<ResUserDTO> resUserDTOS = new ArrayList<>();
         for (User user : userRepository.findAllByStatus(1)) {
-            ResContractDTO resContractDTO = contractConverter.convertToResContractDTO(contractService.getActiveContract(user.getContracts()));
+            ResContractDTO resContractDTO = contractMapper.convertToResContractDTO(contractService.getActiveContract(user.getContracts()));
             ResUserDTO resUserDTO = this.userConverter.convertToResUserDTO(user, resContractDTO);
             resUserDTOS.add(resUserDTO);
         }
@@ -73,11 +74,11 @@ public class UserServiceImpl implements UserService {
         this.userRepository.save(newUser);
         try {
             Contract contract = this.contractService.handleCreateContractWithUser(reqUser, newUser.getId());
-            ResContractDTO resContractDTO = contractConverter.convertToResContractDTO(contract);
+            ResContractDTO resContractDTO = contractMapper.convertToResContractDTO(contract);
             return this.userConverter.convertToResUserDTO(newUser, resContractDTO);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             this.userRepository.delete(newUser);
-            throw new RuntimeException("Lỗi khi tạo hợp đồng, user đã bị xóa!", e);
+            throw new RuntimeException("Lỗi khi tạo hợp đồng: "+ e.getMessage());
         }
 
     }
@@ -85,7 +86,7 @@ public class UserServiceImpl implements UserService {
     public ResUserDTO handleFetchUserById(Long id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isPresent()) {
-            ResContractDTO contractDTO = contractConverter.convertToResContractDTO(contractService.getActiveContract(user.get().getContracts()));
+            ResContractDTO contractDTO = contractMapper.convertToResContractDTO(contractService.getActiveContract(user.get().getContracts()));
             return this.userConverter.convertToResUserDTO(user.get(), contractDTO);
         }
         return null;
@@ -103,7 +104,7 @@ public class UserServiceImpl implements UserService {
             currentUser.get().setPhoneNumber(updateUser.getPhoneNumber());
             currentUser.get().setPassword(hashPassWord);
             this.userRepository.save(currentUser.get());
-            ResContractDTO contractDTO = contractConverter.convertToResContractDTO(contractService.getActiveContract(currentUser.get().getContracts()));
+            ResContractDTO contractDTO = contractMapper.convertToResContractDTO(contractService.getActiveContract(currentUser.get().getContracts()));
             return this.userConverter.convertToResUserDTO(currentUser.get(), contractDTO);
         }
         return null;

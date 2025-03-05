@@ -32,12 +32,21 @@ public class GlobalException {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
     }
 
+    @ExceptionHandler(value = {InvalidRequestException.class})
+    public ResponseEntity<RestResponse<Object>> handleIdException(InvalidRequestException exception) {
+        RestResponse<Object> res = new RestResponse<>();
+        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        res.setError(exception.getMessage());
+        res.setMessage("Dữ liệu không hợp lệ");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
+
     @ExceptionHandler(value = {ExistingIdException.class})
     public ResponseEntity<RestResponse<Object>> handleIdException(ExistingIdException exception) {
         RestResponse<Object> res = new RestResponse<>();
         res.setStatusCode(CONFLICT.value());
         res.setError(exception.getMessage());
-        res.setMessage("ExistingIdException  ");
+        res.setMessage("ExistingIdException");
         return ResponseEntity.status(HttpStatus.CONFLICT).body(res);
     }
     
@@ -105,7 +114,6 @@ public class GlobalException {
         ex.getBindingResult().getFieldErrors().forEach(error -> {
             errors.put(error.getField(), error.getDefaultMessage());
         });
-
         RestResponse<Object> res = new RestResponse<>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
         res.setError("Validation Error");

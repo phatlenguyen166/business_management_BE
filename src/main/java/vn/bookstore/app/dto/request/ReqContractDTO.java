@@ -34,7 +34,7 @@ public class ReqContractDTO {
     @Positive(message = "User ID phải là số dương")
     private Long userId;
 
-    @NotNull(message = "Role ID không được để trống")
-    @Positive(message = "Role ID phải là số dương")
-    private Long roleId;
+    @NotNull(message = "Cấp bậc không được để trống")
+    @Positive(message = "Cấp bậc phải là số dương")
+    private Long seniorityId;
 }

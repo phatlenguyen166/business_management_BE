@@ -1,5 +1,6 @@
 package vn.bookstore.app.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +18,9 @@ public class Role {
     private Long id;
     private String name;
     private String description;
+    private int status;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "role")
-    private List<Contract> contracts = new ArrayList<>();
+    private List<SeniorityLevel> seniorityLevels;
 }
