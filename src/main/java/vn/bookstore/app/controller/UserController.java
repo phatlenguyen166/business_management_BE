@@ -1,5 +1,6 @@
 package vn.bookstore.app.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import vn.bookstore.app.util.error.NotFoundException;
 import java.util.List;
 
 @RestController
+@Tag(name="Users")
 public class UserController {
     private UserServiceImpl userService;
 
