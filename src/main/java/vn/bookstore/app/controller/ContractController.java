@@ -13,6 +13,8 @@ import vn.bookstore.app.util.error.NotFoundException;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/v1")
+
 public class ContractController {
     private ContractService contractService;
     public ContractController(ContractService contractService) {

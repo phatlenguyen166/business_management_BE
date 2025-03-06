@@ -6,9 +6,12 @@ import org.springframework.stereotype.Repository;
 import vn.bookstore.app.model.Role;
 
 import javax.management.relation.RoleStatus;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long>, JpaSpecificationExecutor<Role> {
     Optional<Role> findByIdAndStatus(Long id, int status);
+    List<Role> findAllByStatus(int status);
+    boolean existsByNameAndStatus(String name, int status);
 }

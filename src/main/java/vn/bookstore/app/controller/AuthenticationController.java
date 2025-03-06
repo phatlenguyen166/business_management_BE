@@ -15,7 +15,8 @@ import vn.bookstore.app.service.AuthenticationService;
 import vn.bookstore.app.service.UserService;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/v1")
+
 @Validated
 @Slf4j
 @Tag(name = "User Controller")
@@ -26,18 +27,18 @@ public class AuthenticationController {
     
     private final AuthenticationService authenticationService;
     
-    @PostMapping("/access")
+    @PostMapping("/auth/access")
     public ResponseEntity<TokenResponse> login(@RequestBody SignInRequest request) {
         return new ResponseEntity<>(authenticationService.authenticate(request), HttpStatus.OK);
     }
     
     
-    @PostMapping("/refresh")
+    @PostMapping("/auth/refresh")
     public ResponseEntity<TokenResponse> refresh(HttpServletRequest request) {
         return new ResponseEntity<>(authenticationService.refresh(request), HttpStatus.OK);
     }
     
-    @PostMapping("/logout")
+    @PostMapping("/auth/logout")
     public ResponseEntity<String> logout(HttpServletRequest request) {
         return new ResponseEntity<>(authenticationService.logout(request), HttpStatus.OK);
     }

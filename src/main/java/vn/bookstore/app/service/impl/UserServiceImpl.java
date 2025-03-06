@@ -94,7 +94,13 @@ public class UserServiceImpl implements UserService {
     
     public ResUserDTO handleUpdateUser(ReqUserDTO updateUser, Long id) {
         Optional<User> currentUser = this.userRepository.findById(id);
-        String hashPassWord = this.passwordEncoder.encode(updateUser.getPassword());
+        String hashPassWord;
+        if (updateUser.getPassword() == "" || updateUser.getPassword() == null) {
+             hashPassWord = this.passwordEncoder.encode(currentUser.get().getPassword());
+        } else {
+             hashPassWord = this.passwordEncoder.encode(updateUser.getPassword());
+        }
+
         if (currentUser.isPresent()) {
             currentUser.get().setFullName(updateUser.getFullName());
             currentUser.get().setAddress(updateUser.getAddress());

@@ -15,6 +15,7 @@ import vn.bookstore.app.util.error.NotFoundException;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/v1")
 public class UserController {
     private UserServiceImpl userService;
 
@@ -22,18 +23,19 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/users")
-    public ResponseEntity<RestResponse<List<ResUserDTO>>> fetchAllUsers() {
-        List<ResUserDTO> resUserDTOList = this.userService.handleFetchAllUser();
-        return ResponseEntity.ok(
-                new RestResponse<>(
-                        200,
-                        null,
-                        "Fetch all users successfully",
-                        resUserDTOList
-                )
-        );
-    }
+
+        @GetMapping("/users")
+        public ResponseEntity<RestResponse<List<ResUserDTO>>> fetchAllUsers() {
+            List<ResUserDTO> resUserDTOList = this.userService.handleFetchAllUser();
+            return ResponseEntity.ok(
+                    new RestResponse<>(
+                            200,
+                            null,
+                            "Fetch all users successfully",
+                            resUserDTOList
+                    )
+            );
+        }
 
     @PostMapping("/users")
     public ResponseEntity<RestResponse<ResUserDTO>> createUser(@Valid @RequestBody ReqUserWithContractDTO reqUser) throws ExistingIdException  {

@@ -3,6 +3,7 @@ package vn.bookstore.app.dto.request;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
+import vn.bookstore.app.util.anotation.ValidPassword;
 import vn.bookstore.app.util.constant.GenderEnum;
 
 import java.time.LocalDate;
@@ -39,7 +40,6 @@ public class ReqUserDTO {
     @Size(min = 5, max = 20, message = "Tên đăng nhập phải từ 5 đến 20 ký tự")
     private String username;
 
-    @NotBlank(message = "Mật khẩu không được để trống")
-    @Size(min = 8, message = "Mật khẩu phải có ít nhất 8 ký tự")
+    @ValidPassword
     private String password;
 }

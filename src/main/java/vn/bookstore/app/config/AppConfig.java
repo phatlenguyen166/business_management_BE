@@ -31,7 +31,7 @@ public class AppConfig {
     private final PreFilter prefilter;
     
     private final String[] WHITE_LIST = {
-            "/auth/**",
+            "/api/v1/auth/**",
     };
     
     @Bean

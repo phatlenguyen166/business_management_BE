@@ -13,6 +13,7 @@ import vn.bookstore.app.util.error.NotFoundException;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/v1")
 public class SeniorityLevelController {
     private SeniorityLevelServiceImpl seniorityLevelService;
     public SeniorityLevelController(SeniorityLevelServiceImpl seniorityLevelService) {
