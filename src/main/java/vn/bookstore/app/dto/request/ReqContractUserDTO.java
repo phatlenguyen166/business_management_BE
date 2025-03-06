@@ -35,6 +35,6 @@ public class ReqContractUserDTO{
 
     @NotNull(message = "User ID không được để trống")
     @Positive(message = "User ID phải là số dương")
-    private Long roleId;
+    private Long seniorityId;
 
 }

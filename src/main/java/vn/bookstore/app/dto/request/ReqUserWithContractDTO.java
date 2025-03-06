@@ -21,7 +21,7 @@ public class ReqUserWithContractDTO {
 
     @NotBlank(message = "Số điện thoại không được để trống")
     @Pattern(
-                regexp = "^0[1-9][0-9]{8}$",
+            regexp = "^0[1-9][0-9]{8}$",
             message = "Số điện thoại không hợp lệ, vui lòng nhập đúng định dạng"
     )
     private String phoneNumber;
@@ -48,8 +48,4 @@ public class ReqUserWithContractDTO {
     @Size(min = 8, message = "Mật khẩu phải có ít nhất 8 ký tự")
     private String password;
     private ReqContractUserDTO reqContract;
-    private Long seniorityId;
-
-
-
 }

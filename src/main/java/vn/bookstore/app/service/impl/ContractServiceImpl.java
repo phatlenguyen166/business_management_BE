@@ -1,19 +1,21 @@
 package vn.bookstore.app.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.bookstore.app.dto.request.ReqContractDTO;
 import vn.bookstore.app.dto.request.ReqUserWithContractDTO;
 import vn.bookstore.app.dto.response.ResContractDTO;
-import vn.bookstore.app.mapper.ContractConverter;
+import vn.bookstore.app.mapper.ContractMapper;
 import vn.bookstore.app.model.Contract;
-import vn.bookstore.app.model.Role;
+import vn.bookstore.app.model.SeniorityLevel;
 import vn.bookstore.app.model.User;
 import vn.bookstore.app.repository.ContractRepository;
 import vn.bookstore.app.repository.RoleRepository;
+import vn.bookstore.app.repository.SeniorityLevelRepository;
 import vn.bookstore.app.repository.UserRepository;
 import vn.bookstore.app.service.ContractService;
-import vn.bookstore.app.service.UserService;
+import vn.bookstore.app.util.error.InvalidDataException;
+import vn.bookstore.app.util.error.InvalidRequestException;
+import vn.bookstore.app.util.error.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,46 +26,49 @@ public class ContractServiceImpl implements ContractService {
     private ContractRepository contractRepository;
     private UserRepository userRepository;
     private RoleRepository roleRepository;
-    private ContractConverter contractConverter;
+    private ContractMapper contractMapper;
+    private SeniorityLevelRepository seniorityLevelRepository;
 
 
     public ContractServiceImpl(ContractRepository contractRepository,
                                UserRepository userRepository,
                                RoleRepository roleRepository,
-                               ContractConverter contractConverter) {
+                               ContractMapper contractMapper,
+                               SeniorityLevelRepository seniorityLevelRepository) {
         this.contractRepository = contractRepository;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        this.contractConverter = contractConverter;
+        this.contractMapper = contractMapper;
+        this.seniorityLevelRepository = seniorityLevelRepository;
     }
 
 
     @Override
     public ResContractDTO handleCreateContract(ReqContractDTO newContract) {
         User user = userRepository.findUserByIdAndStatus(newContract.getUserId(), 1).orElseThrow(() -> new RuntimeException("User không tồn tại!"));
-        Role role = roleRepository.findRoleById(newContract.getRoleId())
-                .orElseThrow(() -> new RuntimeException("Role không tồn tại!"));
-        Contract contract = saveContract(user, newContract, role);
-        return contractConverter.convertToResContractDTO(contract);
+        SeniorityLevel seniorityLevel = seniorityLevelRepository.findByIdAndStatus(newContract.getSeniorityId(),1)
+                .orElseThrow(() -> new RuntimeException("Cấp bậc không tồn tại!"));
+        Contract contract = saveContract(user, newContract, seniorityLevel);
+        return contractMapper.convertToResContractDTO(contract);
 
     }
 
 
     @Override
     public Contract handleCreateContractWithUser(ReqUserWithContractDTO reqUserWithContractDTO, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User không tồn tại!"));
-        Role role = roleRepository.findRoleById(reqUserWithContractDTO.getReqContract().getRoleId()).orElseThrow(() -> new RuntimeException("Role không tồn tại!"));
-        ReqContractDTO reqContractDTO = contractConverter.convertToReqContractDTO(reqUserWithContractDTO.getReqContract(), userId);
-       return saveContract(user,reqContractDTO,role);
+        User user = userRepository.findById(userId).orElseThrow(() -> new InvalidRequestException("User không tồn tại!"));
+        SeniorityLevel seniorityLevel = seniorityLevelRepository.findByIdAndStatus(reqUserWithContractDTO.getReqContract().getSeniorityId(),1).orElseThrow(() -> new InvalidRequestException("Cấp bậc không tồn tại !")) ;
+        ReqContractDTO reqContractDTO = contractMapper.convertToReqContractDTO(reqUserWithContractDTO.getReqContract(), userId);
+        return saveContract(user,reqContractDTO,seniorityLevel);
     }
 
     @Override
-    public Contract saveContract(User user, ReqContractDTO newContract, Role role) {
+    public Contract saveContract(User user, ReqContractDTO newContract, SeniorityLevel seniorityLevel) {
         Contract currentContract = getActiveContract(user.getContracts());
         if (currentContract == null) {
-            Contract contract =  contractConverter.convertToContract(new Contract(),newContract);
+            Contract contract =  contractMapper.convertToContract(newContract);
             contract.setUser(user);
-            contract.setRole(role);
+            contract.setSeniorityLevel(seniorityLevel);
             contract.setStatus(1);
             contractRepository.save(contract);
             return  contract;
@@ -71,9 +76,9 @@ public class ContractServiceImpl implements ContractService {
 
             currentContract.setStatus(0);
             contractRepository.save(currentContract);
-            Contract contract =  contractConverter.convertToContract(new Contract(),newContract);
+            Contract contract =  contractMapper.convertToContract(newContract);
             contract.setUser(user);
-            contract.setRole(role);
+            contract.setSeniorityLevel(seniorityLevel);
             contract.setStatus(1);
             contractRepository.save(contract);
             return contract;
@@ -84,7 +89,7 @@ public class ContractServiceImpl implements ContractService {
     public ResContractDTO getContractById(Long id) {
         Optional<Contract> contract = this.contractRepository.findContractByIdAndStatus(id,1);
         if (contract.isPresent()) {
-            return contractConverter.convertToResContractDTO(contract.get());
+            return contractMapper.convertToResContractDTO(contract.get());
         }
         return null;
     }
@@ -92,11 +97,11 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public ResContractDTO handleUpdatedContract(ReqContractDTO updateContract, Long id) {
         Contract currentContract = this.contractRepository.findContractByIdAndStatus(id,1).get();
-        Contract  updatedContract = this.contractConverter.convertToContract(currentContract, updateContract);
+        Contract  updatedContract = this.contractMapper.convertToContract(updateContract);
         updatedContract.setUser(currentContract.getUser());
-        updatedContract.setRole(currentContract.getRole());
+        updatedContract.setSeniorityLevel(currentContract.getSeniorityLevel());
         this.contractRepository.save(updatedContract);
-        return contractConverter.convertToResContractDTO(updatedContract);
+        return contractMapper.convertToResContractDTO(updatedContract);
     }
 
     @Override
@@ -114,7 +119,7 @@ public class ContractServiceImpl implements ContractService {
         List<Contract> contracts = contractRepository.getAllByStatus(1);
         List<ResContractDTO> resContractDTOS = new ArrayList<>();
         for (Contract contract : contracts) {
-            ResContractDTO resContractDTO = contractConverter.convertToResContractDTO(contract);
+            ResContractDTO resContractDTO = contractMapper.convertToResContractDTO(contract);
             resContractDTOS.add(resContractDTO);
         }
         return resContractDTOS;

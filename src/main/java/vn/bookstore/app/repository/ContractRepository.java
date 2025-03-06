@@ -11,8 +11,8 @@ import java.util.Optional;
 
 @Repository
 public interface ContractRepository extends JpaRepository<Contract, Long>, JpaSpecificationExecutor<Contract> {
-List<Contract> getAllByStatus(int status);
-boolean existsContractByUser(User user);
-Optional<Contract> findContractByIdAndStatus(Long id, int status);
+    List<Contract> getAllByStatus(int status);
+    boolean existsContractByUser(User user);
+    Optional<Contract> findContractByIdAndStatus(Long id, int status);
 //
 }

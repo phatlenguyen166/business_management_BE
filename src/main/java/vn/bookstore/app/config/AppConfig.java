@@ -34,7 +34,7 @@ public class AppConfig {
     private final PreFilter prefilter;
     
     private String[] WHITE_LIST = {
-            "/auth/**",
+            "api/v1/auth/**",
 
         
     };

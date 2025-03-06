@@ -15,7 +15,7 @@ import vn.bookstore.app.service.AuthenticationService;
 import vn.bookstore.app.service.UserService;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("api/v1/auth")
 @Validated
 @Slf4j
 @Tag(name = "Authentication")

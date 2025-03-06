@@ -2,6 +2,7 @@ package vn.bookstore.app.dto.response;
 
 import lombok.Getter;
 import lombok.Setter;
+import vn.bookstore.app.model.SeniorityLevel;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,6 +11,8 @@ import java.time.LocalDate;
 @Setter
 public class ResContractDTO {
     private Long id;
+    private Long userId;
+    private String fullName;
     private BigDecimal baseSalary;
     private int standardWorkingDay;
     private int status;
@@ -17,5 +20,6 @@ public class ResContractDTO {
     private LocalDate endDate;
     private LocalDate expiryDate;
     private String roleName;
-    private Long userId;
+    private String levelName;
+    private float salaryCoefficient;
 }

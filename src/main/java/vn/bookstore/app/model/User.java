@@ -34,24 +34,20 @@ public class User implements UserDetails {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private int status;
-    
-    @ManyToOne
-    @JoinColumn(name = "seniority_level_id", nullable = false)
-    private SeniorityLevel seniorityLevel;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Contract> contracts;
-    
+
     @OneToMany(mappedBy = "user")
     private List<Bill> bills;
-    
+
     @OneToMany(mappedBy = "user")
     private List<Payroll> payrolls;
-    
+
     @OneToMany(mappedBy = "user")
     private List<LeaveRequest> leaveRequest;
-    
+
     @OneToMany(mappedBy = "user")
     private List<Attendance> attendances;
 
@@ -65,27 +61,27 @@ public class User implements UserDetails {
     public void handleBeforeUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-    
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();
     }
-    
+
     @Override
     public boolean isAccountNonExpired() {
         return UserDetails.super.isAccountNonExpired();
     }
-    
+
     @Override
     public boolean isAccountNonLocked() {
         return UserDetails.super.isAccountNonLocked();
     }
-    
+
     @Override
     public boolean isCredentialsNonExpired() {
         return UserDetails.super.isCredentialsNonExpired();
     }
-    
+
     @Override
     public boolean isEnabled() {
         return UserDetails.super.isEnabled();
