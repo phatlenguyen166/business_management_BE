@@ -8,7 +8,6 @@ import vn.bookstore.app.dto.response.ResProductDTO;
 import java.io.IOException;
 import java.util.List;
 
-@Service
 public interface ProductService {
     List<ResProductDTO> getListProducts();
     
