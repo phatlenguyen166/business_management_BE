@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
 import vn.bookstore.app.dto.request.ReqProductDTO;
 import vn.bookstore.app.dto.response.ResProductDTO;
-import vn.bookstore.app.dto.response.RestResponse;
+import vn.bookstore.app.dto.response.ResResponse;
 import vn.bookstore.app.service.ProductService;
 
 import java.io.IOException;
@@ -59,7 +59,7 @@ public class ProductController {
     @GetMapping("/list")
     public ResponseEntity<RestResponse<List<ResProductDTO>>> getListProducts() {
         List<ResProductDTO> productDTOList = productService.getListProducts();
-        RestResponse<List<ResProductDTO>> response = RestResponse.success("Lấy danh sách sản phẩm thành công",
+        ResResponse<List<ResProductDTO>> response = ResResponse.success("Lấy danh sách sản phẩm thành công",
                 productDTOList);
         return ResponseEntity.ok(response);
     }
