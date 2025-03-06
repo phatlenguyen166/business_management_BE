@@ -28,15 +28,13 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableWebSecurity
 
 public class AppConfig {
-
-
+    
+    
     private final UserService userService;
     private final PreFilter prefilter;
     
     private String[] WHITE_LIST = {
             "api/v1/auth/**",
-
-        
     };
     
     @Bean
@@ -45,10 +43,10 @@ public class AppConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE")
-                        .allowedOrigins("http://localhost:5173")
+                        .allowedOrigins("http://localhost:5173", "http://127.0.0.1:5173")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
-                        .allowCredentials(false)
+                        .allowCredentials(true)
                         .maxAge(3600);
             }
         };
@@ -62,14 +60,14 @@ public class AppConfig {
     @Bean
     public SecurityFilterChain configure(@NonNull HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests
-                                .requestMatchers(WHITE_LIST)
-                                .permitAll()
-                                .anyRequest().authenticated())
+                .cors(cors -> cors.configure(http)) // Kích hoạt CORS trong Security
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(WHITE_LIST).permitAll()
+                        .anyRequest().authenticated()
+                )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
-                .authenticationProvider(provider()).addFilterBefore(prefilter,
-                        UsernamePasswordAuthenticationFilter.class);
+                .authenticationProvider(provider())
+                .addFilterBefore(prefilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
     

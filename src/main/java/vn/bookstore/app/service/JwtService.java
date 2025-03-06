@@ -5,7 +5,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import vn.bookstore.app.util.constant.TokenType;
 
-@Service
 public interface JwtService {
     
     String generateToken(UserDetails user);
@@ -15,6 +14,4 @@ public interface JwtService {
     String extractUsername(String token, TokenType type);
     
     boolean isValid(String token, TokenType type, UserDetails userDetails);
-    
-    
 }

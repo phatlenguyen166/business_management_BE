@@ -8,7 +8,7 @@ import vn.bookstore.app.util.constant.Platform;
 import java.io.Serializable;
 
 @Getter
-public class SignInRequest implements Serializable {
+public class ReqSignInDTO implements Serializable {
     
     @NotBlank(message = "username must be not null")
     private String username;

@@ -20,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/product")
 @Validated
-@Tag(name="Products")
+@Tag(name = "Products")
 public class ProductController {
     
     private final ProductService productService;
@@ -32,7 +32,7 @@ public class ProductController {
         
         ObjectMapper objectMapper = new ObjectMapper();
         ReqProductDTO reqProductDTO = objectMapper.readValue(productJson, ReqProductDTO.class);
- 
+        
         ResProductDTO newProduct = productService.addProduct(reqProductDTO, file);
         
         ResResponse<ResProductDTO> response = ResResponse.success("Thêm sản phẩm thành công", newProduct);
@@ -49,7 +49,7 @@ public class ProductController {
         ReqProductDTO reqProductDTO = objectMapper.readValue(productJson, ReqProductDTO.class);
         
         ResProductDTO updatedProduct = productService.updateProduct(reqProductDTO, productId, file);
-
+        
         ResResponse<ResProductDTO> response = ResResponse.success("Cập nhật sản phẩm thành công", updatedProduct);
         return ResponseEntity.ok(response);
     }
