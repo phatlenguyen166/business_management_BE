@@ -1,15 +1,17 @@
 package vn.bookstore.app.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.*;
 import org.springframework.http.HttpStatus;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResResponse<T> {
+@JsonPropertyOrder({ "statusCode", "success", "error", "message", "data" })
+public class ResponseDTO<T> {
     private int statusCode;
-    
+    boolean success;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String error;
     
@@ -18,7 +20,7 @@ public class ResResponse<T> {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T data;
     
-    public static <T> ResResponse<T> success(String message, T data) {
-        return new ResResponse<>(HttpStatus.OK.value(), null, message, data);
+    public static <T> ResponseDTO<T> success(boolean success,String message, T data) {
+        return new ResponseDTO<>(HttpStatus.OK.value(),success, null, message, data);
     }
 }

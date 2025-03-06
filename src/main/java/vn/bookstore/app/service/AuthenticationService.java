@@ -1,6 +1,5 @@
 package vn.bookstore.app.service;
 
-import io.jsonwebtoken.Jwt;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,18 +9,15 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import vn.bookstore.app.dto.request.SignInRequest;
-import vn.bookstore.app.dto.response.TokenResponse;
+import vn.bookstore.app.dto.response.ResTokenDTO;
 import vn.bookstore.app.model.Token;
 import vn.bookstore.app.model.User;
 import vn.bookstore.app.repository.UserRepository;
-import vn.bookstore.app.util.constant.TokenType;
 import vn.bookstore.app.util.error.InvalidDataException;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpHeaders.REFERER;
 import static vn.bookstore.app.util.constant.TokenType.ACCESS_TOKEN;
 import static vn.bookstore.app.util.constant.TokenType.REFRESH_TOKEN;
 
@@ -36,7 +32,7 @@ public class AuthenticationService {
     private final JwtService jwtService;
     
     
-    public TokenResponse authenticate(SignInRequest signInRequest) {
+    public ResTokenDTO authenticate(SignInRequest signInRequest) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequest.getUsername(),
                 signInRequest.getPassword()));
         
@@ -49,10 +45,10 @@ public class AuthenticationService {
         
         tokenService.save(Token.builder().username(user.getUsername()).accessToken(accessToken).refreshToken(refreshToken).build());
         
-        return TokenResponse.builder().accessToken(accessToken).refreshToken(refreshToken).userId(user.getId()).build();
+        return ResTokenDTO.builder().accessToken(accessToken).refreshToken(refreshToken).userId(user.getId()).build();
     }
     
-    public TokenResponse refresh(HttpServletRequest request) {
+    public ResTokenDTO refresh(HttpServletRequest request) {
         String refreshToken = request.getHeader(AUTHORIZATION);
         if (StringUtils.isBlank(refreshToken)) {
             throw new InvalidDataException("Token must be not blank");
@@ -71,7 +67,7 @@ public class AuthenticationService {
         
         String accessToken = jwtService.generateToken(user.get());
         
-        return TokenResponse.builder().accessToken(accessToken).refreshToken(refreshToken).userId(user.get().getId()).build();
+        return ResTokenDTO.builder().accessToken(accessToken).refreshToken(refreshToken).userId(user.get().getId()).build();
         
     }
     

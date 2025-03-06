@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
-import vn.bookstore.app.dto.response.ResResponse;
+import vn.bookstore.app.dto.response.ResponseDTO;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,36 +24,40 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class GlobalException {
 
     @ExceptionHandler(value = {NotFoundException.class})
-    public ResponseEntity<ResResponse<Object>> handleIdException(NotFoundException exception) {
-        ResResponse<Object> res = new ResResponse<>();
+    public ResponseEntity<ResponseDTO<Object>> handleIdException(NotFoundException exception) {
+        ResponseDTO<Object> res = new ResponseDTO<>();
         res.setStatusCode(HttpStatus.NOT_FOUND.value());
+        res.setSuccess(false);
         res.setError(exception.getMessage());
         res.setMessage("NotFoundException");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
     }
 
     @ExceptionHandler(value = {InvalidRequestException.class})
-    public ResponseEntity<ResResponse<Object>> handleIdException(InvalidRequestException exception) {
-        ResResponse<Object> res = new ResResponse<>();
+    public ResponseEntity<ResponseDTO<Object>> handleIdException(InvalidRequestException exception) {
+        ResponseDTO<Object> res = new ResponseDTO<>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        res.setSuccess(false);
         res.setError(exception.getMessage());
         res.setMessage("Dữ liệu không hợp lệ");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
 
     @ExceptionHandler(value = {ExistingIdException.class})
-    public ResponseEntity<ResResponse<Object>> handleIdException(ExistingIdException exception) {
-        ResResponse<Object> res = new ResResponse<>();
+    public ResponseEntity<ResponseDTO<Object>> handleIdException(ExistingIdException exception) {
+        ResponseDTO<Object> res = new ResponseDTO<>();
         res.setStatusCode(CONFLICT.value());
+        res.setSuccess(false);
         res.setError(exception.getMessage());
         res.setMessage("ExistingIdException");
         return ResponseEntity.status(HttpStatus.CONFLICT).body(res);
     }
 
     @ExceptionHandler(value = {ResourceNotFoundException.class})
-    public ResponseEntity<ResResponse<Object>> handleResourceNotFoundException(ResourceNotFoundException exception) {
-        ResResponse<Object> res = new ResResponse<>();
+    public ResponseEntity<ResponseDTO<Object>> handleResourceNotFoundException(ResourceNotFoundException exception) {
+        ResponseDTO<Object> res = new ResponseDTO<>();
         res.setStatusCode(HttpStatus.NOT_FOUND.value());
+        res.setSuccess(false);
         res.setMessage(exception.getMessage());
         res.setError("ResourceNotFoundException");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
@@ -61,9 +65,10 @@ public class GlobalException {
 
 
     @ExceptionHandler(value = {Exception.class})
-    public ResponseEntity<ResResponse<Object>> handleAllExceptions(Exception exception) {
-        ResResponse<Object> res = new ResResponse<>();
+    public ResponseEntity<ResponseDTO<Object>> handleAllExceptions(Exception exception) {
+        ResponseDTO<Object> res = new ResponseDTO<>();
         res.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        res.setSuccess(false);
         res.setMessage(exception.getMessage());
         res.setError("Internal Server Error");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
@@ -88,11 +93,12 @@ public class GlobalException {
                                             """
                             ))})
     })
-    public ResponseEntity<ResResponse<Object>> handleDuplicateKeyException(InvalidDataException e,
+    public ResponseEntity<ResponseDTO<Object>> handleDuplicateKeyException(InvalidDataException e,
                                                                            WebRequest request) {
-        ResResponse<Object> res = new ResResponse<>();
+        ResponseDTO<Object> res = new ResponseDTO<>();
 //        res.set(request.getDescription(false).replace("uri=", ""));
         res.setStatusCode(CONFLICT.value());
+        res.setSuccess(false);
         res.setError(CONFLICT.getReasonPhrase());
         res.setMessage(e.getMessage());
 
@@ -100,22 +106,24 @@ public class GlobalException {
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ResResponse<Object>> handleBadCredentialsException(BadCredentialsException exception) {
-        ResResponse<Object> res = new ResResponse<>();
+    public ResponseEntity<ResponseDTO<Object>> handleBadCredentialsException(BadCredentialsException exception) {
+        ResponseDTO<Object> res = new ResponseDTO<>();
         res.setStatusCode(HttpStatus.UNAUTHORIZED.value());
+        res.setSuccess(false);
         res.setError("Username or password incorrect ");
         res.setMessage(exception.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ResResponse<Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ResponseDTO<Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(error -> {
             errors.put(error.getField(), error.getDefaultMessage());
         });
-        ResResponse<Object> res = new ResResponse<>();
+        ResponseDTO<Object> res = new ResponseDTO<>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        res.setSuccess(false);
         res.setError("Validation Error");
         res.setMessage("Dữ liệu đầu vào không hợp lệ");
         res.setData(errors); // Trả về lỗi dưới dạng Map
