@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.bookstore.app.dto.response.ResRoleDTO;
-import vn.bookstore.app.dto.response.RestResponse;
+import vn.bookstore.app.dto.response.ResResponse;
 import vn.bookstore.app.model.Role;
 import vn.bookstore.app.model.User;
 import vn.bookstore.app.service.RoleService;
@@ -21,10 +21,10 @@ public class RoleController {
     private final RoleServiceImpl roleService;
 
     @GetMapping("/roles")
-    public ResponseEntity<RestResponse<List<ResRoleDTO>>>  getAllRole() {
+    public ResponseEntity<ResResponse<List<ResRoleDTO>>>  getAllRole() {
         List<ResRoleDTO> roleList = this.roleService.getAllRole();
         return ResponseEntity.ok(
-                new RestResponse<>(
+                new ResResponse<>(
                         200,
                         null,
                         "Get all roles successfully",
@@ -34,10 +34,10 @@ public class RoleController {
     }
 
     @GetMapping("/roles/{id}")
-    public ResponseEntity<RestResponse<ResRoleDTO>>  getRoleById(@PathVariable Long id) {
+    public ResponseEntity<ResResponse<ResRoleDTO>>  getRoleById(@PathVariable Long id) {
         ResRoleDTO role = this.roleService.handleRoleById(id);
         return ResponseEntity.ok(
-                new RestResponse<>(
+                new ResResponse<>(
                         200,
                         null,
                         "Get role successfully",
@@ -47,10 +47,10 @@ public class RoleController {
     }
 
     @PostMapping("/roles")
-    public ResponseEntity<RestResponse<ResRoleDTO>>  createRole(@Valid @RequestBody Role role) {
+    public ResponseEntity<ResResponse<ResRoleDTO>>  createRole(@Valid @RequestBody Role role) {
         ResRoleDTO newRole = this.roleService.handleCreateRole(role);
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                new RestResponse<>(
+                new ResResponse<>(
                         200,
                         null,
                         "Create role successfully",
@@ -60,10 +60,10 @@ public class RoleController {
     }
 
     @PutMapping("/roles/{id}")
-    public ResponseEntity<RestResponse<ResRoleDTO>>  updateRole(@Valid @RequestBody Role role, @PathVariable Long id) {
+    public ResponseEntity<ResResponse<ResRoleDTO>>  updateRole(@Valid @RequestBody Role role, @PathVariable Long id) {
         ResRoleDTO updatedRole = this.roleService.handleUpdateRole(role, id);
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                new RestResponse<>(
+                new ResResponse<>(
                         200,
                         null,
                         "Update role successfully",
@@ -73,10 +73,10 @@ public class RoleController {
     }
 
     @PatchMapping("/roles/{id}")
-    public ResponseEntity<RestResponse>  deleteRole(@PathVariable Long id) {
+    public ResponseEntity<ResResponse>  deleteRole(@PathVariable Long id) {
       this.roleService.handleDeleteRole(id);
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                new RestResponse<>(
+                new ResResponse<>(
                         200,
                         null,
                         "Delete role successfully",
