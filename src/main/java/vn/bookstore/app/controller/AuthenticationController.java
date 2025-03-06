@@ -18,7 +18,7 @@ import vn.bookstore.app.service.UserService;
 @RequestMapping("/auth")
 @Validated
 @Slf4j
-@Tag(name = "Authentication")
+@Tag(name = "User Controller")
 @RequiredArgsConstructor
 public class AuthenticationController {
     

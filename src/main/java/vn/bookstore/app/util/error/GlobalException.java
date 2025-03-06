@@ -68,7 +68,7 @@ public class GlobalException {
         res.setError("Internal Server Error");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
     }
-    
+
     @ExceptionHandler(InvalidDataException.class)
     @ResponseStatus(CONFLICT)
     @ApiResponses(value = {
@@ -107,13 +107,14 @@ public class GlobalException {
         res.setMessage(exception.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
     }
-    
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResResponse<Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(error -> {
             errors.put(error.getField(), error.getDefaultMessage());
         });
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
         
@@ -123,22 +124,15 @@ public class GlobalException {
 =======
         ResResponse<Object> res = new ResResponse<>();
 >>>>>>> 7f00620 (change file class name)
+=======
+        ResResponse<Object> res = new ResResponse<>();
+>>>>>>> 7f0062024725617942378a8139bd8d3d75ad1886
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
         res.setError("Validation Error");
         res.setMessage("Dữ liệu đầu vào không hợp lệ");
-        res.setData(errors);
-        
+        res.setData(errors); // Trả về lỗi dưới dạng Map
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
-    
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<RestResponse<Object>> handleIllegalArgumentException(IllegalArgumentException exception) {
-        RestResponse<Object> res = new RestResponse<>();
-        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
-        res.setError("Invalid Argument");
-        res.setMessage(exception.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
-    }
-    
-    
+
 }
