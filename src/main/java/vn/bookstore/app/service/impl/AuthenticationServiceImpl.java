@@ -85,14 +85,25 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         
         Optional<User> user = userRepository.findByUsernameAndStatus(userName, 1);
         
+        
+        Contract roleIdInContract = contractRepository.findContractByUserId(user.get().getId())
+                .orElseThrow(() -> new IllegalStateException("Không tìm thấy hợp đồng của người dùng"));
+        
+        Role role = roleRepository.findRoleByIdAndStatus(roleIdInContract.getId(), 1)
+                .orElseThrow(() -> new IllegalStateException("Không ttìm thấy chức vụ"));
+        
         if (!jwtService.isValid(refreshToken, REFRESH_TOKEN, user.get())) {
-            throw new InvalidDataException("Token is invalid");
+            throw new InvalidDataException("Token không hợp lệ");
         }
         
         String accessToken = jwtService.generateToken(user.get());
         
-        return ResTokenDTO.builder().accessToken(accessToken).refreshToken(refreshToken).userId(user.get().getId()).build();
-        
+        return ResTokenDTO.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .userId(user.get().getId())
+                .roleInfo(role)
+                .build();
     }
     
     public String logout(HttpServletRequest request) {
