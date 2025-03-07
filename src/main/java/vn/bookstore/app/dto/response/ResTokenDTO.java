@@ -9,7 +9,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @Builder
-public class TokenResponse implements Serializable {
+public class ResTokenDTO implements Serializable {
     
     private String accessToken;
     

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vn.bookstore.app.dto.request.ReqProductDTO;
 import vn.bookstore.app.dto.response.ResProductDTO;
-import vn.bookstore.app.dto.response.ResResponse;
+import vn.bookstore.app.dto.response.ResponseDTO;
 import vn.bookstore.app.service.ProductService;
 
 import java.io.IOException;
@@ -20,27 +20,27 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/product")
 @Validated
-@Tag(name = "Products")
+@Tag(name="Products")
 public class ProductController {
     
     private final ProductService productService;
     
     @PostMapping("/add")
-    public ResponseEntity<ResResponse<ResProductDTO>> addProduct(
+    public ResponseEntity<ResponseDTO<ResProductDTO>> addProduct(
             @RequestPart("product") String productJson,  // Nhận JSON dạng String
             @RequestPart("file") MultipartFile file) throws IOException {
         
         ObjectMapper objectMapper = new ObjectMapper();
         ReqProductDTO reqProductDTO = objectMapper.readValue(productJson, ReqProductDTO.class);
-        
+ 
         ResProductDTO newProduct = productService.addProduct(reqProductDTO, file);
         
-        ResResponse<ResProductDTO> response = ResResponse.success("Thêm sản phẩm thành công", newProduct);
+        ResponseDTO<ResProductDTO> response = ResponseDTO.success(true,"Thêm sản phẩm thành công", newProduct);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     
     @PutMapping("/{productId}")
-    public ResponseEntity<ResResponse<ResProductDTO>> updateProduct(
+    public ResponseEntity<ResponseDTO<ResProductDTO>> updateProduct(
             @PathVariable Long productId,
             @RequestPart("product") String productJson,  // JSON dạng String
             @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
@@ -49,30 +49,30 @@ public class ProductController {
         ReqProductDTO reqProductDTO = objectMapper.readValue(productJson, ReqProductDTO.class);
         
         ResProductDTO updatedProduct = productService.updateProduct(reqProductDTO, productId, file);
-        
-        ResResponse<ResProductDTO> response = ResResponse.success("Cập nhật sản phẩm thành công", updatedProduct);
+
+        ResponseDTO<ResProductDTO> response = ResponseDTO.success(true,"Cập nhật sản phẩm thành công", updatedProduct);
         return ResponseEntity.ok(response);
     }
     
     
     @GetMapping("/list")
-    public ResponseEntity<ResResponse<List<ResProductDTO>>> getListProducts() {
+    public ResponseEntity<ResponseDTO<List<ResProductDTO>>> getListProducts() {
         List<ResProductDTO> productDTOList = productService.getListProducts();
-        ResResponse<List<ResProductDTO>> response = ResResponse.success("Lấy danh sách sản phẩm thành công",
+        ResponseDTO<List<ResProductDTO>> response = ResponseDTO.success(true,"Lấy danh sách sản phẩm thành công",
                 productDTOList);
         return ResponseEntity.ok(response);
     }
     
     @GetMapping("/{productId}")
-    public ResponseEntity<ResResponse<ResProductDTO>> getProductById(@PathVariable Long productId) {
+    public ResponseEntity<ResponseDTO<ResProductDTO>> getProductById(@PathVariable Long productId) {
         ResProductDTO productDTO = productService.getProductById(productId);
-        ResResponse<ResProductDTO> response = ResResponse.success("Lấy sản phẩm thành công", productDTO);
+        ResponseDTO<ResProductDTO> response = ResponseDTO.success(true,"Lấy sản phẩm thành công", productDTO);
         return ResponseEntity.ok(response);
     }
     
     @PatchMapping("/{productId}")
-    public ResponseEntity<ResResponse<Void>> disableProduct(@PathVariable Long productId) {
+    public ResponseEntity<ResponseDTO<Void>> disableProduct(@PathVariable Long productId) {
         productService.deleteProduct(productId);
-        return ResponseEntity.ok(new ResResponse<>(HttpStatus.OK.value(), null, "Xóa sản phẩm thành công", null));
+        return ResponseEntity.ok(new ResponseDTO<>(HttpStatus.OK.value(),true, null, "Xóa sản phẩm thành công", null));
     }
 }
