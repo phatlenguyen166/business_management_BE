@@ -8,7 +8,7 @@ import vn.bookstore.app.dto.response.ResUserDTO;
 
 import java.util.List;
 
-public interface UserService {
+public interface    UserService {
     UserDetailsService userDetailsService();
 
     public List<ResUserDTO> handleFetchAllUser();

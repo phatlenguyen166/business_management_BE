@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import vn.bookstore.app.dto.request.SignInRequest;
+import vn.bookstore.app.dto.request.ReqSignInDTO;
 import vn.bookstore.app.dto.response.ResTokenDTO;
 import vn.bookstore.app.service.AuthenticationService;
 import vn.bookstore.app.service.UserService;
@@ -27,7 +27,7 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
     
     @PostMapping("/access")
-    public ResponseEntity<ResTokenDTO> login(@RequestBody SignInRequest request) {
+    public ResponseEntity<ResTokenDTO> login(@RequestBody ReqSignInDTO request) {
         return new ResponseEntity<>(authenticationService.authenticate(request), HttpStatus.OK);
     }
     
