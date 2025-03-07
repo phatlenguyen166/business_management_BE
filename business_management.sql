@@ -122,14 +122,14 @@ CREATE TABLE `contracts` (
   `standard_working_day` int NOT NULL,
   `start_date` date DEFAULT NULL,
   `status` int NOT NULL,
-  `role_id` bigint NOT NULL,
+  `seniority_level` bigint NOT NULL,
   `user_id` bigint NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `FKigrx8563skdoseubtgvw1aqjh` (`role_id`),
+  KEY `FKa685dj982h13eolw5pkd65wll` (`seniority_level`),
   KEY `FKq3v8dxlubujug7dxvpauig94n` (`user_id`),
-  CONSTRAINT `FKigrx8563skdoseubtgvw1aqjh` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`),
+  CONSTRAINT `FKa685dj982h13eolw5pkd65wll` FOREIGN KEY (`seniority_level`) REFERENCES `seniority_levels` (`id`),
   CONSTRAINT `FKq3v8dxlubujug7dxvpauig94n` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -138,7 +138,7 @@ CREATE TABLE `contracts` (
 
 LOCK TABLES `contracts` WRITE;
 /*!40000 ALTER TABLE `contracts` DISABLE KEYS */;
-INSERT INTO `contracts` VALUES (1,15000000.0000,'2025-03-01','2026-03-01',26,'2024-03-01',0,1,1),(2,15000000.0000,'2025-03-01','2026-03-01',26,'2024-03-01',1,1,1),(3,10000000.0000,'2025-03-01','2026-03-01',26,'2024-03-01',1,2,2),(4,17000000.0000,'2026-03-01','2026-03-01',26,'2024-03-01',1,3,3),(5,14000000.0000,'2026-03-01','2026-03-01',26,'2024-03-01',1,4,4),(6,16000000.0000,'2025-12-31','2026-12-31',26,'2024-03-01',0,5,5),(7,16000000.0000,'2025-12-31','2026-12-31',26,'2024-03-01',0,5,5),(8,16000000.0000,'2025-12-31','2026-12-31',26,'2024-03-01',1,5,5);
+INSERT INTO `contracts` VALUES (1,20000000.0000,'2026-12-31','2026-12-31',26,'2024-03-05',1,1,2),(2,8000000.0000,'2026-12-31','2026-12-31',26,'2024-03-05',1,2,3),(3,15000000.0000,'2026-12-31','2026-12-31',26,'2024-03-05',1,5,4),(4,12000000.0000,'2026-12-31','2026-12-31',26,'2024-03-05',1,8,5),(5,18000000.0000,'2026-12-31','2026-12-31',26,'2024-03-05',1,11,6);
 /*!40000 ALTER TABLE `contracts` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -329,10 +329,13 @@ DROP TABLE IF EXISTS `products`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `products` (
   `id` bigint NOT NULL AUTO_INCREMENT,
+  `created_at` datetime(6) DEFAULT NULL,
   `image` varchar(255) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
   `price` decimal(19,4) NOT NULL,
   `quantity` int NOT NULL,
+  `status` int NOT NULL,
+  `updated_at` datetime(6) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -357,8 +360,9 @@ CREATE TABLE `roles` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `description` varchar(255) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
+  `status` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -367,7 +371,7 @@ CREATE TABLE `roles` (
 
 LOCK TABLES `roles` WRITE;
 /*!40000 ALTER TABLE `roles` DISABLE KEYS */;
-INSERT INTO `roles` VALUES (1,'Quản trị viên hệ thống, có toàn quyền quản lý và cấu hình hệ thống.','ADMIN'),(2,'Nhân viên làm việc trong hệ thống, có quyền hạn hạn chế theo chức năng được phân công.','EMPLOYEE'),(3,'Quản lý nhân sự, chịu trách nhiệm về hồ sơ nhân viên, hợp đồng, chấm công và lương thưởng.','HR_MANAGER'),(4,'Quản lý kho, giám sát hàng tồn kho, nhập xuất hàng và các hoạt động liên quan.\n','WAREHOUSE_MANAGER	'),(5,'Quản lý kinh doanh, chịu trách nhiệm về chiến lược kinh doanh, doanh số và khách hàng.','BUSINESS_MANAGER'),(6,'Người dùng không có hợp đồng, không được đăng nhập','NO_ROLE');
+INSERT INTO `roles` VALUES (1,'Quản trị viên hệ thống, có toàn quyền quản lý','ADMIN',1),(2,'Nhân viên làm việc trong hệ thống','EMPLOYEE',1),(3,'Quản lý nhân sự, chịu trách nhiệm về hồ sơ nhân sự','HR_MANAGER',1),(4,'	Quản lý kho, giám sát hàng tồn kho, nhập xuất hàng hóa','WAREHOUSE_MANAGER',1),(5,'Quản lý kinh doanh, chịu trách nhiệm về chiến lược kinh doanh','BUSINESS_MANAGER',1);
 /*!40000 ALTER TABLE `roles` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -380,12 +384,16 @@ DROP TABLE IF EXISTS `seniority_levels`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `seniority_levels` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `description` mediumtext,
-  `level` int NOT NULL,
-  `level_name` varchar(255) DEFAULT NULL,
-  `salary_coefficient` int NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `description` mediumtext NOT NULL,
+  `level_name` varchar(100) NOT NULL,
+  `salary_coefficient` float NOT NULL,
+  `status` int NOT NULL,
+  `role_id` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK42hqucc3nfs0pvgu51i74oq13` (`role_id`),
+  CONSTRAINT `FK42hqucc3nfs0pvgu51i74oq13` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`),
+  CONSTRAINT `seniority_levels_chk_2` CHECK ((`salary_coefficient` <= 5))
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -394,6 +402,7 @@ CREATE TABLE `seniority_levels` (
 
 LOCK TABLES `seniority_levels` WRITE;
 /*!40000 ALTER TABLE `seniority_levels` DISABLE KEYS */;
+INSERT INTO `seniority_levels` VALUES (1,'Nhân viên mới vào làm, đang trong giai đoạn thử việc','Thử việc',0.8,1,2),(2,'Nhân viên đã hoàn thành thử việc và làm việc dưới 1 năm.','Nhân viên bậc 1',1,1,2),(3,'Nhân viên đã làm việc từ 1 đến 3 năm trong công ty','Nhân viên bậc 2',1.3,1,2),(4,'Nhân viên đã gắn bó với công ty từ 3 năm trở lên.','Nhân viên bậc 3',1.5,1,2),(5,'Quản lý nhân sự mới được bổ nhiệm.','Quản lý nhân sự bậc 1',1,1,3),(6,'Quản lý nhân sự đã có kinh nghiệm từ 1-3 năm.','Quản lý nhân sự bậc 2',1.2,1,3),(7,'Quản lý nhân sự đã làm việc trên 3 năm.','Quản lý nhân sự bậc 3',1.5,1,3),(8,'Quản lý kho mới được bổ nhiệm.','Quản lý kho bậc 1',1,1,4),(9,'Quản lý kho đã có kinh nghiệm từ 1-3 năm.','Quản lý kho bậc 2',1.2,1,4),(10,'Quản lý kho đã làm việc trên 3 năm.','Quản lý kho bậc 3',1.5,1,4),(11,'Quản lý kho mới được bổ nhiệm.','Quản lý kinh doanh bậc 1',1,1,5),(12,'Quản lý kho đã có kinh nghiệm từ 1-3 năm.','Quản lý kinh doanh kho bậc 2',1.4,1,5),(13,'Quản lý kho đã làm việc trên 3 năm.','Quản lý kinh doanh kho bậc 3',1.8,1,5);
 /*!40000 ALTER TABLE `seniority_levels` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -450,7 +459,7 @@ CREATE TABLE `tokens` (
 
 LOCK TABLES `tokens` WRITE;
 /*!40000 ALTER TABLE `tokens` DISABLE KEYS */;
-INSERT INTO `tokens` VALUES (1,'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc0MDkwMDE0NCwiZXhwIjoxNzQ0NTAwMTQ0fQ.8QykV6mKGlxm__l92fcJwZgsE2RA0pBnKFNs6z9jd8s','2025-03-02 14:22:25.021098','eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc0MDkwMDE0NSwiZXhwIjoxNzQyMTA5NzQ1fQ.xxT4GeyLZJQPEGluOr0KqcIjElypC3CHROmuTFY0QRE','2025-03-02 14:22:25.021098','admin');
+INSERT INTO `tokens` VALUES (1,'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBRE1JTiIsImlhdCI6MTc0MTE4NDE5NCwiZXhwIjoxNzQ0Nzg0MTk0fQ.Em9Eg0yPj4F8MlT8o0bRZRxzN02LgFwBQJ5rnjy-NSk','2025-03-05 21:16:30.531138','eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBRE1JTiIsImlhdCI6MTc0MTE4NDE5NCwiZXhwIjoxNzQyMzkzNzk0fQ.-r2Y0RgXlQOU1KmcLROzvrJtdjcrKY6oVsy5P5Dp34Y','2025-03-05 21:16:34.067015','ADMIN');
 /*!40000 ALTER TABLE `tokens` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -475,12 +484,9 @@ CREATE TABLE `users` (
   `status` int NOT NULL,
   `updated_at` datetime(6) DEFAULT NULL,
   `username` varchar(255) DEFAULT NULL,
-  `seniority_level_id` bigint DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `FKijum2xfaccm1ywliq7qribhff` (`seniority_level_id`),
-  CONSTRAINT `FKijum2xfaccm1ywliq7qribhff` FOREIGN KEY (`seniority_level_id`) REFERENCES `seniority_levels` (`id`),
   CONSTRAINT `users_chk_1` CHECK ((`gender` between 0 and 2))
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -489,7 +495,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'45 Lý Tự Trọng, Quận 3, TP.HCM','2025-03-02 14:13:45.298605','1992-08-25','bich.tranthi@example.com','Trần Thị Bích',1,NULL,'$2a$10$81Qee/Ia6zVgSW3ICzj/Q.3wQIldKduEg9NaOjLVYUDlNwiyhpxBa','0976543210',1,NULL,'admin',NULL),(2,'89 Phan Xích Long, Quận Phú Nhuận, TP.HCM','2025-03-02 14:13:59.204938','1988-06-30','cuong.lequoc@example.com','Lê Quốc Cường',0,NULL,'$2a$10$wBcjuQ16xObEmxCFH6E85uUzmiTjH7K.whtKEWb7XQSoHfD4MwOiC','0912345678',1,NULL,'hr_manager',NULL),(3,'101 Hoàng Diệu, Quận 4, TP.HCM','2025-03-02 14:14:10.396466','1987-11-20','duc.phamminh@example.com','Phạm Minh Đức',0,NULL,'$2a$10$/umsxXUnJqv1hjQDSt7CnOvDt7DpSvmeq2nQqx/SRsYDl958v7Jfu','0908765432',1,NULL,'warehouse_manager',NULL),(4,'202 Nguyễn Đình Chiểu, Quận 5, TP.HCM','2025-03-02 14:16:51.807067','1990-04-10','ha.dangthu@example.com','Đặng Thu Hà',1,NULL,'$2a$10$nz9WnOk5JyrSCVY8VgM7Q.iTQg09780Xn6FzWA1JfrJZDwtWp1/Uq','0934567890',1,NULL,'employee',NULL),(5,'303 Điện Biên Phủ, Quận Bình Thạnh, TP.HCM','2025-03-02 14:21:27.086253','2000-12-01','khanh.buivan@example.com','Bùi Văn Khánh',0,NULL,'$2a$10$9phcyH1m36kgB1x9QyiKy.aVfL3Qlbpt0DNna8YdUirLFv5Ca5uUi','0945678901',1,NULL,'business_manager',NULL);
+INSERT INTO `users` VALUES (2,'Hà Nội, Việt Nam','2025-03-05 21:00:35.000173','1990-05-15','an.nguyen@example.com','Nguyễn Văn An',0,NULL,'$2a$10$NFNUzoBf7f59miXiM2blcuTD9EuI3vL5WYrDkx6NR4hCRbjmna182','0987654321',1,NULL,'ADMIN'),(3,'TP. Hồ Chí Minh, Việt Nam','2025-03-05 21:00:46.305184','1995-07-20','hoa.tran@example.com','Trần Thị Hoa',1,NULL,'$2a$10$BrZzi3u.aS1rubkuTSEJauwgwWSdR9muRBTfUSqaiAdK9b2HcfkTy','0976543210',1,NULL,'EMPLOYEE'),(4,'Đà Nẵng, Việt Nam','2025-03-05 21:01:13.014281','1988-09-10','tuan.le@example.com','Lê Minh Tuấn',0,NULL,'$2a$10$VEsW6l63BLabq2XkGmWYxuVd7M/PVVVd44o8NcW0Y6.O213FOqBCy','0965432109',1,NULL,'HR_MANAGER'),(5,'Hải Phòng, Việt Nam','2025-03-05 21:01:23.772907','1992-11-25','huy.pham@example.com','Phạm Quang Huy',0,NULL,'$2a$10$WWub6z22bRw8lYBKHMbHxujIRI.R6GLVNU8whAYNiXemPQB3.i7Gm','0954321098',1,NULL,'WAREHOUSE_MANAGER'),(6,'Cần Thơ, Việt Nam','2025-03-05 21:01:31.739038','1993-04-30','lan.do@example.com','Đỗ Thị Lan',1,NULL,'$2a$10$7u0rWM7puzgWD6GQWyUzsuuJfXJYzTZsAyONEkZCe/hX8uuxPxQcK','0943210987',1,NULL,'BUSINESS_MANAGER');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -502,4 +508,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-02 15:09:06
+-- Dump completed on 2025-03-05 21:28:58
