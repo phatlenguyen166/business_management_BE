@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import vn.bookstore.app.model.Contract;
 import vn.bookstore.app.model.User;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,5 +15,5 @@ public interface ContractRepository extends JpaRepository<Contract, Long>, JpaSp
     List<Contract> getAllByStatus(int status);
     boolean existsContractByUser(User user);
     Optional<Contract> findContractByIdAndStatus(Long id, int status);
-//
+    Optional<Contract> findContractByUserId(Long userId);
 }

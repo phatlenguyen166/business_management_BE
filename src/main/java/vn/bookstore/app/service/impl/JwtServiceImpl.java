@@ -71,7 +71,8 @@ public class JwtServiceImpl implements JwtService {
         return Jwts.builder().setClaims(claims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * expiryDay)).signWith(getKey(REFRESH_TOKEN), SignatureAlgorithm.HS256).compact();
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * expiryDay))
+                .signWith(getKey(REFRESH_TOKEN), SignatureAlgorithm.HS256).compact();
     }
     
     private Key getKey(TokenType type) {
@@ -81,7 +82,6 @@ public class JwtServiceImpl implements JwtService {
         } else {
             keyBytes = Decoders.BASE64.decode(refreshKey);
         }
-        
         return Keys.hmacShaKeyFor(keyBytes);
     }
     
