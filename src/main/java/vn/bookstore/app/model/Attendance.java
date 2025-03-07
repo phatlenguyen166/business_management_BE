@@ -7,6 +7,7 @@ import vn.bookstore.app.util.constant.AttendanceStatusEnum;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "attendances")
@@ -17,8 +18,8 @@ public class Attendance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private LocalDate workingDate;
-    private Instant checkIn;
-    private Instant checkOut;
+    private LocalDateTime checkIn;
+    private LocalDateTime checkOut;
     private AttendanceStatusEnum attendanceStatus;
 
     @ManyToOne

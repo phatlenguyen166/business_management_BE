@@ -9,7 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import vn.bookstore.app.dto.request.ReqSignInDTO;
-import vn.bookstore.app.dto.response.TokenResponse;
+import vn.bookstore.app.dto.response.ResTokenDTO;
 import vn.bookstore.app.model.Token;
 import vn.bookstore.app.model.User;
 import vn.bookstore.app.repository.UserRepository;
@@ -34,7 +34,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtService jwtService;
     
     
-    public TokenResponse authenticate(ReqSignInDTO reqSignInDTO) {
+    public ResTokenDTO authenticate(ReqSignInDTO reqSignInDTO) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(reqSignInDTO.getUsername(),
                 reqSignInDTO.getPassword()));
         
@@ -47,10 +47,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         
         tokenService.save(Token.builder().username(user.getUsername()).accessToken(accessToken).refreshToken(refreshToken).build());
         
-        return TokenResponse.builder().accessToken(accessToken).refreshToken(refreshToken).userId(user.getId()).build();
+        return ResTokenDTO.builder().accessToken(accessToken).refreshToken(refreshToken).userId(user.getId()).build();
     }
     
-    public TokenResponse refresh(HttpServletRequest request) {
+    public ResTokenDTO refresh(HttpServletRequest request) {
         String refreshToken = request.getHeader(AUTHORIZATION);
         if (StringUtils.isBlank(refreshToken)) {
             throw new InvalidDataException("Token must be not blank");
@@ -69,7 +69,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         
         String accessToken = jwtService.generateToken(user.get());
         
-        return TokenResponse.builder().accessToken(accessToken).refreshToken(refreshToken).userId(user.get().getId()).build();
+        return ResTokenDTO.builder().accessToken(accessToken).refreshToken(refreshToken).userId(user.get().getId()).build();
         
     }
     

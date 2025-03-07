@@ -8,7 +8,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import vn.bookstore.app.dto.request.SignInRequest;
+import vn.bookstore.app.dto.request.ReqSignInDTO;
 import vn.bookstore.app.dto.response.ResTokenDTO;
 import vn.bookstore.app.model.Token;
 import vn.bookstore.app.model.User;
@@ -32,12 +32,12 @@ public class AuthenticationService {
     private final JwtService jwtService;
     
     
-    public ResTokenDTO authenticate(SignInRequest signInRequest) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequest.getUsername(),
-                signInRequest.getPassword()));
+    public ResTokenDTO authenticate(ReqSignInDTO ReqSignInDTO) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(ReqSignInDTO.getUsername(),
+                ReqSignInDTO.getPassword()));
         
         var user =
-                userRepository.findByUsernameAndStatus(signInRequest.getUsername(), 1).orElseThrow(() -> new UsernameNotFoundException("Username or password incorrect"));
+                userRepository.findByUsernameAndStatus(ReqSignInDTO.getUsername(), 1).orElseThrow(() -> new UsernameNotFoundException("Username or password incorrect"));
         
         String accessToken = jwtService.generateToken(user);
         
