@@ -1,3 +1,4 @@
-- Tạo DB có tên business_management;
-- Vào file application.properties đổi password, username của DB trong máy
-- Vào link để lấy xem api (http://localhost:8080/swagger-ui/index.html#/)
+- Import file business_management.sql (MYSQL WB)
+- Contact: phatlenguyen166@gmail.com to get file application
+- Run project
+- Click link and read api documents (http://localhost:8080/swagger-ui/index.html#/)
