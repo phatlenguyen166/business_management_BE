@@ -5,15 +5,14 @@ import lombok.Getter;
 import lombok.Setter;
 import vn.bookstore.app.util.constant.AttendanceStatusEnum;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "attendances")
+@Table(name = "attendance_details")
 @Getter
 @Setter
-public class Attendance {
+public class AttendanceDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -19,4 +19,5 @@ public interface ContractService {
     public ResContractDTO getContractById(Long id);
     public ResContractDTO handleUpdatedContract(ReqContractDTO contract, Long id);
     public void handleDeleteContract(Long id);
+    public List<ResContractDTO> handleGetAllContractsByUser(Long userId);
 }

@@ -11,10 +11,10 @@ import java.time.LocalDate;
 @Setter
 public class ResContractDTO {
     private Long id;
+    private String idString;
     private Long userId;
     private String fullName;
     private BigDecimal baseSalary;
-    private int standardWorkingDay;
     private int status;
     private LocalDate startDate;
     private LocalDate endDate;

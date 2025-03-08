@@ -2,6 +2,7 @@ package vn.bookstore.app.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 import vn.bookstore.app.dto.request.ReqContractDTO;
 import vn.bookstore.app.dto.request.ReqContractUserDTO;
@@ -18,7 +19,12 @@ public interface ContractMapper {
     @Mapping(source = "seniorityLevel.role.name", target = "roleName")
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "user.fullName", target = "fullName")
+    @Mapping(source = "id", target = "idString", qualifiedByName = "formatId")
     ResContractDTO convertToResContractDTO(Contract contract);
+    @Named("formatId")
+    static String formatId(Long id) {
+        return "CTR-" + id;
+    }
 
     @Mapping(source = "id", target = "userId")
     ReqContractDTO convertToReqContractDTO (ReqContractUserDTO reqContract, Long id);

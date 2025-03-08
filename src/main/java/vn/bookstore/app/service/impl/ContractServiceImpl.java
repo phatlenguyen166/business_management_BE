@@ -115,6 +115,16 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
+    public List<ResContractDTO> handleGetAllContractsByUser(Long userId) {
+        List<ResContractDTO> resContractDTOList = this.contractRepository.getAllByUserId(userId)
+                .stream()
+                .map(contractMapper :: convertToResContractDTO)
+                .toList();
+        return resContractDTOList;
+
+    }
+
+    @Override
     public List<ResContractDTO> handleGetAllContracts() {
         List<Contract> contracts = contractRepository.getAllByStatus(1);
         List<ResContractDTO> resContractDTOS = new ArrayList<>();
