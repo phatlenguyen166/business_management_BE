@@ -17,5 +17,5 @@ public interface ProductService {
     
     ResProductDTO updateProduct(ReqProductDTO reqProductDTO, Long productId, MultipartFile multipartFile) throws IOException;
     
-    ResProductDTO addProduct(ReqProductDTO reqProductDTO, MultipartFile multipartFile) throws IOException; // Thêm
+    ResProductDTO addProduct(ReqProductDTO reqProductDTO, MultipartFile multipartFile) throws IOException;
 }
