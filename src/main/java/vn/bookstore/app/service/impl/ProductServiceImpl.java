@@ -15,6 +15,7 @@ import vn.bookstore.app.model.Product;
 import vn.bookstore.app.repository.ProductRepository;
 import vn.bookstore.app.service.CloudinaryService;
 import vn.bookstore.app.service.ProductService;
+import vn.bookstore.app.util.error.InvalidRequestException;
 import vn.bookstore.app.util.error.ResourceNotFoundException;
 
 import java.io.IOException;
@@ -36,12 +37,11 @@ public class ProductServiceImpl implements ProductService {
         if (reqProductDTO.getName() == null || reqProductDTO.getName().trim().isEmpty()) {
             throw new IllegalArgumentException("Tên sản phẩm không được để trống.");
         }
-        
         if (imageFile == null || imageFile.isEmpty()) {
             throw new IllegalArgumentException("Ảnh sản phẩm không được để trống.");
         }
         if (productRepository.existsByName(reqProductDTO.getName())) {
-            throw new IllegalArgumentException("Sản phẩm với tên '" + reqProductDTO.getName() + "' đã tồn tại.");
+            throw new InvalidRequestException("Sản phẩm với tên '" + reqProductDTO.getName() + "' đã tồn tại.");
         }
         String imageUrl = cloudinaryService.uploadFile(imageFile);
         Product product = productMapper.toProduct(reqProductDTO);
@@ -59,6 +59,11 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sản phẩm không tồn tại."));
         
+        if (reqProductDTO.getName() != null && !reqProductDTO.getName().equals(product.getName())
+                && productRepository.existsByName(reqProductDTO.getName())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Tên sản phẩm đã tồn tại!");
+        }
+        
         if (newImageFile != null && !newImageFile.isEmpty()) {
             Optional.ofNullable(product.getImage())
                     .filter(imageUrl -> !imageUrl.trim().isEmpty())
@@ -70,8 +75,6 @@ public class ProductServiceImpl implements ProductService {
                             throw new RuntimeException("Lỗi khi xóa ảnh trên Cloudinary: " + e.getMessage());
                         }
                     });
-            
-            // Upload ảnh mới
             String newImageUrl = cloudinaryService.uploadFile(newImageFile);
             product.setImage(newImageUrl);
         }
@@ -83,6 +86,7 @@ public class ProductServiceImpl implements ProductService {
         
         return productMapper.toResProductDTO(updatedProduct);
     }
+    
     
     
     @Override
