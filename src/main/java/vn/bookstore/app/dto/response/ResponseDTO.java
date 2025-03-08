@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonPropertyOrder({ "statusCode", "success", "error", "message", "data" })
+@JsonPropertyOrder({"statusCode", "success", "error", "message", "data"})
 public class ResponseDTO<T> {
     private int statusCode;
     boolean success;
@@ -20,7 +20,7 @@ public class ResponseDTO<T> {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T data;
     
-    public static <T> ResponseDTO<T> success(boolean success,String message, T data) {
-        return new ResponseDTO<>(HttpStatus.OK.value(),success, null, message, data);
+    public static <T> ResponseDTO<T> success(boolean success, String message, T data) {
+        return new ResponseDTO<>(HttpStatus.OK.value(), success, null, message, data);
     }
 }

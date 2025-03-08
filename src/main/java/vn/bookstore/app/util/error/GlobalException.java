@@ -22,7 +22,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestControllerAdvice
 public class GlobalException {
-
+    
     @ExceptionHandler(value = {NotFoundException.class})
     public ResponseEntity<ResponseDTO<Object>> handleIdException(NotFoundException exception) {
         ResponseDTO<Object> res = new ResponseDTO<>();
@@ -32,7 +32,7 @@ public class GlobalException {
         res.setMessage("NotFoundException");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
     }
-
+    
     @ExceptionHandler(value = {InvalidRequestException.class})
     public ResponseEntity<ResponseDTO<Object>> handleIdException(InvalidRequestException exception) {
         ResponseDTO<Object> res = new ResponseDTO<>();
@@ -42,7 +42,7 @@ public class GlobalException {
         res.setMessage("Dữ liệu không hợp lệ");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
-
+    
     @ExceptionHandler(value = {ExistingIdException.class})
     public ResponseEntity<ResponseDTO<Object>> handleIdException(ExistingIdException exception) {
         ResponseDTO<Object> res = new ResponseDTO<>();
@@ -52,7 +52,7 @@ public class GlobalException {
         res.setMessage("ExistingIdException");
         return ResponseEntity.status(HttpStatus.CONFLICT).body(res);
     }
-
+    
     @ExceptionHandler(value = {ResourceNotFoundException.class})
     public ResponseEntity<ResponseDTO<Object>> handleResourceNotFoundException(ResourceNotFoundException exception) {
         ResponseDTO<Object> res = new ResponseDTO<>();
@@ -62,8 +62,8 @@ public class GlobalException {
         res.setError("ResourceNotFoundException");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
     }
-
-
+    
+    
     @ExceptionHandler(value = {Exception.class})
     public ResponseEntity<ResponseDTO<Object>> handleAllExceptions(Exception exception) {
         ResponseDTO<Object> res = new ResponseDTO<>();
@@ -73,7 +73,7 @@ public class GlobalException {
         res.setError("Internal Server Error");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
     }
-
+    
     @ExceptionHandler(InvalidDataException.class)
     @ResponseStatus(CONFLICT)
     @ApiResponses(value = {
@@ -101,10 +101,10 @@ public class GlobalException {
         res.setSuccess(false);
         res.setError(CONFLICT.getReasonPhrase());
         res.setMessage(e.getMessage());
-
+        
         return ResponseEntity.status(HttpStatus.CONFLICT).body(res);
     }
-
+    
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ResponseDTO<Object>> handleBadCredentialsException(BadCredentialsException exception) {
         ResponseDTO<Object> res = new ResponseDTO<>();
@@ -114,7 +114,7 @@ public class GlobalException {
         res.setMessage(exception.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
     }
-
+    
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseDTO<Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -127,8 +127,18 @@ public class GlobalException {
         res.setError("Validation Error");
         res.setMessage("Dữ liệu đầu vào không hợp lệ");
         res.setData(errors); // Trả về lỗi dưới dạng Map
-
+        
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
-
+    
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ResponseDTO<Object>> handleIllegalStateException(IllegalStateException exception) {
+        ResponseDTO<Object> res = new ResponseDTO<>();
+        res.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        res.setSuccess(false);
+        res.setError("Illegal State Exception");
+        res.setMessage(exception.getMessage());
+        
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+    }
 }
