@@ -51,7 +51,7 @@ public class RoleController {
         ResRoleDTO newRole = this.roleService.handleCreateRole(role);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 new ResponseDTO<>(
-                        200,
+                        201,
                         true,
                         null,
                         "Create role successfully",

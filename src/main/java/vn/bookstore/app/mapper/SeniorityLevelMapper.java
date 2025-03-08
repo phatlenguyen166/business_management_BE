@@ -12,7 +12,7 @@ import vn.bookstore.app.model.SeniorityLevel;
 
 @Mapper(componentModel = "spring")
 public interface SeniorityLevelMapper {
-    ContractMapper INSTANCE = Mappers.getMapper(ContractMapper.class);
+    SeniorityLevelMapper INSTANCE = Mappers.getMapper(SeniorityLevelMapper.class);
 
     SeniorityLevel convertoSeniorityLevel(ReqSeniorityLevelDTO reqSeniorityLevelDTO);
 

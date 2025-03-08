@@ -5,14 +5,12 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
-import vn.bookstore.app.dto.request.ReqSeniorityLevelDTO;
 import vn.bookstore.app.dto.response.ResRoleDTO;
 import vn.bookstore.app.model.Role;
-import vn.bookstore.app.model.SeniorityLevel;
 
 @Mapper(componentModel = "spring", uses = SeniorityLevelMapper.class)
 public interface RoleMapper {
-    ContractMapper INSTANCE = Mappers.getMapper(ContractMapper.class);
+    RoleMapper INSTANCE = Mappers.getMapper(RoleMapper.class);
 
     @Mapping(source = "seniorityLevels", target = "resSeniority", qualifiedByName ="convertToResSeniorityDTO")
     ResRoleDTO convertToResRoleDTO(Role role);
