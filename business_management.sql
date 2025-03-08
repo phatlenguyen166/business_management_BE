@@ -291,17 +291,20 @@ DROP TABLE IF EXISTS `leave_requests`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `leave_requests` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `created_at` datetime(6) DEFAULT NULL,
-  `end_date` date DEFAULT NULL,
-  `leave_reason` varchar(255) DEFAULT NULL,
-  `start_date` date DEFAULT NULL,
+  `description` mediumtext,
+  `end_date` date NOT NULL,
+  `leave_reason` tinyint NOT NULL,
+  `send_date` datetime(6) DEFAULT NULL,
+  `start_date` date NOT NULL,
   `status` int NOT NULL,
+  `title` varchar(255) NOT NULL,
   `updated_at` datetime(6) DEFAULT NULL,
   `user_id` bigint DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FKh6s8bo5d59oy52b6nxfguf4yx` (`user_id`),
-  CONSTRAINT `FKh6s8bo5d59oy52b6nxfguf4yx` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `FKh6s8bo5d59oy52b6nxfguf4yx` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `leave_requests_chk_1` CHECK ((`leave_reason` between 0 and 2))
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -537,4 +540,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-08 19:08:48
+-- Dump completed on 2025-03-09  1:52:36
