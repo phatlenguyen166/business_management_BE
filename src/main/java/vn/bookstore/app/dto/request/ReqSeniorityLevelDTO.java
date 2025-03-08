@@ -5,13 +5,9 @@ import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
-
-
-
 @Getter
 @Setter
 public class ReqSeniorityLevelDTO {
-
 
     @NotBlank(message = "Tên cấp bậc không được để trống")
     @Size(max = 100, message = "Tên cấp bậc không được quá 100 ký tự")
@@ -25,6 +21,5 @@ public class ReqSeniorityLevelDTO {
     @Positive(message = "Hệ số lương phải lớn hơn 0")
     @Max(value = 5, message = "Hệ số lương không được vượt quá 5")
     private float salaryCoefficient;
-
     private Long roleId;
 }
