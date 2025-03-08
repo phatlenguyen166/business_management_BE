@@ -17,7 +17,6 @@ public class LeaveRequest {
     private Long id;
     private LocalDate startDate;
     private LocalDate endDate;
-    @Column(columnDefinition = "MEDIUMTEXT")
     private String leaveReason;
     private int status;
     private Instant createdAt;

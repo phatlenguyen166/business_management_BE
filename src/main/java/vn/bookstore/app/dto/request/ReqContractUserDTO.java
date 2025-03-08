@@ -19,10 +19,6 @@ public class ReqContractUserDTO{
     @Digits(integer = 15, fraction = 4, message = "Lương cơ bản tối đa 15 số nguyên và 4 số thập phân")
     private BigDecimal baseSalary;
 
-    @NotNull(message = "Số ngày công chuẩn không được để trống")
-    @Min(value = 1, message = "Số ngày công chuẩn phải lớn hơn 0")
-    @Max(value = 31, message = "Số ngày công chuẩn tối đa là 31")
-    private Integer standardWorkingDay;
 
     @NotNull(message = "Ngày bắt đầu không được để trống")
     private LocalDate startDate;

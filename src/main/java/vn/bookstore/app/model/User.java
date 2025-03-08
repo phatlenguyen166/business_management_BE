@@ -8,7 +8,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import vn.bookstore.app.util.constant.GenderEnum;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -49,7 +48,7 @@ public class User implements UserDetails {
     private List<LeaveRequest> leaveRequest;
 
     @OneToMany(mappedBy = "user")
-    private List<Attendance> attendances;
+    private List<AttendanceDetail> attendanceDetails;
 
 
     @PrePersist

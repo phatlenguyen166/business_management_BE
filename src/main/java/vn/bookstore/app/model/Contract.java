@@ -17,7 +17,6 @@ public class Contract {
     private Long id;
     @Column(precision = 19, scale = 4, nullable = false)
     private BigDecimal baseSalary;
-    private int standardWorkingDay;
     private int status;
     private LocalDate startDate;
     private LocalDate endDate;

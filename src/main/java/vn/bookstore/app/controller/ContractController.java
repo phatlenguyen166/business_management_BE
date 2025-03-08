@@ -49,6 +49,20 @@ public class ContractController {
         );
     }
 
+    @GetMapping("/contracts/user/{userId}")
+    public ResponseEntity<ResponseDTO<List<ResContractDTO>>> getAllContractsByUserId(@PathVariable Long userId)  {
+        List<ResContractDTO> list = this.contractService.handleGetAllContractsByUser(userId);
+        return ResponseEntity.ok().body(
+                new ResponseDTO<>(
+                        200,
+                        true,
+                        null,
+                        "Get contract successfully",
+                        list
+                )
+        );
+    }
+
     @GetMapping("/contracts/{id}")
     public ResponseEntity<ResponseDTO<ResContractDTO>> getContractById(@PathVariable Long id) throws NotFoundException {
         ResContractDTO resContractDTO = this.contractService.getContractById(id);
