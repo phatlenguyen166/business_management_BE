@@ -214,12 +214,12 @@ CREATE TABLE `good_receipt_details` (
                                         `id` bigint NOT NULL AUTO_INCREMENT,
                                         `input_price` decimal(19,4) NOT NULL,
                                         `quantity` int NOT NULL,
-                                        `goodreipt_id` bigint NOT NULL,
+                                        `good_receipt_id` bigint NOT NULL,
                                         `product_id` bigint NOT NULL,
                                         PRIMARY KEY (`id`),
-                                        KEY `FKds2up0fhjemb8ug5v28eb35r4` (`goodreipt_id`),
+                                        KEY `FKds2up0fhjemb8ug5v28eb35r4` (`good_receipt_id`),
                                         KEY `FKi25t5ni7hi6e6fvmiagxfc0jy` (`product_id`),
-                                        CONSTRAINT `FKds2up0fhjemb8ug5v28eb35r4` FOREIGN KEY (`goodreipt_id`) REFERENCES `good_receipts` (`id`),
+                                        CONSTRAINT `FKds2up0fhjemb8ug5v28eb35r4` FOREIGN KEY (`good_receipt_id`) REFERENCES `good_receipts` (`id`),
                                         CONSTRAINT `FKi25t5ni7hi6e6fvmiagxfc0jy` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
