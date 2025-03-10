@@ -101,6 +101,19 @@ public class LeaveRequestController {
                 )
         );
     }
+    @PatchMapping("/leaveReqs/reject/{id}")
+    public ResponseEntity<ResponseDTO> rejectLeaveReq(@PathVariable Long id) {
+        this.leaveReqService.handleRejectLeaveReq(id);
+        return ResponseEntity.ok(
+                new ResponseDTO<>(
+                        200,
+                        true,
+                        null,
+                        "Reject LeaveRequest successfully",
+                        null
+                )
+        );
+    }
     @PatchMapping("/leaveReqs/{id}")
     public ResponseEntity<ResponseDTO> deleteLeaveReq(@PathVariable Long id) {
         this.leaveReqService.handleDeleteLeaveReq(id);
