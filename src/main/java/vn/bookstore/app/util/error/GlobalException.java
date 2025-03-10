@@ -114,23 +114,25 @@ public class GlobalException {
         res.setMessage(exception.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
     }
-    
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseDTO<Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error -> {
+            errors.put(error.getField(), error.getDefaultMessage());
+        });
+
         ResponseDTO<Object> res = new ResponseDTO<>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
         res.setSuccess(false);
         res.setError("Dữ liệu đầu vào không hợp lệ");
-        
+        res.setMessage(errors.toString());
+        res.setData(null);
 
-        res.setMessage(ex.getMessage());
-        res.setData(null); // Trả về lỗi dưới dạng Map
-        
-        
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
-    
+
+
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ResponseDTO<Object>> handleIllegalStateException(IllegalStateException exception) {
         ResponseDTO<Object> res = new ResponseDTO<>();

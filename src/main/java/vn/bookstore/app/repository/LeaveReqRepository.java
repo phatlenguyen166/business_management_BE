@@ -2,7 +2,6 @@ package vn.bookstore.app.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import vn.bookstore.app.model.LeaveRequest;
 import vn.bookstore.app.model.User;
@@ -16,5 +15,5 @@ public interface LeaveReqRepository extends JpaRepository<LeaveRequest, Long>, J
     List<LeaveRequest> findByStatusIn(List<Integer> statusList);
     Optional<LeaveRequest> findByIdAndStatusIn(Long id, List<Integer> statusList);
 
-    List<LeaveRequest> findByUserAndStatusIn(User user,List<Integer> statusList);
+    List<LeaveRequest> findByUser(User user);
 }

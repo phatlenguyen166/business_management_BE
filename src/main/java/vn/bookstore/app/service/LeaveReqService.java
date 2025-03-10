@@ -14,5 +14,6 @@ public interface LeaveReqService {
     public ResLeaveReqDTO handleUpdateLeaveReq(Long id, ReqLeaveReqDTO leaveRequest);
     public void  handleApproveLeaveReq(Long id);
     public void  handleDeleteLeaveReq(Long id);
+    public void  handleRejectLeaveReq(Long id);
     public List<ResLeaveReqDTO> handleGetAllLeaveReqByUserId(Long userId);
 }
