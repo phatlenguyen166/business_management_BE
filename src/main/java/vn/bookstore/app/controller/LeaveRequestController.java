@@ -46,20 +46,6 @@ public class LeaveRequestController {
         );
     }
 
-    @GetMapping("/leaveReqs/user/{id}")
-    public ResponseEntity<ResponseDTO<List<ResLeaveReqDTO>>> getAllLeaveReqByUserId(@PathVariable Long id) {
-        List<ResLeaveReqDTO> leaveRequests = this.leaveReqService.handleGetAllLeaveReqByUserId(id);
-        return ResponseEntity.ok(
-                new ResponseDTO<>(
-                        200,
-                        true,
-                        null,
-                        "Get all LeaveRequest By User successfully",
-                        leaveRequests
-                )
-        );
-    }
-
     @GetMapping("/leaveReqs/{id}")
     public ResponseEntity<ResponseDTO<ResLeaveReqDTO>> getLeaveReq(@PathVariable Long id) {
         ResLeaveReqDTO leaveRequest = this.leaveReqService.handleGetLeaveReq(id);
