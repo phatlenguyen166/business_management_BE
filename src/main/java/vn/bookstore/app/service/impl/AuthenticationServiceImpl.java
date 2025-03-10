@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import vn.bookstore.app.dto.request.ReqSignInDTO;
 import vn.bookstore.app.dto.response.ResTokenDTO;
+import vn.bookstore.app.mapper.TokenMapper;
 import vn.bookstore.app.model.*;
 import vn.bookstore.app.repository.ContractRepository;
 import vn.bookstore.app.repository.RoleRepository;
@@ -37,29 +38,29 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final TokenService tokenService;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private final ContractRepository contractRepository;
     private final RoleRepository roleRepository;
-    private final SeniorityLevelRepository seniorityLevelRepository;
     
     public ResTokenDTO authenticate(ReqSignInDTO reqSignInDTO) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(reqSignInDTO.getUsername(),
-                reqSignInDTO.getPassword()));
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                reqSignInDTO.getUsername(), reqSignInDTO.getPassword()));
         
         User user = userRepository.findByUsernameAndStatus(reqSignInDTO.getUsername(), 1)
                 .orElseThrow(() -> new UsernameNotFoundException("Tên đăng nhập hoặc mật khẩu không chính xác"));
         
-        Role role = roleRepository.findRoleByUserId(user.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy role với Id:" + user.getId()));
-        
-        
         String accessToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
         
-        tokenService.save(Token.builder().username(user.getUsername()).accessToken(accessToken).refreshToken(refreshToken).build());
+        Token token = Token.builder()
+                .username(user.getUsername())
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
         
+        tokenService.save(token);
         
-        return ResTokenDTO.builder().accessToken(accessToken).refreshToken(refreshToken).userId(user.getId()).roleInfo(role).build();
+        return generateTokenResponse(user, accessToken, refreshToken);
     }
+
     
     public ResTokenDTO refresh(HttpServletRequest request) {
         String refreshToken = request.getHeader(AUTHORIZATION);
@@ -69,13 +70,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         
         final String userName = jwtService.extractUsername(refreshToken, REFRESH_TOKEN);
         
-//        System.out.println("userName = " + userName);
-        
         User user = userRepository.findByUsernameAndStatus(userName, 1)
                 .orElseThrow(() -> new UsernameNotFoundException("Tên đăng nhập hoặc mật khẩu không chính xác"));
-        
-        Role role = roleRepository.findRoleByUserId(user.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy role với Id:" + user.getId()));
         
         if (!jwtService.isValid(refreshToken, REFRESH_TOKEN, user)) {
             throw new InvalidDataException("Token không hợp lệ");
@@ -83,8 +79,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         
         String accessToken = jwtService.generateToken(user);
         
-        return ResTokenDTO.builder().accessToken(accessToken).refreshToken(refreshToken).userId(user.getId()).roleInfo(role).build();
+        return generateTokenResponse(user, accessToken, refreshToken);
     }
+    
     
     public String logout(HttpServletRequest request) {
         log.info("---------- logout ----------");
@@ -98,5 +95,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         tokenService.delete(userName);
         
         return "Deleted!";
+    }
+    
+    public ResTokenDTO generateTokenResponse(User user, String accessToken, String refreshToken) {
+        Role role = roleRepository.findRoleByUserId(user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy role với Id:" + user.getId()));
+        
+        return TokenMapper.INSTANCE.mapToResTokenDTO(user, accessToken, refreshToken, role);
     }
 }
