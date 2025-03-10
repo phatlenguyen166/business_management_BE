@@ -75,4 +75,14 @@ public class LeaveReqServiceImpl implements LeaveReqService {
         currentLeaveReq.setStatus(0);
         this.leaveReqRepository.save(currentLeaveReq);
     }
+
+    @Override
+    public List<ResLeaveReqDTO> handleGetAllLeaveReqByUserId(Long userId) {
+        User user = this.userRepository.findUserByIdAndStatus(userId,1).orElseThrow(() -> new NotFoundException("User Không tồn tại"));
+        List<ResLeaveReqDTO> resLeaveReqDTOList = this.leaveReqRepository.findByUserAndStatusIn(user,List.of(1,2))
+                .stream()
+                .map(leaveReqMapper ::convertToResLeaveReqDTO)
+                .collect(Collectors.toList());
+        return resLeaveReqDTOList;
+    }
 }
