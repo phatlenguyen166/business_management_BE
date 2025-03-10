@@ -13,7 +13,6 @@ import vn.bookstore.app.service.LeaveReqService;
 import vn.bookstore.app.util.error.NotFoundException;
 
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,7 +34,7 @@ public class LeaveReqServiceImpl implements LeaveReqService {
 
     @Override
     public List<ResLeaveReqDTO> handleGetAllLeaveReq() {
-        List<ResLeaveReqDTO> resLeaveReqDTOList = this.leaveReqRepository.findByStatusIn(List.of(1,2))
+        List<ResLeaveReqDTO> resLeaveReqDTOList = this.leaveReqRepository.findByStatusIn(List.of(1,2,3))
                 .stream()
                 .map(leaveReqMapper ::convertToResLeaveReqDTO)
                 .collect(Collectors.toList());
@@ -77,9 +76,16 @@ public class LeaveReqServiceImpl implements LeaveReqService {
     }
 
     @Override
+    public void handleRejectLeaveReq(Long id) {
+        LeaveRequest currentLeaveReq = getLeaveReqById(id);
+        currentLeaveReq.setStatus(3);
+        this.leaveReqRepository.save(currentLeaveReq);
+    }
+
+    @Override
     public List<ResLeaveReqDTO> handleGetAllLeaveReqByUserId(Long userId) {
         User user = this.userRepository.findUserByIdAndStatus(userId,1).orElseThrow(() -> new NotFoundException("User Không tồn tại"));
-        List<ResLeaveReqDTO> resLeaveReqDTOList = this.leaveReqRepository.findByUserAndStatusIn(user,List.of(1,2))
+        List<ResLeaveReqDTO> resLeaveReqDTOList = this.leaveReqRepository.findByUser(user)
                 .stream()
                 .map(leaveReqMapper ::convertToResLeaveReqDTO)
                 .collect(Collectors.toList());
