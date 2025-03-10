@@ -11,6 +11,7 @@ public class GoodReceiptDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private int quantity;
+    
     @Column(precision = 19, scale = 4, nullable = false)
     private BigDecimal inputPrice;
 
@@ -21,15 +22,5 @@ public class GoodReceiptDetail {
     @ManyToOne
     @JoinColumn(name = "goodreipt_id", nullable = false)
     private GoodReceipt goodReceipt;
-
-
-
-
-
-
-
-
-
-
 
 }
