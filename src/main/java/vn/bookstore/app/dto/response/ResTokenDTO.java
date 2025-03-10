@@ -6,6 +6,7 @@ import lombok.Setter;
 import vn.bookstore.app.model.Role;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -18,4 +19,5 @@ public class ResTokenDTO implements Serializable {
     private Long userId;
     
     private Role roleInfo;
+
 }
