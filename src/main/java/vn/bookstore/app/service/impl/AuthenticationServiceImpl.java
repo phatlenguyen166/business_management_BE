@@ -10,16 +10,15 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import vn.bookstore.app.dto.request.ReqSignInDTO;
 import vn.bookstore.app.dto.response.ResTokenDTO;
-import vn.bookstore.app.model.Contract;
-import vn.bookstore.app.model.Role;
-import vn.bookstore.app.model.Token;
-import vn.bookstore.app.model.User;
+import vn.bookstore.app.model.*;
 import vn.bookstore.app.repository.ContractRepository;
 import vn.bookstore.app.repository.RoleRepository;
+import vn.bookstore.app.repository.SeniorityLevelRepository;
 import vn.bookstore.app.repository.UserRepository;
 import vn.bookstore.app.service.AuthenticationService;
 import vn.bookstore.app.service.JwtService;
 import vn.bookstore.app.service.TokenService;
+import vn.bookstore.app.service.UserService;
 import vn.bookstore.app.util.error.InvalidDataException;
 
 import java.util.Optional;
@@ -39,38 +38,39 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtService jwtService;
     private final ContractRepository contractRepository;
     private final RoleRepository roleRepository;
+    private final SeniorityLevelRepository seniorityLevelRepository;
     
     public ResTokenDTO authenticate(ReqSignInDTO reqSignInDTO) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(reqSignInDTO.getUsername(),
                 reqSignInDTO.getPassword()));
         
-        User user = userRepository.findByUsernameAndStatus(reqSignInDTO.getUsername(), 1)
-                .orElseThrow(() -> new UsernameNotFoundException("Tên đăng nhập hoặc mật khẩu không chính xác"));
+        User user =
+                userRepository.findByUsernameAndStatus(reqSignInDTO.getUsername(), 1)
+                        .orElseThrow(() -> new UsernameNotFoundException("Tên đăng nhập hoặc mật khẩu không chính " +
+                                "xác"));
+        System.out.println("user id : " + user.getId());
         
-        Contract roleIdInContract = contractRepository.findContractByUserId(user.getId())
-                .orElseThrow(() -> new IllegalStateException("Không tìm thấy hợp đồng của người dùng"));
+        Contract selectContractByUserID =
+                contractRepository.findContractByUserId(user.getId())
+                        .orElseThrow(() -> new IllegalStateException("Kh" +
+                                "ông tìm thấy hợp đồng của người dùng"));
         
-        Role role = roleRepository.findRoleByIdAndStatus(roleIdInContract.getId(), 1)
-                .orElseThrow(() -> new IllegalStateException("Không ttìm thấy chức vụ"));
+        SeniorityLevel selectSeniorityLevelById =
+                seniorityLevelRepository.findById(selectContractByUserID.getId())
+                        .orElseThrow(() -> new IllegalStateException("Không tìm thấy cấp bậc của người dùng"));
+        ;
+        
+        Role role =
+                roleRepository.findRoleByIdAndStatus(selectSeniorityLevelById.getRole().getId(), 1)
+                        .orElseThrow(() -> new IllegalStateException("Không tìm thấy chức vụ"));
         
         String accessToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
         
-        tokenService.save(
-                Token.builder()
-                        .username(user.getUsername())
-                        .accessToken(accessToken)
-                        .refreshToken(refreshToken)
-                        .build()
-        );
+        tokenService.save(Token.builder().username(user.getUsername()).accessToken(accessToken).refreshToken(refreshToken).build());
         
         // 7. Trả về DTO chứa thông tin
-        return ResTokenDTO.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .userId(user.getId())
-                .roleInfo(role)
-                .build();
+        return ResTokenDTO.builder().accessToken(accessToken).refreshToken(refreshToken).userId(user.getId()).roleInfo(role).build();
     }
     
     public ResTokenDTO refresh(HttpServletRequest request) {
@@ -86,11 +86,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Optional<User> user = userRepository.findByUsernameAndStatus(userName, 1);
         
         
-        Contract roleIdInContract = contractRepository.findContractByUserId(user.get().getId())
-                .orElseThrow(() -> new IllegalStateException("Không tìm thấy hợp đồng của người dùng"));
+        Contract roleIdInContract =
+                contractRepository.findContractByUserId(user.get().getId()).orElseThrow(() -> new IllegalStateException("Không tìm thấy hợp đồng của người dùng"));
         
-        Role role = roleRepository.findRoleByIdAndStatus(roleIdInContract.getId(), 1)
-                .orElseThrow(() -> new IllegalStateException("Không ttìm thấy chức vụ"));
+        Role role =
+                roleRepository.findRoleByIdAndStatus(roleIdInContract.getId(), 1).orElseThrow(() -> new IllegalStateException("Không ttìm thấy chức vụ"));
         
         if (!jwtService.isValid(refreshToken, REFRESH_TOKEN, user.get())) {
             throw new InvalidDataException("Token không hợp lệ");
@@ -98,12 +98,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         
         String accessToken = jwtService.generateToken(user.get());
         
-        return ResTokenDTO.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .userId(user.get().getId())
-                .roleInfo(role)
-                .build();
+        return ResTokenDTO.builder().accessToken(accessToken).refreshToken(refreshToken).userId(user.get().getId()).roleInfo(role).build();
     }
     
     public String logout(HttpServletRequest request) {
