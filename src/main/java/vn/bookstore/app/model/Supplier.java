@@ -19,11 +19,12 @@ public class Supplier {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    
+    private String email;
     private String phoneNumber;
-    
     private String address;
     private int status;
+    
+    private double percentage;
     
     @CreationTimestamp
     private LocalDateTime createdAt;
