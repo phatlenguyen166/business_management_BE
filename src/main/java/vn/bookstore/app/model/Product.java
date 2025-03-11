@@ -36,4 +36,7 @@ public class Product {
 
     @OneToMany(mappedBy = "product")
     private List<BillDetail> billDetails;
+    
+    @OneToMany(mappedBy = "product")
+    private List<GoodReceiptDetail> goodReceiptDetails;
 }

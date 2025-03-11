@@ -1,11 +1,18 @@
 package vn.bookstore.app.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "good_receipt_details")
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+
 public class GoodReceiptDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,9 +25,9 @@ public class GoodReceiptDetail {
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
-
-    @ManyToOne
-    @JoinColumn(name = "goodreipt_id", nullable = false)
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "good_receipt_id", nullable = false)
     private GoodReceipt goodReceipt;
 
 }
