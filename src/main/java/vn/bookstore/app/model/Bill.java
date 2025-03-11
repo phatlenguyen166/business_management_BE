@@ -1,8 +1,7 @@
 package vn.bookstore.app.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -12,6 +11,9 @@ import java.util.List;
 @Table(name ="bills")
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Bill {
     @Id
     public Long id;

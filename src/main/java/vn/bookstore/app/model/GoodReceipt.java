@@ -1,8 +1,7 @@
 package vn.bookstore.app.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -15,10 +14,21 @@ import java.util.List;
 @Table(name = "good_receipts")
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class GoodReceipt {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+    
+    @ManyToOne
+    @JoinColumn(name = "supplier_id", nullable = false)
+    private Supplier supplier;
     
     @Column(precision = 19, scale = 4, nullable = false)
     private BigDecimal totalPrice;
@@ -28,23 +38,9 @@ public class GoodReceipt {
     
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @OneToMany(mappedBy = "goodReceipt")
+    
+    @OneToMany(mappedBy = "goodReceipt", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GoodReceiptDetail> goodReceiptDetails;
-
-    @ManyToOne
-    @JoinColumn(name = "supplier_id", nullable = false)
-    private Supplier supplier;
-
-
-
-
-
-
 
 
 }
