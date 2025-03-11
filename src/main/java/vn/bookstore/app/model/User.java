@@ -48,7 +48,7 @@ public class User implements UserDetails {
     private List<LeaveRequest> leaveRequest;
 
     @OneToMany(mappedBy = "user")
-    private List<AttendanceDetail> attendanceDetails;
+    private List<Attendance> attendances;
 
 
     @PrePersist

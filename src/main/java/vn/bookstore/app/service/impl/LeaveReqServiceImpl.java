@@ -34,7 +34,7 @@ public class LeaveReqServiceImpl implements LeaveReqService {
 
     @Override
     public List<ResLeaveReqDTO> handleGetAllLeaveReq() {
-        List<ResLeaveReqDTO> resLeaveReqDTOList = this.leaveReqRepository.findByStatusIn(List.of(1,2,3))
+        List<ResLeaveReqDTO> resLeaveReqDTOList = this.leaveReqRepository.findByStatusInOrderBySendDateDesc(List.of(1,2,3))
                 .stream()
                 .map(leaveReqMapper ::convertToResLeaveReqDTO)
                 .collect(Collectors.toList());
@@ -85,7 +85,7 @@ public class LeaveReqServiceImpl implements LeaveReqService {
     @Override
     public List<ResLeaveReqDTO> handleGetAllLeaveReqByUserId(Long userId) {
         User user = this.userRepository.findUserByIdAndStatus(userId,1).orElseThrow(() -> new NotFoundException("User Không tồn tại"));
-        List<ResLeaveReqDTO> resLeaveReqDTOList = this.leaveReqRepository.findByUser(user)
+        List<ResLeaveReqDTO> resLeaveReqDTOList = this.leaveReqRepository.findByUserOrderBySendDateDesc(user)
                 .stream()
                 .map(leaveReqMapper ::convertToResLeaveReqDTO)
                 .collect(Collectors.toList());
