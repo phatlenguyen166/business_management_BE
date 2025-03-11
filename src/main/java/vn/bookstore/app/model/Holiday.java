@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "holidays")
@@ -29,4 +30,7 @@ public class Holiday {
     @Column(columnDefinition = "MEDIUMTEXT")
     private String description;
     private Integer status;
+
+    @OneToMany(mappedBy = "holiday")
+    private List<AttendanceDetail> attendanceDetailList;
 }

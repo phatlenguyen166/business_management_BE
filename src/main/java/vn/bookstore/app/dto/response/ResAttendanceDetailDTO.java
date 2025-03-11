@@ -1,8 +1,9 @@
-package vn.bookstore.app.model;
+package vn.bookstore.app.dto.response;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import vn.bookstore.app.model.User;
 import vn.bookstore.app.util.constant.AttendanceStatusEnum;
 import vn.bookstore.app.util.constant.LeaveTypeEnum;
 
@@ -10,31 +11,19 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-@Entity
-@Table(name = "attendance_details")
 @Getter
 @Setter
-public class AttendanceDetail {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ResAttendanceDetailDTO {
     private Long id;
-    private LocalDate workingDay;
+    private String idString;
     private LocalTime checkIn;
     private LocalTime checkOut;
+    private LocalDate workingDay;
     @Enumerated(EnumType.STRING)
     private AttendanceStatusEnum attendanceStatus;
-
     @Enumerated(EnumType.STRING)
     private LeaveTypeEnum leaveTypeEnum;
-
-    @ManyToOne
-    @JoinColumn(name = "attendance_id", nullable = false)
-    private Attendance attendance;
-
-    @ManyToOne
-    @JoinColumn(name = "holiday_id")
-    private Holiday holiday;
-
-
+    private Long userId;
+    private Long attendanceId;
 
 }
