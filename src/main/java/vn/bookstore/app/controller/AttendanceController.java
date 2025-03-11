@@ -27,7 +27,7 @@ public class AttendanceController {
                         200,
                         true,
                         null,
-                        "Scan successfully",
+                        "Get all attendances successfully",
                         resAttendanceDTOS
                 )
         );
@@ -41,7 +41,7 @@ public class AttendanceController {
                         200,
                         true,
                         null,
-                        "Scan successfully",
+                        "Get attendance By User successfully",
                         resAttendanceDTOS
                 )
         );
