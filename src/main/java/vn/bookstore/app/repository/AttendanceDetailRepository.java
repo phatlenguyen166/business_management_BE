@@ -16,5 +16,6 @@ public interface AttendanceDetailRepository extends JpaRepository<AttendanceDeta
     AttendanceDetail findByAttendanceAndCheckInDate(@Param("attendance") Attendance attendance,
                                                                 @Param("checkInDate") LocalDate checkInDate);
     List<AttendanceDetail> findAllByAttendance(Attendance attendance);
+    List<AttendanceDetail> findAllByWorkingDay(LocalDate workingDay);
 
 }

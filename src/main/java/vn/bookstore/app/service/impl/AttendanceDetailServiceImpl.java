@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -237,6 +238,28 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
     public List<ResAttendanceDetailDTO> handleGetAllByMonth(Long id) {
         Attendance attendance = this.attendanceRepository.findById(id).orElseThrow(() -> new NotFoundException("Attendance not found"));
         List<ResAttendanceDetailDTO> attendanceDetailDTOS = this.attendanceDetailRepository.findAllByAttendance(attendance).stream()
+                .map(attendanceDetailMapper::convertToResAttendanceDetailDTO)
+                .collect(Collectors.toList());
+        return attendanceDetailDTOS;
+    }
+
+    @Override
+    public List<ResAttendanceDetailDTO> handleGetAllByUser(Long id) {
+      User user = this.userRepository.findUserByIdAndStatus(id,1).orElseThrow(() -> new NotFoundException("User not found"));
+       List<Attendance> attendances = this.attendanceRepository.findAllByUserOrderByMonthOfYearDesc(user);
+       List<AttendanceDetail> attendanceDetails = new ArrayList<>();
+       for (Attendance attendance : attendances) {
+           List<AttendanceDetail> details = attendanceDetailRepository.findAllByAttendance(attendance);
+           attendanceDetails.addAll(details);
+       }
+       return attendanceDetails.stream().
+               map(attendanceDetailMapper::convertToResAttendanceDetailDTO)
+               .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ResAttendanceDetailDTO> handleGetAllByDate(LocalDate date) {
+        List<ResAttendanceDetailDTO> attendanceDetailDTOS = this.attendanceDetailRepository.findAllByWorkingDay(date).stream()
                 .map(attendanceDetailMapper::convertToResAttendanceDetailDTO)
                 .collect(Collectors.toList());
         return attendanceDetailDTOS;
