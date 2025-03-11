@@ -49,7 +49,7 @@ public class SupplierController {
     @Operation(summary = "Lấy nhà cung cấp theo ID", description = "Lấy nhà cung cấp theo Id")
     public ResponseEntity<ResponseDTO<ResSupplierDTO>> getSupplierById(@PathVariable Long supplierId) {
         ResSupplierDTO resSupplierDTO = supplierService.getSupplierById(supplierId);
-        return ResponseEntity.ok(ResponseDTO.success(true, "Lấy sản phẩm thành công", resSupplierDTO));
+        return ResponseEntity.ok(ResponseDTO.success(true, "Lấy nhà cung cấp thành công", resSupplierDTO));
     }
     
     @PatchMapping("/{supplierId}")

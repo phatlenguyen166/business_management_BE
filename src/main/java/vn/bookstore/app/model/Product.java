@@ -33,7 +33,10 @@ public class Product {
     
     @Column(precision = 19, scale = 4, nullable = false)
     private BigDecimal price;
-    
+
     @OneToMany(mappedBy = "product")
     private List<BillDetail> billDetails;
+    
+    @OneToMany(mappedBy = "product")
+    private List<GoodReceiptDetail> goodReceiptDetails;
 }

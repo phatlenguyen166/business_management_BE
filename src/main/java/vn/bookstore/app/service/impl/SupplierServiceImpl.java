@@ -39,7 +39,6 @@ public class SupplierServiceImpl implements SupplierService {
     }
     
     @Override
-    @NonNull
     public ResSupplierDTO getSupplierById(Long id) {
         return supplierRepository.findById(id).map(supplierMapper::toResSupplierDTO)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm nhà cung cấp với ID: " + id));
