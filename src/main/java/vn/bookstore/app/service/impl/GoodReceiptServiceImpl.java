@@ -2,6 +2,7 @@ package vn.bookstore.app.service.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import vn.bookstore.app.dto.request.ReqGoodReceiptDTO;
 import vn.bookstore.app.dto.request.ReqGoodReceiptDetailDTO;
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GoodReceiptServiceImpl implements GoodReceiptService {
@@ -101,21 +103,21 @@ public class GoodReceiptServiceImpl implements GoodReceiptService {
         productRepository.saveAll(productMap.values());
         
         savedReceipt.setTotalPrice(totalPrice.get());
-        savedReceipt.setGoodReceiptDetails(details);
         
         goodReceiptRepository.save(savedReceipt);
+        savedReceipt.setGoodReceiptDetails(details);
         
-//        System.out.println("------------>"+ savedReceipt);
+        
+        GoodReceipt finalResult = goodReceiptRepository.findById(savedReceipt.getId()).orElseThrow();
         
         
         ResGoodReceiptDTO returnRes = new ResGoodReceiptDTO();
-        
-        returnRes.setId(savedReceipt.getId());
-        returnRes.setSupplierId(savedReceipt.getSupplier().getId());
-        returnRes.setUserId(savedReceipt.getUser().getId());
-        returnRes.setTotalPrice(savedReceipt.getTotalPrice());
+        returnRes.setId(finalResult.getId());
+        returnRes.setSupplierId(finalResult.getSupplier().getId());
+        returnRes.setUserId(finalResult.getUser().getId());
+        returnRes.setTotalPrice(finalResult.getTotalPrice());
         returnRes.setGoodReceiptDetails(
-                savedReceipt.getGoodReceiptDetails().stream()
+                finalResult.getGoodReceiptDetails().stream()
                         .map(goodReceiptMapper::toResGoodReceiptDetail)
                         .toList()
         );
