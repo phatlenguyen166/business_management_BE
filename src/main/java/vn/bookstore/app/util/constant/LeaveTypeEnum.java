@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum LeaveTypeEnum {
-    SICK_LEAVE(1),
-    PAID_LEAVE(2),
-    MATERNITY_LEAVE(3),
-    HOLIDAY(4);
+    SICK_LEAVE(0),
+    PAID_LEAVE(1),
+    MATERNITY_LEAVE(2),
+    HOLIDAY(3);
 
 
     private final int value;
