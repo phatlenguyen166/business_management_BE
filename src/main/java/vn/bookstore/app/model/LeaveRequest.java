@@ -37,6 +37,7 @@ public class LeaveRequest {
     @Column(columnDefinition = "MEDIUMTEXT")
     private String description;
     @NotNull(message = "Lý do nghỉ không được để trống")
+    @Enumerated(EnumType.STRING)
     private LeaveTypeEnum leaveReason;
 
     private int status;
