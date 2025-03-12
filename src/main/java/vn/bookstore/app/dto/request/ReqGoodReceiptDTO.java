@@ -15,12 +15,9 @@ import java.util.List;
 @Builder
 public class ReqGoodReceiptDTO {
 
-    @NotNull(message = "Nhà cung cấp không được để trống")
-    private Long supplierId;
-    
     @NotNull(message = "Người dùng không được để trống")
     private Long userId;
-    
+
     @NotEmpty(message = "Danh sách sản phẩm không được để trống")
     private List<ReqGoodReceiptDetailDTO> goodReceiptDetails;
 }

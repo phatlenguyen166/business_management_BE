@@ -14,7 +14,6 @@ import java.util.List;
 public class ResGoodReceiptDTO {
     private Long id;
     private Long userId;
-    private Long supplierId;
     private BigDecimal totalPrice;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

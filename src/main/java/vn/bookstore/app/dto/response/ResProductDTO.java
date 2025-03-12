@@ -5,6 +5,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
+import vn.bookstore.app.model.Supplier;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -23,13 +25,12 @@ public class ResProductDTO {
     private String image;
     private int quantity;
     private int status;
-    
+    private BigDecimal price;
+    private ResSupplierDTO supplier;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
-    
+
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-    
-    @Column(precision = 19, scale = 4, nullable = false)
-    private BigDecimal price;
 }

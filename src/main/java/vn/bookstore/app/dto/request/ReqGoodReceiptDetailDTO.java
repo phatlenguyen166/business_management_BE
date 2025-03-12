@@ -4,8 +4,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.math.BigDecimal;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,8 +12,7 @@ import java.math.BigDecimal;
 public class ReqGoodReceiptDetailDTO {
     @NotNull(message = "ID sản phẩm không được để trống")
     private Long productId;
-    
+
     @Min(value = 1, message = "Số lượng sản phẩm phải lớn hơn 0")
     private int quantity;
-    
 }

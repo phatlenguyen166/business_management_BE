@@ -24,19 +24,23 @@ public class Product {
     private String image;
     private int quantity;
     private int status;
-    
+
     @CreationTimestamp
     private LocalDateTime createdAt;
-    
+
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-    
+
     @Column(precision = 19, scale = 4, nullable = false)
     private BigDecimal price;
 
+    @ManyToOne
+    @JoinColumn(name = "supplier_id")
+    private Supplier supplier;
+
     @OneToMany(mappedBy = "product")
     private List<BillDetail> billDetails;
-    
+
     @OneToMany(mappedBy = "product")
     private List<GoodReceiptDetail> goodReceiptDetails;
 }
