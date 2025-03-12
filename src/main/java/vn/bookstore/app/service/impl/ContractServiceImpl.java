@@ -17,6 +17,7 @@ import vn.bookstore.app.util.error.InvalidDataException;
 import vn.bookstore.app.util.error.InvalidRequestException;
 import vn.bookstore.app.util.error.NotFoundException;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -56,7 +57,7 @@ public class ContractServiceImpl implements ContractService {
 
     @Override
     public Contract handleCreateContractWithUser(ReqUserWithContractDTO reqUserWithContractDTO, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new InvalidRequestException("User không tồn tại!"));
+        User user = userRepository.findByIdAndStatus(userId,1).orElseThrow(() -> new InvalidRequestException("User không tồn tại!"));
         SeniorityLevel seniorityLevel = seniorityLevelRepository.findByIdAndStatus(reqUserWithContractDTO.getReqContract().getSeniorityId(),1).orElseThrow(() -> new InvalidRequestException("Cấp bậc không tồn tại !")) ;
         ReqContractDTO reqContractDTO = contractMapper.convertToReqContractDTO(reqUserWithContractDTO.getReqContract(), userId);
         return saveContract(user,reqContractDTO,seniorityLevel);
@@ -87,11 +88,20 @@ public class ContractServiceImpl implements ContractService {
 
     @Override
     public ResContractDTO getContractById(Long id) {
+        updateExpiredContracts();
         Optional<Contract> contract = this.contractRepository.findContractByIdAndStatus(id,1);
         if (contract.isPresent()) {
             return contractMapper.convertToResContractDTO(contract.get());
         }
         return null;
+    }
+    public void updateExpiredContracts() {
+        LocalDate today = LocalDate.now();
+        Contract expiredContracts = contractRepository.findByExpiryDateBeforeAndStatus(today, 1);
+        if (expiredContracts != null) {
+            expiredContracts.setStatus(0);
+            contractRepository.save(expiredContracts);
+        }
     }
 
     @Override
@@ -100,6 +110,7 @@ public class ContractServiceImpl implements ContractService {
         Contract  updatedContract = this.contractMapper.convertToContract(updateContract);
         updatedContract.setUser(currentContract.getUser());
         updatedContract.setSeniorityLevel(currentContract.getSeniorityLevel());
+        updateExpiredContracts();
         this.contractRepository.save(updatedContract);
         return contractMapper.convertToResContractDTO(updatedContract);
     }
@@ -116,6 +127,7 @@ public class ContractServiceImpl implements ContractService {
 
     @Override
     public List<ResContractDTO> handleGetAllContractsByUser(Long userId) {
+        updateExpiredContracts();
         List<ResContractDTO> resContractDTOList = this.contractRepository.getAllByUserId(userId)
                 .stream()
                 .map(contractMapper :: convertToResContractDTO)
@@ -126,6 +138,7 @@ public class ContractServiceImpl implements ContractService {
 
     @Override
     public List<ResContractDTO> handleGetAllContracts() {
+        updateExpiredContracts();
         List<Contract> contracts = contractRepository.getAllByStatus(1);
         List<ResContractDTO> resContractDTOS = new ArrayList<>();
         for (Contract contract : contracts) {

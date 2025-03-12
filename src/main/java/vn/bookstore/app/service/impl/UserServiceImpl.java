@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public ResUserDTO handleFetchUserById(Long id) {
-        Optional<User> user = userRepository.findById(id);
+        Optional<User> user = userRepository.findByIdAndStatus(id,1);
         if (user.isPresent()) {
             ResContractDTO contractDTO = contractMapper.convertToResContractDTO(contractService.getActiveContract(user.get().getContracts()));
             return this.userConverter.convertToResUserDTO(user.get(), contractDTO);
@@ -93,7 +93,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public ResUserDTO handleUpdateUser(ReqUserDTO updateUser, Long id) {
-        Optional<User> currentUser = this.userRepository.findById(id);
+        Optional<User> currentUser = this.userRepository.findByIdAndStatus(id,1);
         String hashPassWord;
         if (updateUser.getPassword() == "" || updateUser.getPassword() == null) {
             hashPassWord = this.passwordEncoder.encode(currentUser.get().getPassword());
@@ -117,7 +117,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public void handleDeleteUser(Long id) {
-        Optional<User> currentUser = this.userRepository.findById(id);
+        Optional<User> currentUser = this.userRepository.findByIdAndStatus(id,1);
         if (currentUser.isPresent()) {
             currentUser.get().setStatus(0);
             this.userRepository.save(currentUser.get());
@@ -129,7 +129,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public boolean isActive(Long id) {
-        Optional<User> currentUser = this.userRepository.findById(id);
+        Optional<User> currentUser = this.userRepository.findByIdAndStatus(id,1);
         if (currentUser.isPresent()) {
             if (currentUser.get().getStatus() == 0) {
                 return false;

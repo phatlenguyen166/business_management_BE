@@ -49,7 +49,7 @@ public class GoodReceiptServiceImpl implements GoodReceiptService {
         Supplier supplier = supplierRepository.findById(request.getSupplierId())
                 .orElseThrow(() -> new ResourceNotFoundException("Nhà cung cấp không tồn tại"));
         
-        User user = userRepository.findById(request.getUserId())
+        User user = userRepository.findByIdAndStatus(request.getUserId(),1)
                 .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại"));
         
         GoodReceipt goodReceipt = GoodReceipt.builder()
