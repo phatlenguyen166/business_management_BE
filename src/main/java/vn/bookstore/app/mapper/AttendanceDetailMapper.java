@@ -6,6 +6,8 @@ import vn.bookstore.app.dto.response.ResAttendanceDetailDTO;
 import vn.bookstore.app.model.AttendanceDetail;
 import vn.bookstore.app.model.Holiday;
 
+import java.time.LocalTime;
+
 @Mapper(componentModel = "spring")
 public interface AttendanceDetailMapper {
     AttendanceDetailMapper INSTANCE = Mappers.getMapper(AttendanceDetailMapper.class);
@@ -18,6 +20,7 @@ public interface AttendanceDetailMapper {
     static String formatId(Long id) {
         return "ATD-" + id;
     }
+
 
 
 //    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

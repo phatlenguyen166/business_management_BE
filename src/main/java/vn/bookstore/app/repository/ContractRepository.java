@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import vn.bookstore.app.model.Contract;
 import vn.bookstore.app.model.User;
 
-import javax.swing.text.html.Option;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,4 +20,5 @@ public interface ContractRepository extends JpaRepository<Contract, Long>, JpaSp
 
     @Query(value = "select * from contracts where user_id = 2 order by start_date DESC", nativeQuery = true)
     List<Contract> getAllByUserId(Long userId);
+    Contract findByExpiryDateBeforeAndStatus(LocalDate expiryDate, int status);
 }
