@@ -23,17 +23,15 @@ public class Supplier {
     private String phoneNumber;
     private String address;
     private int status;
-    
+
     private double percentage;
-    
+
     @CreationTimestamp
     private LocalDateTime createdAt;
-    
+
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "supplier")
-    private List<GoodReceipt> goodReceipts;
-
-
+    private List<Product> products;
 }

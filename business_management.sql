@@ -1,10 +1,10 @@
 CREATE DATABASE  IF NOT EXISTS `business_management` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `business_management`;
--- MySQL dump 10.13  Distrib 8.0.36, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.41, for Win64 (x86_64)
 --
--- Host: localhost    Database: business_management
+-- Host: 127.0.0.1    Database: business_management
 -- ------------------------------------------------------
--- Server version	8.0.37
+-- Server version	8.0.41
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -25,19 +25,19 @@ DROP TABLE IF EXISTS `attendance_details`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `attendance_details` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `attendance_status` enum('ABSENT','ON_LEAVE','PRESENT') DEFAULT NULL,
-  `check_in` time(6) DEFAULT NULL,
-  `check_out` time(6) DEFAULT NULL,
-  `leave_type_enum` enum('HOLIDAY','MATERNITY_LEAVE','PAID_LEAVE','SICK_LEAVE') DEFAULT NULL,
-  `working_day` date DEFAULT NULL,
-  `attendance_id` bigint NOT NULL,
-  `holiday_id` bigint DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FK1d74vxn7muwg3w6matb0tkf9c` (`attendance_id`),
-  KEY `FK9otly272s6xvcvno3urlwihlf` (`holiday_id`),
-  CONSTRAINT `FK1d74vxn7muwg3w6matb0tkf9c` FOREIGN KEY (`attendance_id`) REFERENCES `attendances` (`id`),
-  CONSTRAINT `FK9otly272s6xvcvno3urlwihlf` FOREIGN KEY (`holiday_id`) REFERENCES `holidays` (`id`)
+                                      `id` bigint NOT NULL AUTO_INCREMENT,
+                                      `attendance_status` enum('ABSENT','ON_LEAVE','PRESENT') DEFAULT NULL,
+                                      `check_in` time(6) DEFAULT NULL,
+                                      `check_out` time(6) DEFAULT NULL,
+                                      `leave_type_enum` enum('HOLIDAY','MATERNITY_LEAVE','PAID_LEAVE','SICK_LEAVE') DEFAULT NULL,
+                                      `working_day` date DEFAULT NULL,
+                                      `attendance_id` bigint NOT NULL,
+                                      `holiday_id` bigint DEFAULT NULL,
+                                      PRIMARY KEY (`id`),
+                                      KEY `FK1d74vxn7muwg3w6matb0tkf9c` (`attendance_id`),
+                                      KEY `FK9otly272s6xvcvno3urlwihlf` (`holiday_id`),
+                                      CONSTRAINT `FK1d74vxn7muwg3w6matb0tkf9c` FOREIGN KEY (`attendance_id`) REFERENCES `attendances` (`id`),
+                                      CONSTRAINT `FK9otly272s6xvcvno3urlwihlf` FOREIGN KEY (`holiday_id`) REFERENCES `holidays` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -58,18 +58,18 @@ DROP TABLE IF EXISTS `attendances`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `attendances` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `month_of_year` varchar(255) DEFAULT NULL,
-  `total_holiday_leaves` int NOT NULL,
-  `total_maternity_leaves` int NOT NULL,
-  `total_paid_leaves` int NOT NULL,
-  `total_sick_leaves` int NOT NULL,
-  `total_unpaid_leaves` int NOT NULL,
-  `total_working_days` int NOT NULL,
-  `user_id` bigint DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FK8o39cn3ghqwhccyrrqdesttr8` (`user_id`),
-  CONSTRAINT `FK8o39cn3ghqwhccyrrqdesttr8` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+                               `id` bigint NOT NULL AUTO_INCREMENT,
+                               `month_of_year` varchar(255) DEFAULT NULL,
+                               `total_holiday_leaves` int NOT NULL,
+                               `total_maternity_leaves` int NOT NULL,
+                               `total_paid_leaves` int NOT NULL,
+                               `total_sick_leaves` int NOT NULL,
+                               `total_unpaid_leaves` int NOT NULL,
+                               `total_working_days` int NOT NULL,
+                               `user_id` bigint DEFAULT NULL,
+                               PRIMARY KEY (`id`),
+                               KEY `FK8o39cn3ghqwhccyrrqdesttr8` (`user_id`),
+                               CONSTRAINT `FK8o39cn3ghqwhccyrrqdesttr8` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -90,16 +90,16 @@ DROP TABLE IF EXISTS `bill_details`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `bill_details` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `quantity` int NOT NULL,
-  `sub_price` decimal(19,4) NOT NULL,
-  `bill_id` bigint NOT NULL,
-  `product_id` bigint NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FKfwm4sko9p82ndh6belyxx12bj` (`bill_id`),
-  KEY `FK4iagdr0uhsq4tj0ag99nmmya1` (`product_id`),
-  CONSTRAINT `FK4iagdr0uhsq4tj0ag99nmmya1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
-  CONSTRAINT `FKfwm4sko9p82ndh6belyxx12bj` FOREIGN KEY (`bill_id`) REFERENCES `bills` (`id`)
+                                `id` bigint NOT NULL AUTO_INCREMENT,
+                                `quantity` int NOT NULL,
+                                `sub_price` decimal(19,4) NOT NULL,
+                                `bill_id` bigint NOT NULL,
+                                `product_id` bigint NOT NULL,
+                                PRIMARY KEY (`id`),
+                                KEY `FKfwm4sko9p82ndh6belyxx12bj` (`bill_id`),
+                                KEY `FK4iagdr0uhsq4tj0ag99nmmya1` (`product_id`),
+                                CONSTRAINT `FK4iagdr0uhsq4tj0ag99nmmya1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
+                                CONSTRAINT `FKfwm4sko9p82ndh6belyxx12bj` FOREIGN KEY (`bill_id`) REFERENCES `bills` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -120,18 +120,18 @@ DROP TABLE IF EXISTS `bills`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `bills` (
-  `id` bigint NOT NULL,
-  `address` varchar(255) DEFAULT NULL,
-  `created_at` datetime(6) DEFAULT NULL,
-  `total_price` decimal(19,4) NOT NULL,
-  `updated_at` datetime(6) DEFAULT NULL,
-  `customer_id` bigint NOT NULL,
-  `user_id` bigint NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FKoy9sc2dmxj2qwjeiiilf3yuxp` (`customer_id`),
-  KEY `FKk8vs7ac9xknv5xp18pdiehpp1` (`user_id`),
-  CONSTRAINT `FKk8vs7ac9xknv5xp18pdiehpp1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  CONSTRAINT `FKoy9sc2dmxj2qwjeiiilf3yuxp` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`)
+                         `id` bigint NOT NULL,
+                         `address` varchar(255) DEFAULT NULL,
+                         `created_at` datetime(6) DEFAULT NULL,
+                         `total_price` decimal(19,4) NOT NULL,
+                         `updated_at` datetime(6) DEFAULT NULL,
+                         `customer_id` bigint NOT NULL,
+                         `user_id` bigint NOT NULL,
+                         PRIMARY KEY (`id`),
+                         KEY `FKoy9sc2dmxj2qwjeiiilf3yuxp` (`customer_id`),
+                         KEY `FKk8vs7ac9xknv5xp18pdiehpp1` (`user_id`),
+                         CONSTRAINT `FKk8vs7ac9xknv5xp18pdiehpp1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+                         CONSTRAINT `FKoy9sc2dmxj2qwjeiiilf3yuxp` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -152,19 +152,19 @@ DROP TABLE IF EXISTS `contracts`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `contracts` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `base_salary` decimal(19,4) NOT NULL,
-  `end_date` date DEFAULT NULL,
-  `expiry_date` date DEFAULT NULL,
-  `start_date` date DEFAULT NULL,
-  `status` int NOT NULL,
-  `seniority_level` bigint NOT NULL,
-  `user_id` bigint NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FKa685dj982h13eolw5pkd65wll` (`seniority_level`),
-  KEY `FKq3v8dxlubujug7dxvpauig94n` (`user_id`),
-  CONSTRAINT `FKa685dj982h13eolw5pkd65wll` FOREIGN KEY (`seniority_level`) REFERENCES `seniority_levels` (`id`),
-  CONSTRAINT `FKq3v8dxlubujug7dxvpauig94n` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+                             `id` bigint NOT NULL AUTO_INCREMENT,
+                             `base_salary` decimal(19,4) NOT NULL,
+                             `end_date` date DEFAULT NULL,
+                             `expiry_date` date DEFAULT NULL,
+                             `start_date` date DEFAULT NULL,
+                             `status` int NOT NULL,
+                             `seniority_level` bigint NOT NULL,
+                             `user_id` bigint NOT NULL,
+                             PRIMARY KEY (`id`),
+                             KEY `FKa685dj982h13eolw5pkd65wll` (`seniority_level`),
+                             KEY `FKq3v8dxlubujug7dxvpauig94n` (`user_id`),
+                             CONSTRAINT `FKa685dj982h13eolw5pkd65wll` FOREIGN KEY (`seniority_level`) REFERENCES `seniority_levels` (`id`),
+                             CONSTRAINT `FKq3v8dxlubujug7dxvpauig94n` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -186,15 +186,15 @@ DROP TABLE IF EXISTS `customers`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `customers` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL,
-  `phone_number` varchar(255) DEFAULT NULL,
-  `address` varchar(255) DEFAULT NULL,
-  `created_at` datetime(6) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `status` int NOT NULL,
-  `updated_at` datetime(6) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+                             `id` bigint NOT NULL AUTO_INCREMENT,
+                             `name` varchar(255) DEFAULT NULL,
+                             `phone_number` varchar(255) DEFAULT NULL,
+                             `address` varchar(255) DEFAULT NULL,
+                             `created_at` datetime(6) DEFAULT NULL,
+                             `email` varchar(255) DEFAULT NULL,
+                             `status` int NOT NULL,
+                             `updated_at` datetime(6) DEFAULT NULL,
+                             PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -216,18 +216,17 @@ DROP TABLE IF EXISTS `good_receipt_details`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `good_receipt_details` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `input_price` decimal(19,4) NOT NULL,
-  `quantity` int NOT NULL,
-  `good_receipt_id` bigint NOT NULL,
-  `product_id` bigint NOT NULL,
-  `goodreipt_id` bigint NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FKds2up0fhjemb8ug5v28eb35r4` (`good_receipt_id`),
-  KEY `FKi25t5ni7hi6e6fvmiagxfc0jy` (`product_id`),
-  CONSTRAINT `FKds2up0fhjemb8ug5v28eb35r4` FOREIGN KEY (`good_receipt_id`) REFERENCES `good_receipts` (`id`),
-  CONSTRAINT `FKi25t5ni7hi6e6fvmiagxfc0jy` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+                                        `id` bigint NOT NULL AUTO_INCREMENT,
+                                        `input_price` decimal(19,4) NOT NULL,
+                                        `quantity` int NOT NULL,
+                                        `good_receipt_id` bigint NOT NULL,
+                                        `product_id` bigint NOT NULL,
+                                        PRIMARY KEY (`id`),
+                                        KEY `FKds2up0fhjemb8ug5v28eb35r4` (`good_receipt_id`),
+                                        KEY `FKi25t5ni7hi6e6fvmiagxfc0jy` (`product_id`),
+                                        CONSTRAINT `FKds2up0fhjemb8ug5v28eb35r4` FOREIGN KEY (`good_receipt_id`) REFERENCES `good_receipts` (`id`),
+                                        CONSTRAINT `FKi25t5ni7hi6e6fvmiagxfc0jy` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -236,6 +235,7 @@ CREATE TABLE `good_receipt_details` (
 
 LOCK TABLES `good_receipt_details` WRITE;
 /*!40000 ALTER TABLE `good_receipt_details` DISABLE KEYS */;
+INSERT INTO `good_receipt_details` VALUES (1,108000.0000,10,1,1),(2,84150.0000,15,1,2);
 /*!40000 ALTER TABLE `good_receipt_details` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -247,18 +247,15 @@ DROP TABLE IF EXISTS `good_receipts`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `good_receipts` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `created_at` datetime(6) DEFAULT NULL,
-  `total_price` decimal(19,4) NOT NULL,
-  `updated_at` datetime(6) DEFAULT NULL,
-  `supplier_id` bigint NOT NULL,
-  `user_id` bigint DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FK16hdoccmb55lsi1hf2rs12rl9` (`supplier_id`),
-  KEY `FKf5qtokynne3a2n7mn566ohxyh` (`user_id`),
-  CONSTRAINT `FK16hdoccmb55lsi1hf2rs12rl9` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`),
-  CONSTRAINT `FKf5qtokynne3a2n7mn566ohxyh` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+                                 `id` bigint NOT NULL AUTO_INCREMENT,
+                                 `created_at` datetime(6) DEFAULT NULL,
+                                 `total_price` decimal(19,4) NOT NULL,
+                                 `updated_at` datetime(6) DEFAULT NULL,
+                                 `user_id` bigint DEFAULT NULL,
+                                 PRIMARY KEY (`id`),
+                                 KEY `FKf5qtokynne3a2n7mn566ohxyh` (`user_id`),
+                                 CONSTRAINT `FKf5qtokynne3a2n7mn566ohxyh` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -267,6 +264,7 @@ CREATE TABLE `good_receipts` (
 
 LOCK TABLES `good_receipts` WRITE;
 /*!40000 ALTER TABLE `good_receipts` DISABLE KEYS */;
+INSERT INTO `good_receipts` VALUES (1,'2025-03-12 15:26:01.407869',2342250.0000,'2025-03-12 15:26:01.453898',5);
 /*!40000 ALTER TABLE `good_receipts` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -278,13 +276,13 @@ DROP TABLE IF EXISTS `holidays`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `holidays` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `description` mediumtext,
-  `end_date` date DEFAULT NULL,
-  `start_date` date DEFAULT NULL,
-  `status` int NOT NULL,
-  `name` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`)
+                            `id` bigint NOT NULL AUTO_INCREMENT,
+                            `description` mediumtext,
+                            `end_date` date DEFAULT NULL,
+                            `start_date` date DEFAULT NULL,
+                            `status` int NOT NULL,
+                            `name` varchar(255) NOT NULL,
+                            PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -305,20 +303,20 @@ DROP TABLE IF EXISTS `leave_requests`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `leave_requests` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `description` mediumtext,
-  `end_date` date NOT NULL,
-  `leave_reason` tinyint NOT NULL,
-  `send_date` datetime(6) DEFAULT NULL,
-  `start_date` date NOT NULL,
-  `status` int NOT NULL,
-  `title` varchar(255) NOT NULL,
-  `updated_at` datetime(6) DEFAULT NULL,
-  `user_id` bigint DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FKh6s8bo5d59oy52b6nxfguf4yx` (`user_id`),
-  CONSTRAINT `FKh6s8bo5d59oy52b6nxfguf4yx` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  CONSTRAINT `leave_requests_chk_1` CHECK ((`leave_reason` between 0 and 2))
+                                  `id` bigint NOT NULL AUTO_INCREMENT,
+                                  `description` mediumtext,
+                                  `end_date` date NOT NULL,
+                                  `leave_reason` tinyint NOT NULL,
+                                  `send_date` datetime(6) DEFAULT NULL,
+                                  `start_date` date NOT NULL,
+                                  `status` int NOT NULL,
+                                  `title` varchar(255) NOT NULL,
+                                  `updated_at` datetime(6) DEFAULT NULL,
+                                  `user_id` bigint DEFAULT NULL,
+                                  PRIMARY KEY (`id`),
+                                  KEY `FKh6s8bo5d59oy52b6nxfguf4yx` (`user_id`),
+                                  CONSTRAINT `FKh6s8bo5d59oy52b6nxfguf4yx` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+                                  CONSTRAINT `leave_requests_chk_1` CHECK ((`leave_reason` between 0 and 2))
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -339,22 +337,22 @@ DROP TABLE IF EXISTS `payrolls`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `payrolls` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `gross_salary` decimal(19,4) NOT NULL,
-  `maternity_benefit` decimal(19,4) NOT NULL,
-  `maternity_leaves` int NOT NULL,
-  `meal_allowance` decimal(19,4) NOT NULL,
-  `net_salary` decimal(19,4) NOT NULL,
-  `paid_leaves` int NOT NULL,
-  `pay_period` date DEFAULT NULL,
-  `penalties` decimal(19,4) NOT NULL,
-  `sick_leaves` int NOT NULL,
-  `tax` decimal(19,4) NOT NULL,
-  `working_days` int NOT NULL,
-  `user_id` bigint NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FKldxx1r63qa4adw90ohy7ga8o` (`user_id`),
-  CONSTRAINT `FKldxx1r63qa4adw90ohy7ga8o` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+                            `id` bigint NOT NULL AUTO_INCREMENT,
+                            `gross_salary` decimal(19,4) NOT NULL,
+                            `maternity_benefit` decimal(19,4) NOT NULL,
+                            `maternity_leaves` int NOT NULL,
+                            `meal_allowance` decimal(19,4) NOT NULL,
+                            `net_salary` decimal(19,4) NOT NULL,
+                            `paid_leaves` int NOT NULL,
+                            `pay_period` date DEFAULT NULL,
+                            `penalties` decimal(19,4) NOT NULL,
+                            `sick_leaves` int NOT NULL,
+                            `tax` decimal(19,4) NOT NULL,
+                            `working_days` int NOT NULL,
+                            `user_id` bigint NOT NULL,
+                            PRIMARY KEY (`id`),
+                            KEY `FKldxx1r63qa4adw90ohy7ga8o` (`user_id`),
+                            CONSTRAINT `FKldxx1r63qa4adw90ohy7ga8o` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -375,15 +373,18 @@ DROP TABLE IF EXISTS `products`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `products` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `created_at` datetime(6) DEFAULT NULL,
-  `image` varchar(255) DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `price` decimal(19,4) NOT NULL,
-  `quantity` int NOT NULL,
-  `status` int NOT NULL,
-  `updated_at` datetime(6) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+                            `id` bigint NOT NULL AUTO_INCREMENT,
+                            `created_at` datetime(6) DEFAULT NULL,
+                            `image` varchar(255) DEFAULT NULL,
+                            `name` varchar(255) DEFAULT NULL,
+                            `price` decimal(19,4) NOT NULL,
+                            `quantity` int NOT NULL,
+                            `status` int NOT NULL,
+                            `updated_at` datetime(6) DEFAULT NULL,
+                            `supplier_id` bigint DEFAULT NULL,
+                            PRIMARY KEY (`id`),
+                            KEY `FK6i174ixi9087gcvvut45em7fd` (`supplier_id`),
+                            CONSTRAINT `FK6i174ixi9087gcvvut45em7fd` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -393,7 +394,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` VALUES (1,'2025-03-10 14:45:15.000000',NULL,'Sách Lập Trình Java',299000.0000,50,1,'2025-03-10 14:45:15.000000'),(2,'2025-03-10 14:45:15.000000',NULL,'Sách Python Cơ Bản',199000.0000,30,1,'2025-03-10 14:45:15.000000'),(3,'2025-03-10 14:45:15.000000',NULL,'Sách Dữ Liệu Lớn',399000.0000,20,1,'2025-03-10 14:45:15.000000'),(4,'2025-03-10 14:45:15.000000',NULL,'Sách Khoa Học Máy Tính',249000.0000,25,1,'2025-03-10 14:45:15.000000'),(5,'2025-03-10 14:45:15.000000',NULL,'Sách Thiết Kế UX/UI',349000.0000,40,1,'2025-03-10 14:45:15.000000'),(6,'2025-03-10 14:45:15.000000',NULL,'Sách AI và Machine Learning',499000.0000,15,1,'2025-03-10 14:45:15.000000'),(7,'2025-03-10 14:45:15.000000',NULL,'Sách Nhập Môn CNTT',159000.0000,60,1,'2025-03-10 14:45:15.000000'),(8,'2025-03-10 14:45:15.000000',NULL,'Sách Cấu Trúc Dữ Liệu',279000.0000,35,1,'2025-03-10 14:45:15.000000'),(9,'2025-03-10 14:45:15.000000',NULL,'Sách Mạng Máy Tính',319000.0000,45,1,'2025-03-10 14:45:15.000000'),(10,'2025-03-10 14:45:15.000000',NULL,'Sách An Ninh Mạng',459000.0000,20,1,'2025-03-10 14:45:15.000000'),(11,'2025-03-10 14:45:15.000000',NULL,'Sách Phát Triển Web',229000.0000,55,1,'2025-03-10 14:45:15.000000'),(12,'2025-03-10 14:45:15.000000',NULL,'Sách JavaScript Chuyên Sâu',319000.0000,33,1,'2025-03-10 14:45:15.000000'),(13,'2025-03-10 14:45:15.000000',NULL,'Sách React.js và Redux',349000.0000,25,1,'2025-03-10 14:45:15.000000'),(14,'2025-03-10 14:45:15.000000',NULL,'Sách Node.js và Express',299000.0000,22,1,'2025-03-10 14:45:15.000000'),(15,'2025-03-10 14:45:15.000000',NULL,'Sách Spring Boot',359000.0000,28,1,'2025-03-10 14:45:15.000000'),(16,'2025-03-10 14:45:15.000000',NULL,'Sách Lập Trình Mobile',279000.0000,30,1,'2025-03-10 14:45:15.000000'),(17,'2025-03-10 14:45:15.000000',NULL,'Sách Data Science',499000.0000,18,1,'2025-03-10 14:45:15.000000'),(18,'2025-03-10 14:45:15.000000',NULL,'Sách Kỹ Thuật Lập Trình',239000.0000,40,1,'2025-03-10 14:45:15.000000'),(19,'2025-03-10 14:45:15.000000',NULL,'Sách Hệ Điều Hành',289000.0000,23,1,'2025-03-10 14:45:15.000000'),(20,'2025-03-10 14:45:15.000000',NULL,'Sách SQL và Database',319000.0000,37,1,'2025-03-10 14:45:15.000000');
+INSERT INTO `products` VALUES (1,'2024-02-15 11:30:45.000000','https://picsum.photos/200?random=1','Đắc Nhân Tâm',120000.0000,10,1,'2025-03-12 15:26:01.457411',1),(2,'2024-02-10 09:15:20.000000','https://picsum.photos/200?random=2','Nhà Giả Kim',99000.0000,15,1,'2025-03-12 15:26:01.458408',2),(3,'2024-01-05 14:10:00.000000','https://picsum.photos/200?random=3','Tôi Thấy Hoa Vàng Trên Cỏ Xanh',85000.0000,0,1,'2024-02-20 10:45:12.000000',3),(4,'2024-03-01 10:20:30.000000','https://picsum.photos/200?random=4','Quẳng Gánh Lo Đi & Vui Sống',110000.0000,0,1,'2024-03-08 12:00:00.000000',4),(5,'2024-02-18 09:45:00.000000','https://picsum.photos/200?random=5','Bí Mật Của May Mắn',150000.0000,0,1,'2024-03-06 11:30:15.000000',5),(6,'2024-01-22 13:50:10.000000','https://picsum.photos/200?random=6','Dám Nghĩ Lớn',180000.0000,0,1,'2024-02-28 15:20:30.000000',6),(7,'2023-12-30 08:25:45.000000','https://picsum.photos/200?random=7','Muôn Kiếp Nhân Sinh',145000.0000,0,1,'2024-02-27 17:15:20.000000',7),(8,'2023-11-15 10:40:30.000000','https://picsum.photos/200?random=8','Hiểu Về Trái Tim',97000.0000,0,1,'2024-02-25 09:35:10.000000',8),(9,'2023-10-28 12:05:15.000000','https://picsum.photos/200?random=9','Cà Phê Cùng Tony',132000.0000,0,1,'2024-02-23 14:10:00.000000',9),(10,'2023-09-18 11:20:10.000000','https://picsum.photos/200?random=10','Người Giàu Có Nhất Thành Babylon',119000.0000,0,1,'2024-02-21 10:00:45.000000',10);
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -405,11 +406,11 @@ DROP TABLE IF EXISTS `roles`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `roles` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `description` varchar(255) DEFAULT NULL,
-  `name` varchar(50) NOT NULL,
-  `status` int NOT NULL,
-  PRIMARY KEY (`id`)
+                         `id` bigint NOT NULL AUTO_INCREMENT,
+                         `description` varchar(255) DEFAULT NULL,
+                         `name` varchar(50) NOT NULL,
+                         `status` int NOT NULL,
+                         PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -431,16 +432,16 @@ DROP TABLE IF EXISTS `seniority_levels`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `seniority_levels` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `description` mediumtext NOT NULL,
-  `level_name` varchar(100) NOT NULL,
-  `salary_coefficient` float NOT NULL,
-  `status` int NOT NULL,
-  `role_id` bigint NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FK42hqucc3nfs0pvgu51i74oq13` (`role_id`),
-  CONSTRAINT `FK42hqucc3nfs0pvgu51i74oq13` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`),
-  CONSTRAINT `seniority_levels_chk_2` CHECK ((`salary_coefficient` <= 5))
+                                    `id` bigint NOT NULL AUTO_INCREMENT,
+                                    `description` mediumtext NOT NULL,
+                                    `level_name` varchar(100) NOT NULL,
+                                    `salary_coefficient` float NOT NULL,
+                                    `status` int NOT NULL,
+                                    `role_id` bigint NOT NULL,
+                                    PRIMARY KEY (`id`),
+                                    KEY `FK42hqucc3nfs0pvgu51i74oq13` (`role_id`),
+                                    CONSTRAINT `FK42hqucc3nfs0pvgu51i74oq13` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`),
+                                    CONSTRAINT `seniority_levels_chk_2` CHECK ((`salary_coefficient` <= 5))
 ) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -462,16 +463,16 @@ DROP TABLE IF EXISTS `suppliers`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `suppliers` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `address` varchar(255) DEFAULT NULL,
-  `created_at` datetime(6) DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `phone_number` varchar(255) DEFAULT NULL,
-  `status` int NOT NULL,
-  `updated_at` datetime(6) DEFAULT NULL,
-  `percentage` double NOT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+                             `id` bigint NOT NULL AUTO_INCREMENT,
+                             `address` varchar(255) DEFAULT NULL,
+                             `created_at` datetime(6) DEFAULT NULL,
+                             `name` varchar(255) DEFAULT NULL,
+                             `phone_number` varchar(255) DEFAULT NULL,
+                             `status` int NOT NULL,
+                             `updated_at` datetime(6) DEFAULT NULL,
+                             `percentage` double NOT NULL,
+                             `email` varchar(255) DEFAULT NULL,
+                             PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -481,7 +482,7 @@ CREATE TABLE `suppliers` (
 
 LOCK TABLES `suppliers` WRITE;
 /*!40000 ALTER TABLE `suppliers` DISABLE KEYS */;
-INSERT INTO `suppliers` VALUES (11,'123 Đường ABC, TP.HCM','2025-03-10 22:38:26.000000','Công ty A','0987654321',1,'2025-03-10 22:38:26.000000',5,'contact@companya.com'),(12,'456 Đường XYZ, Hà Nội','2025-03-10 22:38:26.000000','Công ty B','0971122334',1,'2025-03-10 22:38:26.000000',7.5,'info@companyb.com'),(13,'789 Đường LMN, Đà Nẵng','2025-03-10 22:38:26.000000','Công ty C','0903344556',1,'2025-03-10 22:38:26.000000',6.2,'support@companyc.com'),(14,'111 Đường PQR, Hải Phòng','2025-03-10 22:38:26.000000','Công ty D','0912345678',1,'2025-03-10 22:38:26.000000',4.8,'hello@companyd.com'),(15,'222 Đường UVW, Cần Thơ','2025-03-10 22:38:26.000000','Công ty E','0938765432',1,'2025-03-10 22:38:26.000000',8.1,'sales@companye.com'),(16,'333 Đường STU, Bình Dương','2025-03-10 22:38:26.000000','Công ty F','0956781234',1,'2025-03-10 22:38:26.000000',9,'contact@companyf.com'),(17,'444 Đường RST, Đồng Nai','2025-03-10 22:38:26.000000','Công ty G','0923456789',1,'2025-03-10 22:38:26.000000',3.6,'admin@companyg.com'),(18,'555 Đường NOP, Vũng Tàu','2025-03-10 22:38:26.000000','Công ty H','0919876543',1,'2025-03-10 22:38:26.000000',5.5,'info@companyh.com'),(19,'666 Đường HIJ, Nha Trang','2025-03-10 22:38:26.000000','Công ty I','0945678901',1,'2025-03-10 22:38:26.000000',7.2,'support@companyi.com'),(20,'777 Đường EFG, Huế','2025-03-10 22:38:26.000000','Công ty J','0967890123',1,'2025-03-10 22:38:26.000000',6.8,'hello@companyj.com');
+INSERT INTO `suppliers` VALUES (1,'Hà Nội, Việt Nam','2024-01-01 12:00:00.000000','Nhà Xuất Bản Kim Đồng','+84-24-3851-4352',1,'2024-03-10 14:20:30.000000',10,'contact@kimdong.vn'),(2,'TP.HCM, Việt Nam','2023-11-15 09:15:00.000000','NXB Trẻ','+84-28-3930-0700',1,'2024-02-28 16:45:12.000000',15,'info@nxbtre.vn'),(3,'Hà Nội, Việt Nam','2024-02-05 08:50:30.000000','Nhà Xuất Bản Giáo Dục','+84-24-3869-2694',1,'2024-03-01 10:10:00.000000',20,'support@giaoduc.vn'),(4,'TP.HCM, Việt Nam','2024-02-10 07:45:20.000000','Nhà Sách Fahasa','+84-28-3829-2180',1,'2024-03-05 13:55:12.000000',18,'contact@fahasa.com'),(5,'TP.HCM, Việt Nam','2023-12-20 15:22:10.000000','Tiki Trading','+84-28-7300-9999',1,'2024-02-15 09:10:30.000000',12,'info@tiki.vn'),(6,'TP.HCM, Việt Nam','2023-12-01 11:30:00.000000','Vinabook','+84-28-7301-8886',1,'2024-02-25 14:40:20.000000',25,'support@vinabook.com'),(7,'Hà Nội, Việt Nam','2023-11-25 10:00:00.000000','Nhà Xuất Bản Văn Học','+84-24-3944-3631',1,'2024-03-01 12:30:00.000000',30,'sales@vanhoc.vn'),(8,'TP.HCM, Việt Nam','2023-10-10 15:45:12.000000','NXB Tổng Hợp TP.HCM','+84-28-3829-7140',1,'2024-03-02 14:55:30.000000',22,'info@nxbtonghop.vn'),(9,'Hà Nội, Việt Nam','2023-09-15 14:22:40.000000','Nhà Xuất Bản Đại Học Quốc Gia','+84-24-3754-7505',1,'2024-03-03 11:12:50.000000',28,'sales@dhqg.vn'),(10,'TP.HCM, Việt Nam','2023-08-30 09:30:00.000000','Nhà Sách Phương Nam','+84-28-7303-1666',1,'2024-02-28 10:45:00.000000',35,'info@phuongnambook.vn');
 /*!40000 ALTER TABLE `suppliers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -493,14 +494,14 @@ DROP TABLE IF EXISTS `tokens`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tokens` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `access_token` varchar(255) DEFAULT NULL,
-  `created_at` datetime(6) DEFAULT NULL,
-  `refresh_token` varchar(255) DEFAULT NULL,
-  `updated_at` datetime(6) DEFAULT NULL,
-  `username` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `UK7nq3j9mbmotv8kv3nv9kbcb7c` (`username`)
+                          `id` bigint NOT NULL AUTO_INCREMENT,
+                          `access_token` varchar(255) DEFAULT NULL,
+                          `created_at` datetime(6) DEFAULT NULL,
+                          `refresh_token` varchar(255) DEFAULT NULL,
+                          `updated_at` datetime(6) DEFAULT NULL,
+                          `username` varchar(255) DEFAULT NULL,
+                          PRIMARY KEY (`id`),
+                          UNIQUE KEY `UK7nq3j9mbmotv8kv3nv9kbcb7c` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -522,21 +523,21 @@ DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `address` varchar(255) DEFAULT NULL,
-  `created_at` datetime(6) DEFAULT NULL,
-  `date_of_birth` date DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `full_name` varchar(255) DEFAULT NULL,
-  `gender` tinyint DEFAULT NULL,
-  `last_login` datetime(6) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL,
-  `phone_number` varchar(255) DEFAULT NULL,
-  `status` int NOT NULL,
-  `updated_at` datetime(6) DEFAULT NULL,
-  `username` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  CONSTRAINT `users_chk_1` CHECK ((`gender` between 0 and 2))
+                         `id` bigint NOT NULL AUTO_INCREMENT,
+                         `address` varchar(255) DEFAULT NULL,
+                         `created_at` datetime(6) DEFAULT NULL,
+                         `date_of_birth` date DEFAULT NULL,
+                         `email` varchar(255) DEFAULT NULL,
+                         `full_name` varchar(255) DEFAULT NULL,
+                         `gender` tinyint DEFAULT NULL,
+                         `last_login` datetime(6) DEFAULT NULL,
+                         `password` varchar(255) DEFAULT NULL,
+                         `phone_number` varchar(255) DEFAULT NULL,
+                         `status` int NOT NULL,
+                         `updated_at` datetime(6) DEFAULT NULL,
+                         `username` varchar(255) DEFAULT NULL,
+                         PRIMARY KEY (`id`),
+                         CONSTRAINT `users_chk_1` CHECK ((`gender` between 0 and 2))
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -559,4 +560,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-11 19:16:08
+-- Dump completed on 2025-03-12 15:28:09
