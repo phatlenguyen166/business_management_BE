@@ -14,14 +14,13 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring")
 public interface GoodReceiptMapper {
     GoodReceiptMapper INSTANCE = Mappers.getMapper(GoodReceiptMapper.class);
-    
+
     @Mapping(source = "user.id", target = "userId")
-    @Mapping(source = "supplier.id", target = "supplierId")
     ResGoodReceiptDTO toResGoodReceipt(GoodReceipt goodReceipt);
-    
+
     @Mapping(source = "product.id", target = "productId")
     ResGoodReceiptDetailDTO toResGoodReceiptDetail(GoodReceiptDetail goodReceiptDetail);
-    
+
     default List<ResGoodReceiptDetailDTO> mapGoodReceiptDetails(List<GoodReceiptDetail> details) {
         if (details == null) {
             return null;
@@ -30,7 +29,6 @@ public interface GoodReceiptMapper {
                 .productId(detail.getProduct().getId())
                 .quantity(detail.getQuantity())
                 .inputPrice(detail.getInputPrice())
-                .build()
-        ).collect(Collectors.toList());
+                .build()).collect(Collectors.toList());
     }
 }

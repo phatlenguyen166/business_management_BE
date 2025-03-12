@@ -12,7 +12,9 @@ import vn.bookstore.app.dto.request.ReqProductDTO;
 import vn.bookstore.app.dto.response.ResProductDTO;
 import vn.bookstore.app.mapper.ProductMapper;
 import vn.bookstore.app.model.Product;
+import vn.bookstore.app.model.Supplier;
 import vn.bookstore.app.repository.ProductRepository;
+import vn.bookstore.app.repository.SupplierRepository;
 import vn.bookstore.app.service.CloudinaryService;
 import vn.bookstore.app.service.ProductService;
 import vn.bookstore.app.util.error.InvalidRequestException;
@@ -26,11 +28,12 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
-    
+
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final CloudinaryService cloudinaryService;
-    
+    private final SupplierRepository supplierRepository;
+
     @Transactional
     @Override
     public ResProductDTO addProduct(ReqProductDTO reqProductDTO, MultipartFile imageFile) throws IOException {
@@ -43,27 +46,35 @@ public class ProductServiceImpl implements ProductService {
         if (productRepository.existsByName(reqProductDTO.getName())) {
             throw new InvalidRequestException("Sản phẩm với tên '" + reqProductDTO.getName() + "' đã tồn tại.");
         }
+
+        // Get supplier
+        Supplier supplier = supplierRepository.findById(reqProductDTO.getSupplierId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Không tìm thấy nhà cung cấp với ID: " + reqProductDTO.getSupplierId()));
+
         String imageUrl = cloudinaryService.uploadFile(imageFile);
         Product product = productMapper.toProduct(reqProductDTO);
         product.setImage(imageUrl);
         product.setQuantity(0);
         product.setStatus(1);
+        product.setSupplier(supplier);
         log.info("-------> ", product.getImage());
         Product savedProduct = productRepository.save(product);
-        
+
         return productMapper.toResProductDTO(savedProduct);
     }
-    
+
     @Override
-    public ResProductDTO updateProduct(ReqProductDTO reqProductDTO, Long productId, MultipartFile newImageFile) throws IOException {
+    public ResProductDTO updateProduct(ReqProductDTO reqProductDTO, Long productId, MultipartFile newImageFile)
+            throws IOException {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sản phẩm không tồn tại."));
-        
+
         if (reqProductDTO.getName() != null && !reqProductDTO.getName().equals(product.getName())
                 && productRepository.existsByName(reqProductDTO.getName())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Tên sản phẩm đã tồn tại!");
         }
-        
+
         if (newImageFile != null && !newImageFile.isEmpty()) {
             Optional.ofNullable(product.getImage())
                     .filter(imageUrl -> !imageUrl.trim().isEmpty())
@@ -78,33 +89,40 @@ public class ProductServiceImpl implements ProductService {
             String newImageUrl = cloudinaryService.uploadFile(newImageFile);
             product.setImage(newImageUrl);
         }
-        
+
         Optional.ofNullable(reqProductDTO.getName()).ifPresent(product::setName);
         Optional.ofNullable(reqProductDTO.getPrice()).ifPresent(product::setPrice);
-        
+
+        // Update supplier if provided
+        if (reqProductDTO.getSupplierId() != null) {
+            Supplier supplier = supplierRepository.findById(reqProductDTO.getSupplierId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Không tìm thấy nhà cung cấp với ID: " + reqProductDTO.getSupplierId()));
+            product.setSupplier(supplier);
+        }
+
         Product updatedProduct = productRepository.save(product);
-        
+
         return productMapper.toResProductDTO(updatedProduct);
     }
-    
-    
-    
+
     @Override
     public List<ResProductDTO> getListProducts() {
         return productRepository.findAll().stream().map(productMapper::toResProductDTO).toList();
     }
-    
+
     @Override
     @NonNull
     public ResProductDTO getProductById(Long id) {
-        return productRepository.findById(id).map(productMapper::toResProductDTO).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm với ID: " + id));
+        return productRepository.findById(id).map(productMapper::toResProductDTO)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm với ID: " + id));
     }
-    
+
     @Override
     public void deleteProduct(Long id) {
         Product product = productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm " +
                 "thấy sản phẩm với ID: " + id));
-        
+
         product.setStatus(0);
         productRepository.save(product);
     }
