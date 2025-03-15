@@ -52,6 +52,7 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
             AttendanceDetail detail = new AttendanceDetail();
             detail.setAttendance(newAttendance);
             detail.setCheckIn(LocalTime.from(attendanceDetail.getCheckIn()).now());
+            detail.setWorkingDay(date);
             this.attendanceDetailRepository.save(detail);
             return this.attendanceDetailMapper.convertToResAttendanceDetailDTO(detail);
         }
@@ -152,7 +153,7 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
 
             AttendanceDetail optionalAttendanceDetail = attendanceDetailRepository.findByAttendanceAndCheckInDate(attendance, today);
 
-            Optional<LeaveRequest> leaveRequestOpt = leaveReqRepository.findLeaveRequestByUserAndDate(user, today);
+            Optional<LeaveRequest> leaveRequestOpt = leaveReqRepository.findLeaveRequestByUserAndDateAndStatus(user, today,1);
             Optional<Holiday> holidayOpt = holidayRepository.findHolidayByDate(today);
             if (optionalAttendanceDetail != null) {
                 AttendanceDetail attendanceDetail = optionalAttendanceDetail;

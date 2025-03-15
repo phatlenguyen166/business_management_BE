@@ -7,8 +7,10 @@ import vn.bookstore.app.mapper.HolidayMapper;
 import vn.bookstore.app.model.Holiday;
 import vn.bookstore.app.repository.HolidayRepository;
 import vn.bookstore.app.service.HolidayService;
+import vn.bookstore.app.util.error.InvalidRequestException;
 import vn.bookstore.app.util.error.NotFoundException;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,7 +58,12 @@ public class HolidayServiceImpl implements HolidayService {
     @Override
     public void handleDeleteHoliday(Long id) {
         Holiday currHoliday = getHolidayById(id);
-        currHoliday.setStatus(0);
-        this.holidayRepository.save(currHoliday);
+        LocalDate today = LocalDate.now();
+        if (currHoliday.getStartDate().isAfter(today)) {
+            currHoliday.setStatus(0);
+            this.holidayRepository.save(currHoliday);
+        } else {
+            throw new  InvalidRequestException("Không thể xóa");
+        }
     }
 }

@@ -17,12 +17,13 @@ public class ReqContractDTO {
     private BigDecimal baseSalary;
 
     @NotNull(message = "Ngày bắt đầu không được để trống")
+    @FutureOrPresent(message = "Ngày hết hạn phải từ hôm nay trở đi")
     private LocalDate startDate;
 
     @NotNull(message = "Ngày kết thúc không được để trống")
     private LocalDate endDate;
 
-    @FutureOrPresent(message = "Ngày hết hạn phải từ hôm nay trở đi")
+    @Future(message = "Ngày hết hạn phải từ hôm nay trở đi")
     private LocalDate expiryDate;
 
     @NotNull(message = "User ID không được để trống")

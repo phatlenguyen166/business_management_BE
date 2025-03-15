@@ -17,8 +17,10 @@ import java.util.Optional;
 public interface LeaveReqRepository extends JpaRepository<LeaveRequest, Long>, JpaSpecificationExecutor<LeaveRequest> {
     List<LeaveRequest> findByStatusInOrderBySendDateDesc(List<Integer> statusList);
     Optional<LeaveRequest> findByIdAndStatusIn(Long id, List<Integer> statusList);
+    Optional<LeaveRequest> findByIdAndStatus(Long id, int status);
     List<LeaveRequest> findByUserOrderBySendDateDesc(User user);
+    List<LeaveRequest> findByUserAndStatus(User user, int status);
 
     @Query("SELECT lr FROM LeaveRequest lr WHERE lr.user = :user AND  lr.status = 1 AND :today BETWEEN lr.startDate AND lr.endDate")
-    Optional<LeaveRequest> findLeaveRequestByUserAndDate(@Param("user") User user, @Param("today") LocalDate today);
+    Optional<LeaveRequest> findLeaveRequestByUserAndDateAndStatus(@Param("user") User user, @Param("today") LocalDate today, int status);
 }

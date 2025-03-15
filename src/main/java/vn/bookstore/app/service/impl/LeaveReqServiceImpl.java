@@ -70,11 +70,10 @@ public class LeaveReqServiceImpl implements LeaveReqService {
 
     @Override
     public void handleDeleteLeaveReq(Long id) {
-        LeaveRequest currentLeaveReq = getLeaveReqById(id);
+        LeaveRequest currentLeaveReq = this.leaveReqRepository.findByIdAndStatus(id,2).orElseThrow(() -> new NotFoundException("Đơn xin nghỉ phép không tồn tại hoặc đã được duyệt"));
         currentLeaveReq.setStatus(0);
         this.leaveReqRepository.save(currentLeaveReq);
     }
-
     @Override
     public void handleRejectLeaveReq(Long id) {
         LeaveRequest currentLeaveReq = getLeaveReqById(id);

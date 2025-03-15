@@ -1,6 +1,7 @@
 package vn.bookstore.app.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -21,7 +22,7 @@ public class Holiday {
     @NotBlank(message = "Tên ngày lễ không được để trống")
     private String name;
     @NotNull(message = "Start date không được để trống")
-    @FutureOrPresent(message = "Start date phải là ngày hiện tại hoặc tương lai")
+    @Future(message = "Start date phải là ngày tương lai")
     private LocalDate startDate;
     @NotNull(message = "End date không được để trống")
     @FutureOrPresent(message = "End date phải là ngày hiện tại hoặc tương lai")
