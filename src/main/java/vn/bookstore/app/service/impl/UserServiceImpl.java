@@ -11,9 +11,8 @@ import vn.bookstore.app.dto.response.ResContractDTO;
 import vn.bookstore.app.dto.response.ResUserDTO;
 import vn.bookstore.app.mapper.ContractMapper;
 import vn.bookstore.app.mapper.UserConverter;
-import vn.bookstore.app.model.Contract;
-import vn.bookstore.app.model.User;
-import vn.bookstore.app.repository.UserRepository;
+import vn.bookstore.app.model.*;
+import vn.bookstore.app.repository.*;
 import vn.bookstore.app.service.UserService;
 import vn.bookstore.app.util.error.NotFoundException;
 
@@ -34,18 +33,31 @@ public class UserServiceImpl implements UserService {
     private  PasswordEncoder passwordEncoder;
     private  ContractServiceImpl contractService;
     private ContractMapper contractMapper;
+    private LeaveReqRepository leaveReqRepository;
+    private ContractRepository contractRepository;
+    private AttendanceRepository attendanceRepository;
+    private AttendanceDetailRepository attendanceDetailRepository;
     public UserServiceImpl (UserRepository userRepository,
                             UserConverter userConverter,
                             @Lazy
                             PasswordEncoder passwordEncoder,
                             @Lazy
                             ContractServiceImpl contractService,
-                            ContractMapper contractMapper){
+                            ContractMapper contractMapper,
+                            LeaveReqRepository leaveReqRepository,
+                            ContractRepository contractRepository,
+                            AttendanceRepository attendanceRepository,
+                            AttendanceDetailRepository attendanceDetailRepository
+                            ){
         this.contractService =contractService;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userConverter =userConverter;
         this.contractMapper = contractMapper;
+        this.leaveReqRepository = leaveReqRepository;
+        this.contractRepository =contractRepository;
+        this.attendanceRepository = attendanceRepository;
+        this.attendanceDetailRepository = attendanceDetailRepository;
     }
 
     @Override
@@ -119,6 +131,23 @@ public class UserServiceImpl implements UserService {
     public void handleDeleteUser(Long id) {
         Optional<User> currentUser = this.userRepository.findByIdAndStatus(id,1);
         if (currentUser.isPresent()) {
+            List<LeaveRequest> leaveRequests = this.leaveReqRepository.findByUserAndStatus(currentUser.get(),1);
+            for (LeaveRequest leaveRequest : leaveRequests) {
+                leaveRequest.setStatus(0);
+                this.leaveReqRepository.save(leaveRequest);
+            }
+            List<Contract> contracts = this.contractRepository.getAllByUserId(id);
+            for (Contract contract : contracts) {
+                contract.setStatus(0);
+                this.contractRepository.save(contract);
+            }
+            User user1 = currentUser.get();
+            List<Attendance> attendances =  this.attendanceRepository.findAllByUserOrderByMonthOfYearDesc(user1);
+            for (Attendance attendance : attendances) {
+                List<AttendanceDetail> attendanceDetails = this.attendanceDetailRepository.findAllByAttendance(attendance);
+                this.attendanceDetailRepository.deleteAll(attendanceDetails);
+            }
+            this.attendanceRepository.deleteAll(attendances);
             currentUser.get().setStatus(0);
             this.userRepository.save(currentUser.get());
         }

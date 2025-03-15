@@ -1,5 +1,7 @@
 package vn.bookstore.app.dto.response;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 import vn.bookstore.app.util.constant.LeaveTypeEnum;
@@ -17,6 +19,7 @@ public class ResLeaveReqDTO {
     private LocalDate endDate;
     private LocalDate sendDate;
     private String description;
+    @Enumerated(EnumType.STRING)
     private LeaveTypeEnum leaveReason;
     private LocalDateTime updatedAt;
     private int status;

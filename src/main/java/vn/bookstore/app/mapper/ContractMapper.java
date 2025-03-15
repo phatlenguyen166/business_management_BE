@@ -17,6 +17,7 @@ public interface ContractMapper {
     @Mapping(source = "seniorityLevel.levelName", target = "levelName")
     @Mapping(source = "seniorityLevel.salaryCoefficient", target = "salaryCoefficient")
     @Mapping(source = "seniorityLevel.role.name", target = "roleName")
+    @Mapping(source = "seniorityLevel.id", target = "seniorityId")
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "user.fullName", target = "fullName")
     @Mapping(source = "id", target = "idString", qualifiedByName = "formatId")

@@ -14,6 +14,7 @@ public class ResContractDTO {
     private String idString;
     private Long userId;
     private String fullName;
+    private Long seniorityId;
     private BigDecimal baseSalary;
     private int status;
     private LocalDate startDate;
