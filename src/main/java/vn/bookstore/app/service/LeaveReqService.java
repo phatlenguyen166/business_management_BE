@@ -7,7 +7,7 @@ import vn.bookstore.app.model.LeaveRequest;
 import java.util.List;
 
 public interface LeaveReqService {
-    public ResLeaveReqDTO handleCreateLeaveReq(ReqLeaveReqDTO newLeaveReq);
+    public List<ResLeaveReqDTO> handleCreateLeaveReq(ReqLeaveReqDTO newLeaveReq);
     public List<ResLeaveReqDTO> handleGetAllLeaveReq();
     public ResLeaveReqDTO handleGetLeaveReq(Long id);
     public LeaveRequest getLeaveReqById(Long id);

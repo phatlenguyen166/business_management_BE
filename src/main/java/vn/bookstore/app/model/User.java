@@ -42,9 +42,6 @@ public class User implements UserDetails {
     private List<Bill> bills;
 
     @OneToMany(mappedBy = "user")
-    private List<Payroll> payrolls;
-
-    @OneToMany(mappedBy = "user")
     private List<LeaveRequest> leaveRequest;
 
     @OneToMany(mappedBy = "user")
