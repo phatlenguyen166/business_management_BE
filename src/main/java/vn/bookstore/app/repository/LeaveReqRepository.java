@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import vn.bookstore.app.model.LeaveRequest;
 import vn.bookstore.app.model.User;
+import vn.bookstore.app.util.constant.LeaveTypeEnum;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,6 +21,16 @@ public interface LeaveReqRepository extends JpaRepository<LeaveRequest, Long>, J
     Optional<LeaveRequest> findByIdAndStatus(Long id, int status);
     List<LeaveRequest> findByUserOrderBySendDateDesc(User user);
     List<LeaveRequest> findByUserAndStatus(User user, int status);
+
+    @Query("SELECT lr FROM LeaveRequest lr WHERE lr.user = :user AND lr.status = 1 AND lr.leaveReason = :leaveReason "+
+            "AND MONTH(lr.startDate) = MONTH(:startDate) " +
+            "AND YEAR(lr.startDate) = YEAR(:startDate)")
+    LeaveRequest findByUserAndStatusAndMonth(@Param("user") User user, @Param("startDate") LocalDate startDate, @Param("leaveReason")LeaveTypeEnum leaveReason);
+
+    @Query("SELECT lr FROM LeaveRequest lr WHERE lr.user = :user AND lr.status = 1 AND lr.leaveReason = :leaveReason "+
+            "AND YEAR(lr.startDate) = YEAR(:startDate)")
+    List<LeaveRequest> findByUserAndStatusAndYear(@Param("user") User user, @Param("startDate") LocalDate startDate, @Param("leaveReason")LeaveTypeEnum leaveReason);
+
 
     @Query("SELECT lr FROM LeaveRequest lr WHERE lr.user = :user AND  lr.status = 1 AND :today BETWEEN lr.startDate AND lr.endDate")
     Optional<LeaveRequest> findLeaveRequestByUserAndDateAndStatus(@Param("user") User user, @Param("today") LocalDate today, int status);

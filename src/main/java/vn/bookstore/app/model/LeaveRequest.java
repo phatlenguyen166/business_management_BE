@@ -30,6 +30,7 @@ public class LeaveRequest {
     @NotNull(message = "End date không được để trống")
     @Future(message = "End date phải là ngày trong tương lai")
     private LocalDate endDate;
+    private long totalDayLeave;
     @CreationTimestamp
     private LocalDateTime sendDate;
 

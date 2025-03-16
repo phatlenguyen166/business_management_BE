@@ -20,8 +20,8 @@ public class LeaveRequestController {
     private final LeaveReqServiceImpl leaveReqService;
 
     @PostMapping("/leaveReqs")
-    public ResponseEntity<ResponseDTO<ResLeaveReqDTO>> createLeaveReq(@Valid @RequestBody ReqLeaveReqDTO leaveRequest) {
-        ResLeaveReqDTO newLeaveReq = this.leaveReqService.handleCreateLeaveReq(leaveRequest);
+    public ResponseEntity<ResponseDTO<List<ResLeaveReqDTO>>> createLeaveReq(@Valid @RequestBody ReqLeaveReqDTO leaveRequest) {
+         List<ResLeaveReqDTO> newLeaveReq = this.leaveReqService.handleCreateLeaveReq(leaveRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 new ResponseDTO<>(
                         201,

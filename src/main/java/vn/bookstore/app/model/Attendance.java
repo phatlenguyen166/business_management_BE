@@ -34,6 +34,9 @@ public class Attendance {
 
     @OneToMany(mappedBy = "attendance")
     private List<AttendanceDetail> attendanceDetails;
+
+    @OneToOne(mappedBy = "attendance", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Payroll payroll;
 }
 
 

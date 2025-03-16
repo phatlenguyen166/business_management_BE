@@ -15,11 +15,6 @@ public class Payroll {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private LocalDate payPeriod;
-    private int workingDays;
-    private int maternityLeaves;
-    private int sickLeaves;
-    private int paidLeaves;
     @Column(precision = 19, scale = 4, nullable = false)
     private BigDecimal maternityBenefit;
     @Column(precision = 19, scale = 4, nullable = false)
@@ -31,11 +26,12 @@ public class Payroll {
     @Column(precision = 19, scale = 4, nullable = false)
     private BigDecimal grossSalary;
     @Column(precision = 19, scale = 4, nullable = false)
-    private BigDecimal mealAllowance;
+    private BigDecimal allowance;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @OneToOne
+    @JoinColumn(name = "attendance_id", unique = true, nullable = false)
+    private Attendance attendance;
+
 
 
 
