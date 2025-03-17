@@ -13,9 +13,7 @@ import vn.bookstore.app.repository.RoleRepository;
 import vn.bookstore.app.repository.SeniorityLevelRepository;
 import vn.bookstore.app.repository.UserRepository;
 import vn.bookstore.app.service.ContractService;
-import vn.bookstore.app.util.error.InvalidDataException;
 import vn.bookstore.app.util.error.InvalidRequestException;
-import vn.bookstore.app.util.error.NotFoundException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -74,8 +72,7 @@ public class ContractServiceImpl implements ContractService {
             contractRepository.save(contract);
             return  contract;
         } else {
-
-            currentContract.setStatus(0);
+            currentContract.setStatus(2);
             contractRepository.save(currentContract);
             Contract contract =  contractMapper.convertToContract(newContract);
             contract.setUser(user);
@@ -99,7 +96,7 @@ public class ContractServiceImpl implements ContractService {
         LocalDate today = LocalDate.now();
         Contract expiredContracts = contractRepository.findByExpiryDateBeforeAndStatus(today, 1);
         if (expiredContracts != null) {
-            expiredContracts.setStatus(0);
+            expiredContracts.setStatus(2);
             contractRepository.save(expiredContracts);
         }
     }
@@ -117,7 +114,7 @@ public class ContractServiceImpl implements ContractService {
 
     @Override
     public void handleDeleteContract(Long id) {
-        Contract contract = this.contractRepository.findContractByIdAndStatus(id,1).get();
+        Contract contract = this.contractRepository.findContractByIdAndStatusIn(id,List.of(1,2)).get();
         User user = contract.getUser();
         contract.setStatus(0);
         user.setStatus(0);
@@ -139,7 +136,7 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public List<ResContractDTO> handleGetAllContracts() {
         updateExpiredContracts();
-        List<Contract> contracts = contractRepository.getAllByStatus(1);
+        List<Contract> contracts = contractRepository.findAllContractByStatusInOrderByStartDateDesc(List.of(1,2));
         List<ResContractDTO> resContractDTOS = new ArrayList<>();
         for (Contract contract : contracts) {
             ResContractDTO resContractDTO = contractMapper.convertToResContractDTO(contract);

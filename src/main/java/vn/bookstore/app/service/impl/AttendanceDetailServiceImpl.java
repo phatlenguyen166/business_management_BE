@@ -201,7 +201,7 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
     }
 
     @Override
-    public List<ResAttendanceDetailDTO> handleGetAllByMonth(Long id) {
+    public List<ResAttendanceDetailDTO> handleGetAllByAttendance(Long id) {
         Attendance attendance = this.attendanceRepository.findById(id).orElseThrow(() -> new NotFoundException("Attendance not found"));
         List<ResAttendanceDetailDTO> attendanceDetailDTOS = this.attendanceDetailRepository.findAllByAttendance(attendance).stream()
                 .map(attendanceDetailMapper::convertToResAttendanceDetailDTO)
@@ -226,6 +226,14 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
     @Override
     public List<ResAttendanceDetailDTO> handleGetAllByDate(LocalDate date) {
         List<ResAttendanceDetailDTO> attendanceDetailDTOS = this.attendanceDetailRepository.findAllByWorkingDay(date).stream()
+                .map(attendanceDetailMapper::convertToResAttendanceDetailDTO)
+                .collect(Collectors.toList());
+        return attendanceDetailDTOS;
+    }
+
+    @Override
+    public List<ResAttendanceDetailDTO> handleGetAllByMonth(YearMonth yearMonth) {
+        List<ResAttendanceDetailDTO> attendanceDetailDTOS = this.attendanceDetailRepository.findAllByMonth(yearMonth).stream()
                 .map(attendanceDetailMapper::convertToResAttendanceDetailDTO)
                 .collect(Collectors.toList());
         return attendanceDetailDTOS;

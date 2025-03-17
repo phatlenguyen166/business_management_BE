@@ -12,7 +12,7 @@ import vn.bookstore.app.service.impl.AttendanceDetailServiceImpl;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.YearMonth;
 import java.util.List;
 
 @RestController
@@ -79,7 +79,7 @@ public class AttendanceDetailController {
 
     @GetMapping("/attendanceDetails/attendance/{id}")
     public ResponseEntity<ResponseDTO<List<ResAttendanceDetailDTO>>> getAllAttendanceDetailByMonth(@PathVariable Long id) {
-        List<ResAttendanceDetailDTO> resAttendanceDetailDTOS = this.attendanceDetailService.handleGetAllByMonth(id);
+        List<ResAttendanceDetailDTO> resAttendanceDetailDTOS = this.attendanceDetailService.handleGetAllByAttendance(id);
         return ResponseEntity.ok(
                 new ResponseDTO<>(
                         200,
@@ -106,8 +106,22 @@ public class AttendanceDetailController {
     }
 
     @GetMapping("/attendanceDetails/date")
-    public ResponseEntity<ResponseDTO<List<ResAttendanceDetailDTO>>> getAllAttendanceDetailByUser(@RequestParam("date") LocalDate date) {
+    public ResponseEntity<ResponseDTO<List<ResAttendanceDetailDTO>>> getAllAttendanceDetailByDate(@RequestParam("date") LocalDate date) {
         List<ResAttendanceDetailDTO> resAttendanceDetailDTOS = this.attendanceDetailService.handleGetAllByDate(date);
+        return ResponseEntity.ok(
+                new ResponseDTO<>(
+                        200,
+                        true,
+                        null,
+                        "Get all attendanceDetails By LocalDate successfully",
+                        resAttendanceDetailDTOS
+                )
+        );
+    }
+
+    @GetMapping("/attendanceDetails/month")
+    public ResponseEntity<ResponseDTO<List<ResAttendanceDetailDTO>>> getAllAttendanceDetailByMonth(@RequestParam("yearMonth") YearMonth yearMonth) {
+        List<ResAttendanceDetailDTO> resAttendanceDetailDTOS = this.attendanceDetailService.handleGetAllByMonth(yearMonth);
         return ResponseEntity.ok(
                 new ResponseDTO<>(
                         200,

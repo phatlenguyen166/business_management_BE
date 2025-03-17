@@ -8,6 +8,7 @@ import vn.bookstore.app.model.Attendance;
 import vn.bookstore.app.model.AttendanceDetail;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 @Repository
@@ -17,5 +18,8 @@ public interface AttendanceDetailRepository extends JpaRepository<AttendanceDeta
                                                                 @Param("checkInDate") LocalDate checkInDate);
     List<AttendanceDetail> findAllByAttendance(Attendance attendance);
     List<AttendanceDetail> findAllByWorkingDay(LocalDate workingDay);
+
+    @Query("SELECT a FROM AttendanceDetail a WHERE MONTH(a.workingDay) = MONTH(:yearMonth) AND YEAR(a.workingDay) = YEAR(a.workingDay) ")
+    List<AttendanceDetail> findAllByMonth(@Param("yearMonth") YearMonth yearMonth);
 
 }
