@@ -1,18 +1,20 @@
 package vn.bookstore.app.mapper;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+
 import vn.bookstore.app.dto.response.ResGoodReceiptDTO;
 import vn.bookstore.app.dto.response.ResGoodReceiptDetailDTO;
 import vn.bookstore.app.model.GoodReceipt;
 import vn.bookstore.app.model.GoodReceiptDetail;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Mapper(componentModel = "spring")
 public interface GoodReceiptMapper {
+
     GoodReceiptMapper INSTANCE = Mappers.getMapper(GoodReceiptMapper.class);
 
     @Mapping(source = "user.id", target = "userId")
