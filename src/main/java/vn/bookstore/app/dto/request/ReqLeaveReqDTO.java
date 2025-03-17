@@ -28,4 +28,15 @@ public class ReqLeaveReqDTO {
     private LeaveTypeEnum leaveReason;
     @NotNull(message = "userId không được để trống" )
     private Long userId;
+
+    public ReqLeaveReqDTO copy() {
+        ReqLeaveReqDTO copy = new ReqLeaveReqDTO();
+        copy.setUserId(this.userId);
+        copy.setStartDate(this.startDate);
+        copy.setEndDate(this.endDate);
+        copy.setLeaveReason(this.leaveReason);
+        copy.setTitle(this.title);
+        copy.setDescription(this.description);
+        return copy;
+    }
 }

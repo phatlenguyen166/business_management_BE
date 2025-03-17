@@ -75,8 +75,8 @@ public class LeaveRequestController {
     }
 
     @PutMapping("/leaveReqs/{id}")
-    public ResponseEntity<ResponseDTO<ResLeaveReqDTO>> updateLeaveReq(@Valid @RequestBody ReqLeaveReqDTO leaveRequest, @PathVariable Long id) {
-        ResLeaveReqDTO updatedLeaveReq = this.leaveReqService.handleUpdateLeaveReq(id, leaveRequest);
+    public ResponseEntity<ResponseDTO<List<ResLeaveReqDTO>>> updateLeaveReq(@Valid @RequestBody ReqLeaveReqDTO leaveRequest, @PathVariable Long id) {
+        List<ResLeaveReqDTO> updatedLeaveReq = this.leaveReqService.handleUpdateLeaveReq(id, leaveRequest);
         return ResponseEntity.ok(
                 new ResponseDTO<>(
                         200,
