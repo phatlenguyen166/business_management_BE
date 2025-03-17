@@ -24,4 +24,6 @@ public class ResLeaveReqDTO {
     private LocalDateTime updatedAt;
     private int status;
     private Long userId;
+    private String roleName;
+    private String fullName;
 }
