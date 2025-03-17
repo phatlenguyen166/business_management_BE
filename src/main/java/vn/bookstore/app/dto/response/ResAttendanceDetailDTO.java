@@ -24,6 +24,8 @@ public class ResAttendanceDetailDTO {
     @Enumerated(EnumType.STRING)
     private LeaveTypeEnum leaveTypeEnum;
     private Long userId;
+    private String userIdString;
+    private String fullName;
     private Long attendanceId;
 
 }

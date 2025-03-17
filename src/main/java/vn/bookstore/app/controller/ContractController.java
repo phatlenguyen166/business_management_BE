@@ -1,6 +1,7 @@
 package vn.bookstore.app.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -8,18 +9,18 @@ import vn.bookstore.app.dto.request.ReqContractDTO;
 import vn.bookstore.app.dto.response.ResContractDTO;
 import vn.bookstore.app.dto.response.ResponseDTO;
 import vn.bookstore.app.service.ContractService;
+import vn.bookstore.app.service.impl.ContractServiceImpl;
 import vn.bookstore.app.util.error.NotFoundException;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
+@RequiredArgsConstructor
 
 public class ContractController {
-    private ContractService contractService;
-    public ContractController(ContractService contractService) {
-        this.contractService = contractService;
-    }
+    private final ContractServiceImpl  contractService;
+
 
     @PostMapping("/contracts")
     public ResponseEntity<ResponseDTO<ResContractDTO>> createContract(@Valid @RequestBody ReqContractDTO contract) {

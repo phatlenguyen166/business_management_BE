@@ -14,11 +14,17 @@ public interface AttendanceDetailMapper {
 
     @Mapping(source = "id", target = "idString", qualifiedByName = "formatId")
     @Mapping(source = "attendance.user.id", target = "userId")
+    @Mapping(source = "attendance.user.id", target = "userIdString", qualifiedByName = "formatIdUser")
+    @Mapping(source = "attendance.user.fullName", target = "fullName")
     @Mapping(source = "attendance.id", target = "attendanceId")
     ResAttendanceDetailDTO convertToResAttendanceDetailDTO(AttendanceDetail attendanceDetail);
     @Named("formatId")
     static String formatId(Long id) {
         return "ATD-" + id;
+    }
+    @Named("formatIdUser")
+    static String formatIdUser(Long id) {
+        return "NV-" + id;
     }
 
 

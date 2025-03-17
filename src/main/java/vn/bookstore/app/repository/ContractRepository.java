@@ -16,11 +16,13 @@ import java.util.Optional;
 public interface ContractRepository extends JpaRepository<Contract, Long>, JpaSpecificationExecutor<Contract> {
     List<Contract> getAllByStatus(int status);
     boolean existsContractByUser(User user);
+    Optional<Contract> findContractByIdAndStatusIn(Long id, List<Integer> statusList);
+    List<Contract> findAllContractByStatusInOrderByStartDateDesc(List<Integer> statusList);
     Optional<Contract> findContractByIdAndStatus(Long id, int status);
     Optional<Contract> findContractByUserId(Long userId);
 
 //    @Query(value = "select * from contracts where user_id = 2 order by start_date DESC", nativeQuery = true)
-    @Query("select c from Contract c where c.user.id = :userId order by c.startDate desc")
+    @Query("select c from Contract c where c.user.id = :userId and c.status in (1,2) order by c.startDate desc")
     List<Contract> getAllByUserId(@Param("userId") Long userId);
     Contract findByExpiryDateBeforeAndStatus(LocalDate expiryDate, int status);
 }
