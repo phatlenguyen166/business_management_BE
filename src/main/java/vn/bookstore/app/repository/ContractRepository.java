@@ -19,7 +19,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long>, JpaSp
     Optional<Contract> findContractByIdAndStatusIn(Long id, List<Integer> statusList);
     List<Contract> findAllContractByStatusInOrderByStartDateDesc(List<Integer> statusList);
     Optional<Contract> findContractByIdAndStatus(Long id, int status);
-    Optional<Contract> findContractByUserId(Long userId);
+    Optional<Contract> findContractByUserAndStatus(User user, int status);
 
 //    @Query(value = "select * from contracts where user_id = 2 order by start_date DESC", nativeQuery = true)
     @Query("select c from Contract c where c.user.id = :userId and c.status in (1,2) order by c.startDate desc")

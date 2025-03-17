@@ -1,5 +1,6 @@
 package vn.bookstore.app.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vn.bookstore.app.dto.request.ReqContractDTO;
 import vn.bookstore.app.dto.request.ReqUserWithContractDTO;
@@ -14,6 +15,7 @@ import vn.bookstore.app.repository.SeniorityLevelRepository;
 import vn.bookstore.app.repository.UserRepository;
 import vn.bookstore.app.service.ContractService;
 import vn.bookstore.app.util.error.InvalidRequestException;
+import vn.bookstore.app.util.error.NotFoundException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -21,25 +23,16 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ContractServiceImpl implements ContractService {
-    private ContractRepository contractRepository;
-    private UserRepository userRepository;
-    private RoleRepository roleRepository;
-    private ContractMapper contractMapper;
-    private SeniorityLevelRepository seniorityLevelRepository;
+    private final ContractRepository contractRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final ContractMapper contractMapper;
+    private final SeniorityLevelRepository seniorityLevelRepository;
 
 
-    public ContractServiceImpl(ContractRepository contractRepository,
-                               UserRepository userRepository,
-                               RoleRepository roleRepository,
-                               ContractMapper contractMapper,
-                               SeniorityLevelRepository seniorityLevelRepository) {
-        this.contractRepository = contractRepository;
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.contractMapper = contractMapper;
-        this.seniorityLevelRepository = seniorityLevelRepository;
-    }
+
 
 
     @Override
@@ -157,6 +150,16 @@ public class ContractServiceImpl implements ContractService {
         }
         return null;
     }
+
+    public String getActiveRoleName(User user) {
+        Optional<Contract> currContract = this.contractRepository.findContractByUserAndStatus(user,1);
+        if (currContract.isPresent()) {
+            return currContract.get().getSeniorityLevel().getRole().getName();
+        }
+        return "NO_ROLE";
+    }
+
+
 }
 
 
