@@ -12,7 +12,6 @@ import vn.bookstore.app.model.*;
 import vn.bookstore.app.repository.*;
 import vn.bookstore.app.service.BillService;
 import vn.bookstore.app.util.error.ResourceNotFoundException;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,6 +51,7 @@ public class BillServiceImpl implements BillService {
                 .user(user)
                 .totalPrice(BigDecimal.ZERO)
                 .customer(customer)
+                .address(request.getAddress())
                 .build();
 
         Bill savedBill = billRepository.save(bill);
@@ -125,5 +125,17 @@ public class BillServiceImpl implements BillService {
                 .updatedAt(savedBill.getUpdatedAt())
                 .build();
     }
+
+    @Override
+    public List<ResBillDTO> getListBills() {
+        return billRepository.findAll().stream().map(billMapper::toResBill).toList();
+    }
+
+    @Override
+    public ResBillDTO getBillById(Long id) {
+        return billRepository.findById(id).map(billMapper::toResBill)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy phiếu nhập với ID: " + id));
+    }
+
 
 }

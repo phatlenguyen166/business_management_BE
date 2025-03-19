@@ -41,7 +41,6 @@ public class GoodReceiptController {
     public ResponseEntity<ResponseDTO<List<ResGoodReceiptDTO>>> getListGoodReceipts() {
         List<ResGoodReceiptDTO> lReceiptDTOs = goodReceiptService.getListGoodReceipts();
         return ResponseEntity.ok(ResponseDTO.success(true, "Lấy danh sách phiếu nhập thành công!", lReceiptDTOs));
-
     }
 
     @GetMapping("/{goodReceiptId}")
