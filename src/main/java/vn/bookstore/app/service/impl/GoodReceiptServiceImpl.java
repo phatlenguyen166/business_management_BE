@@ -84,7 +84,7 @@ public class GoodReceiptServiceImpl implements GoodReceiptService {
                     BigDecimal.ONE.subtract(BigDecimal.valueOf(supplierPercentage)
                             .divide(BigDecimal.valueOf(100))));
 
-            BigDecimal itemTotal = inputPrice.multiply(BigDecimal.valueOf(detailDTO.getQuantity()));
+                BigDecimal itemTotal = inputPrice.multiply(BigDecimal.valueOf(detailDTO.getQuantity()));
             totalPrice.updateAndGet(currentTotal -> currentTotal.add(itemTotal));
 
             return GoodReceiptDetail.builder()
