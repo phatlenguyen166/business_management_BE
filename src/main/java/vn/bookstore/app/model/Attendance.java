@@ -3,12 +3,7 @@ package vn.bookstore.app.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import vn.bookstore.app.util.constant.AttendanceStatusEnum;
-import vn.bookstore.app.util.constant.LeaveTypeEnum;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.YearMonth;
 import java.util.List;
 
 @Entity

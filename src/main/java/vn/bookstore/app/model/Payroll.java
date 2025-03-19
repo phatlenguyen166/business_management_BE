@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "payrolls")
@@ -15,6 +14,7 @@ public class Payroll {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private int standardWorkingDays;
     @Column(precision = 19, scale = 4, nullable = false)
     private BigDecimal maternityBenefit;
     @Column(precision = 19, scale = 4, nullable = false)
