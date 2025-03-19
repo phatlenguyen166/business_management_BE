@@ -102,7 +102,7 @@ CREATE TABLE `bill_details` (
                                 KEY `FK4iagdr0uhsq4tj0ag99nmmya1` (`product_id`),
                                 CONSTRAINT `FK4iagdr0uhsq4tj0ag99nmmya1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
                                 CONSTRAINT `FKfwm4sko9p82ndh6belyxx12bj` FOREIGN KEY (`bill_id`) REFERENCES `bills` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -111,7 +111,7 @@ CREATE TABLE `bill_details` (
 
 LOCK TABLES `bill_details` WRITE;
 /*!40000 ALTER TABLE `bill_details` DISABLE KEYS */;
-INSERT INTO `bill_details` VALUES (1,5,120000.0000,1,1),(2,5,99000.0000,1,2);
+INSERT INTO `bill_details` VALUES (1,1,120000.0000,1,1),(2,2,99000.0000,1,2),(3,1,120000.0000,2,1),(4,2,99000.0000,2,2);
 /*!40000 ALTER TABLE `bill_details` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -135,7 +135,7 @@ CREATE TABLE `bills` (
                          KEY `FKk8vs7ac9xknv5xp18pdiehpp1` (`user_id`),
                          CONSTRAINT `FKk8vs7ac9xknv5xp18pdiehpp1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
                          CONSTRAINT `FKoy9sc2dmxj2qwjeiiilf3yuxp` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -144,7 +144,7 @@ CREATE TABLE `bills` (
 
 LOCK TABLES `bills` WRITE;
 /*!40000 ALTER TABLE `bills` DISABLE KEYS */;
-INSERT INTO `bills` VALUES (1,NULL,'2025-03-19 21:57:35.935758',1095000.0000,'2025-03-19 21:57:36.033007',1,5);
+INSERT INTO `bills` VALUES (1,'234 Nguyen Trai, quan 5, TPHCM','2025-03-19 22:34:12.350620',318000.0000,'2025-03-19 22:34:12.452106',2,5),(2,'234 Nguyen Trai, quan 5, TPHCM','2025-03-19 22:34:26.366559',318000.0000,'2025-03-19 22:34:26.377500',2,5);
 /*!40000 ALTER TABLE `bills` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -405,7 +405,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` VALUES (1,'2024-02-15 11:30:45.000000','https://picsum.photos/200?random=1','Đắc Nhân Tâm',120000.0000,5,1,'2025-03-19 21:57:36.045007',1),(2,'2024-02-10 09:15:20.000000','https://picsum.photos/200?random=2','Nhà Giả Kim',99000.0000,10,1,'2025-03-19 21:57:36.047993',2),(3,'2024-01-05 14:10:00.000000','https://picsum.photos/200?random=3','Tôi Thấy Hoa Vàng Trên Cỏ Xanh',85000.0000,0,1,'2024-02-20 10:45:12.000000',3),(4,'2024-03-01 10:20:30.000000','https://picsum.photos/200?random=4','Quẳng Gánh Lo Đi & Vui Sống',110000.0000,0,1,'2024-03-08 12:00:00.000000',4),(5,'2024-02-18 09:45:00.000000','https://picsum.photos/200?random=5','Bí Mật Của May Mắn',150000.0000,0,1,'2024-03-06 11:30:15.000000',5),(6,'2024-01-22 13:50:10.000000','https://picsum.photos/200?random=6','Dám Nghĩ Lớn',180000.0000,0,1,'2024-02-28 15:20:30.000000',6),(7,'2023-12-30 08:25:45.000000','https://picsum.photos/200?random=7','Muôn Kiếp Nhân Sinh',145000.0000,0,1,'2024-02-27 17:15:20.000000',7),(8,'2023-11-15 10:40:30.000000','https://picsum.photos/200?random=8','Hiểu Về Trái Tim',97000.0000,0,1,'2024-02-25 09:35:10.000000',8),(9,'2023-10-28 12:05:15.000000','https://picsum.photos/200?random=9','Cà Phê Cùng Tony',132000.0000,0,1,'2024-02-23 14:10:00.000000',9),(10,'2023-09-18 11:20:10.000000','https://picsum.photos/200?random=10','Người Giàu Có Nhất Thành Babylon',119000.0000,0,1,'2024-02-21 10:00:45.000000',10);
+INSERT INTO `products` VALUES (1,'2024-02-15 11:30:45.000000','https://picsum.photos/200?random=1','Đắc Nhân Tâm',120000.0000,8,1,'2025-03-19 22:34:26.378644',1),(2,'2024-02-10 09:15:20.000000','https://picsum.photos/200?random=2','Nhà Giả Kim',99000.0000,11,1,'2025-03-19 22:34:26.381644',2),(3,'2024-01-05 14:10:00.000000','https://picsum.photos/200?random=3','Tôi Thấy Hoa Vàng Trên Cỏ Xanh',85000.0000,0,1,'2024-02-20 10:45:12.000000',3),(4,'2024-03-01 10:20:30.000000','https://picsum.photos/200?random=4','Quẳng Gánh Lo Đi & Vui Sống',110000.0000,0,1,'2024-03-08 12:00:00.000000',4),(5,'2024-02-18 09:45:00.000000','https://picsum.photos/200?random=5','Bí Mật Của May Mắn',150000.0000,0,1,'2024-03-06 11:30:15.000000',5),(6,'2024-01-22 13:50:10.000000','https://picsum.photos/200?random=6','Dám Nghĩ Lớn',180000.0000,0,1,'2024-02-28 15:20:30.000000',6),(7,'2023-12-30 08:25:45.000000','https://picsum.photos/200?random=7','Muôn Kiếp Nhân Sinh',145000.0000,0,1,'2024-02-27 17:15:20.000000',7),(8,'2023-11-15 10:40:30.000000','https://picsum.photos/200?random=8','Hiểu Về Trái Tim',97000.0000,0,1,'2024-02-25 09:35:10.000000',8),(9,'2023-10-28 12:05:15.000000','https://picsum.photos/200?random=9','Cà Phê Cùng Tony',132000.0000,0,1,'2024-02-23 14:10:00.000000',9),(10,'2023-09-18 11:20:10.000000','https://picsum.photos/200?random=10','Người Giàu Có Nhất Thành Babylon',119000.0000,0,1,'2024-02-21 10:00:45.000000',10);
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -571,4 +571,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-19 22:00:59
+-- Dump completed on 2025-03-19 22:34:55
