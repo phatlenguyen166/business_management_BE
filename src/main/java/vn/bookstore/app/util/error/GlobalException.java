@@ -143,4 +143,15 @@ public class GlobalException {
         
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ResponseDTO<Object>> handleIllegalArgumentException(IllegalArgumentException exception) {
+        ResponseDTO<Object> res = new ResponseDTO<>();
+        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        res.setSuccess(false);
+        res.setError("Dữ liệu đầu vào không hợp lệ");
+        res.setMessage(exception.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
 }

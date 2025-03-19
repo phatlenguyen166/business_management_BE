@@ -2,20 +2,20 @@ package vn.bookstore.app.service.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import vn.bookstore.app.dto.request.ReqBillDTO;
 import vn.bookstore.app.dto.request.ReqBillDetailDTO;
 import vn.bookstore.app.dto.response.ResBillDTO;
 import vn.bookstore.app.mapper.BillMapper;
 import vn.bookstore.app.model.*;
-import vn.bookstore.app.repository.BillDetailRepository;
-import vn.bookstore.app.repository.BillRepository;
-import vn.bookstore.app.repository.ProductRepository;
-import vn.bookstore.app.repository.UserRepository;
+import vn.bookstore.app.repository.*;
 import vn.bookstore.app.service.BillService;
 import vn.bookstore.app.util.error.ResourceNotFoundException;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BillServiceImpl implements BillService {
 
     private final UserRepository userRepository;
@@ -30,6 +31,7 @@ public class BillServiceImpl implements BillService {
     private final ProductRepository productRepository;
     private final BillDetailRepository billDetailRepository;
     private final BillMapper billMapper;
+    private final CustomerRepository customerRepository;
 
     @Override
     @Transactional
@@ -38,53 +40,72 @@ public class BillServiceImpl implements BillService {
             throw new IllegalArgumentException("Danh sách sản phẩm không được trống");
         }
 
+        log.info("request --------------> : {}", request);
+
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại"));
+
+        Customer customer = customerRepository.findById(request.getCustomerId())
+                .orElseThrow(() -> new ResourceNotFoundException("Khách hàng không tồn tại"));
 
         Bill bill = Bill.builder()
                 .user(user)
                 .totalPrice(BigDecimal.ZERO)
+                .customer(customer)
                 .build();
 
         Bill savedBill = billRepository.save(bill);
 
         List<Long> productIds = request.getBillDetails().stream()
                 .map(ReqBillDetailDTO::getProductId)
-                .toList();
+                .collect(Collectors.toList());
 
-        Map<Long, Product> productMap = productRepository.findAllById(productIds).stream()
-                .collect(Collectors.toMap(Product::getId, product -> product));
+        Map<Long, Product> productMap = new HashMap<>(productRepository.findAllById(productIds).stream()
+                .collect(Collectors.toMap(Product::getId, product -> product)));
 
         AtomicReference<BigDecimal> totalPrice = new AtomicReference<>(BigDecimal.ZERO);
 
-        List<BillDetail> billDetails = request.getBillDetails().stream()
-                .map(details -> {
-                    Product product = productMap.get(details.getProductId());
-                    if (product == null) {
-                        throw new ResourceNotFoundException("Sản phẩm không tồn tại");
-                    }
+        List<BillDetail> billDetails = new ArrayList<>();
 
-                    if (product.getQuantity() < details.getQuantity()) {
-                        throw new IllegalArgumentException("Sản phẩm " + product.getId() + " không đủ số lượng trong kho");
-                    }
+        for (ReqBillDetailDTO details : request.getBillDetails()) {
+            Product product = productMap.get(details.getProductId());
+            if (product == null) {
+                throw new ResourceNotFoundException("Sản phẩm không tồn tại");
+            }
 
-                    BigDecimal price = product.getPrice();
-                    BigDecimal itemTotal = price.multiply(BigDecimal.valueOf(details.getQuantity()));
+            if (product.getQuantity() < details.getQuantity()) {
+                throw new IllegalArgumentException("Sản phẩm " + product.getId() + " không đủ số lượng trong kho");
+            }
 
-                    totalPrice.updateAndGet(currentTotal -> currentTotal.add(itemTotal));
+            BigDecimal price = product.getPrice();
+            if (price == null || price.compareTo(BigDecimal.ZERO) <= 0) {
+                throw new IllegalArgumentException("Giá sản phẩm không hợp lệ");
+            }
+            if (details.getQuantity() <= 0) {
+                throw new IllegalArgumentException("Số lượng sản phẩm phải lớn hơn 0");
+            }
 
-                    product.setQuantity(product.getQuantity() - details.getQuantity());
+            BigDecimal itemTotal = price.multiply(BigDecimal.valueOf(details.getQuantity()));
+            totalPrice.updateAndGet(currentTotal -> currentTotal.add(itemTotal));
 
-                    return BillDetail.builder()
-                            .bill(savedBill)
-                            .product(product)
-                            .quantity(details.getQuantity())
-                            .subPrice(price)
-                            .build();
-                }).toList();
+            product.setQuantity(product.getQuantity() - details.getQuantity());
+
+            BillDetail billDetail = BillDetail.builder()
+                    .bill(savedBill)
+                    .product(product)
+                    .quantity(details.getQuantity())
+                    .subPrice(price)
+                    .build();
+
+            billDetails.add(billDetail);
+        }
 
         billDetailRepository.saveAll(billDetails);
         productRepository.saveAll(productMap.values());
+
+        if (totalPrice.get().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Tổng tiền không hợp lệ");
+        }
 
         savedBill.setTotalPrice(totalPrice.get());
         savedBill.setBillDetails(billDetails);
@@ -94,12 +115,15 @@ public class BillServiceImpl implements BillService {
                 .id(savedBill.getId())
                 .userId(savedBill.getUser().getId())
                 .totalPrice(savedBill.getTotalPrice())
-                .billDetails(savedBill.getBillDetails().stream()
+                .customerId(savedBill.getCustomer().getId())
+                .address(savedBill.getAddress())
+                .billDetails(billDetails.stream()
                         .map(billMapper::toResBillDetail)
-                        .toList()
+                        .collect(Collectors.toList())
                 )
                 .createdAt(savedBill.getCreatedAt())
                 .updatedAt(savedBill.getUpdatedAt())
                 .build();
     }
+
 }
