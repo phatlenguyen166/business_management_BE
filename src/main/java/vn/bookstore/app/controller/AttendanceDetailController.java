@@ -9,10 +9,12 @@ import vn.bookstore.app.dto.request.ReqAttendanceDetailDTO;
 import vn.bookstore.app.dto.response.ResAttendanceDetailDTO;
 import vn.bookstore.app.dto.response.ResponseDTO;
 import vn.bookstore.app.service.impl.AttendanceDetailServiceImpl;
+import vn.bookstore.app.util.error.InvalidRequestException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @RestController
@@ -106,7 +108,13 @@ public class AttendanceDetailController {
     }
 
     @GetMapping("/attendanceDetails/date")
-    public ResponseEntity<ResponseDTO<List<ResAttendanceDetailDTO>>> getAllAttendanceDetailByDate(@RequestParam("date") LocalDate date) {
+    public ResponseEntity<ResponseDTO<List<ResAttendanceDetailDTO>>> getAllAttendanceDetailByDate(@RequestParam("date") String dateString) {
+        LocalDate date;
+        try {
+             date = LocalDate.parse(dateString);
+        } catch (DateTimeParseException e) {
+            throw new InvalidRequestException("Invalid yearMonth format. Expected format: yyyy-MM-dd");
+        }
         List<ResAttendanceDetailDTO> resAttendanceDetailDTOS = this.attendanceDetailService.handleGetAllByDate(date);
         return ResponseEntity.ok(
                 new ResponseDTO<>(
@@ -120,7 +128,13 @@ public class AttendanceDetailController {
     }
 
     @GetMapping("/attendanceDetails/month")
-    public ResponseEntity<ResponseDTO<List<ResAttendanceDetailDTO>>> getAllAttendanceDetailByMonth(@RequestParam("yearMonth") YearMonth yearMonth) {
+    public ResponseEntity<ResponseDTO<List<ResAttendanceDetailDTO>>> getAllAttendanceDetailByMonth(@RequestParam("yearMonth") String yearMonthStr) {
+        YearMonth yearMonth;
+        try {
+            yearMonth = YearMonth.parse(yearMonthStr);
+        } catch (DateTimeParseException e) {
+            throw new InvalidRequestException("Invalid yearMonth format. Expected format: yyyy-MM");
+        }
         List<ResAttendanceDetailDTO> resAttendanceDetailDTOS = this.attendanceDetailService.handleGetAllByMonth(yearMonth);
         return ResponseEntity.ok(
                 new ResponseDTO<>(

@@ -15,6 +15,7 @@ import vn.bookstore.app.util.error.InvalidRequestException;
 import vn.bookstore.app.util.error.NotFoundException;
 
 import java.time.LocalDate;
+import java.time.Year;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,12 +40,14 @@ public class LeaveReqServiceImpl implements LeaveReqService {
 
 
     private void validatePaidLeave(ReqLeaveReqDTO leaveReqDTO, User user) {
-        if (leaveReqDTO.getEndDate().isAfter(leaveReqDTO.getStartDate())) {
-            throw new InvalidRequestException("Nghỉ phép có lương chỉ được tối đa 1 ngày");
-        }
-        if (this.leaveReqRepository.findByUserAndStatusAndMonth(user, leaveReqDTO.getStartDate(), LeaveTypeEnum.PAID_LEAVE) != null) {
-            throw new InvalidRequestException("Đã hết ngày nghỉ phép tháng này");
-        }
+         long totalPaidLeaves = this.leaveReqRepository.findLeaveRequestsByUserAndYear(user,leaveReqDTO.getStartDate().getYear(),LeaveTypeEnum.PAID_LEAVE,1)
+                 .stream()
+                 .mapToLong(LeaveRequest::getTotalDayLeave)
+                 .sum();
+        long daysRequested = calculateLeaveDays(leaveReqDTO.getStartDate(), leaveReqDTO.getEndDate());
+         if (totalPaidLeaves + daysRequested > 12) {
+             throw new InvalidRequestException("Bạn đã nghỉ phép " + totalPaidLeaves + " lần trong năm " + leaveReqDTO.getStartDate().getYear() + ". Số ngày nghỉ tối đa là 12 ngày. Không thể nghỉ thêm"  );
+         }
     }
 
     private void validateYearlyLeave(ReqLeaveReqDTO leaveReqDTO, User user, LeaveTypeEnum leaveType, int maxDays) {
@@ -221,6 +224,28 @@ public class LeaveReqServiceImpl implements LeaveReqService {
                 this.leaveReqRepository.save(newLeaveReq2);
                 resLeaveReqDTOS.add(this.leaveReqMapper.convertToResLeaveReqDTO(newLeaveReq2));
                 return resLeaveReqDTOS;
+            } else if (leaveReqDTO.getLeaveReason() == LeaveTypeEnum.PAID_LEAVE) {
+                ReqLeaveReqDTO part1 = leaveReqDTO.copy();
+                part1.setStartDate(startDate1);
+                part1.setEndDate(endDate1);
+                validateYearlyLeave(part1, user, LeaveTypeEnum.PAID_LEAVE, 12);
+                ReqLeaveReqDTO part2 = leaveReqDTO.copy();
+                part2.setStartDate(startDate2);
+                part2.setEndDate(endDate2);
+                validateYearlyLeave(part2, user, LeaveTypeEnum.PAID_LEAVE, 12);
+                LeaveRequest newLeaveReq1 = this.leaveReqMapper.convertToLeaveRequest(part1);
+                newLeaveReq1.setTotalDayLeave(calculateLeaveDays(startDate1, endDate1));
+                newLeaveReq1.setStatus(2);
+                newLeaveReq1.setUser(user);
+                this.leaveReqRepository.save(newLeaveReq1);
+                resLeaveReqDTOS.add(this.leaveReqMapper.convertToResLeaveReqDTO(newLeaveReq1));
+                LeaveRequest newLeaveReq2 = this.leaveReqMapper.convertToLeaveRequest(part2);
+                newLeaveReq2.setTotalDayLeave(calculateLeaveDays(startDate2, endDate2));
+                newLeaveReq2.setStatus(2);
+                newLeaveReq2.setUser(user);
+                this.leaveReqRepository.save(newLeaveReq2);
+                resLeaveReqDTOS.add(this.leaveReqMapper.convertToResLeaveReqDTO(newLeaveReq2));
+                return resLeaveReqDTOS;
             }
         }
         if (leaveReqDTO.getLeaveReason() == LeaveTypeEnum.PAID_LEAVE) {
@@ -269,17 +294,12 @@ public class LeaveReqServiceImpl implements LeaveReqService {
         User user = currentLeaveReq.getUser();
         List<ResLeaveReqDTO> resLeaveReqDTOS = new ArrayList<>();
 
-        // Nếu đơn nghỉ span qua nhiều năm
         if (leaveRequestDTO.getStartDate().getYear() != leaveRequestDTO.getEndDate().getYear()) {
-            // Tách đơn thành 2 phần:
-            // Phần 1: từ ngày bắt đầu đến 31/12 của năm bắt đầu
             LocalDate startDate1 = leaveRequestDTO.getStartDate();
             LocalDate endDate1 = LocalDate.of(leaveRequestDTO.getStartDate().getYear(), 12, 31);
-            // Phần 2: từ 01/01 của năm kết thúc đến ngày kết thúc
             LocalDate startDate2 = LocalDate.of(leaveRequestDTO.getEndDate().getYear(), 1, 1);
             LocalDate endDate2 = leaveRequestDTO.getEndDate();
 
-            // Tạo bản sao DTO cho từng phần (để không làm thay đổi DTO gốc)
             ReqLeaveReqDTO part1 = leaveRequestDTO.copy();
             part1.setStartDate(startDate1);
             part1.setEndDate(endDate1);
@@ -287,7 +307,6 @@ public class LeaveReqServiceImpl implements LeaveReqService {
             part2.setStartDate(startDate2);
             part2.setEndDate(endDate2);
 
-            // Validate từng phần theo loại nghỉ
             if (leaveRequestDTO.getLeaveReason() == LeaveTypeEnum.PAID_LEAVE) {
                 validatePaidLeave(part1, user);
                 validatePaidLeave(part2, user);
@@ -299,14 +318,12 @@ public class LeaveReqServiceImpl implements LeaveReqService {
                 validateYearlyLeave(part2, user, LeaveTypeEnum.MATERNITY_LEAVE, 180);
             }
 
-            // Cập nhật đơn nghỉ hiện tại thành phần 1
             leaveReqMapper.updateLeaveReq(part1, currentLeaveReq);
             currentLeaveReq.setTotalDayLeave(calculateLeaveDays(startDate1, endDate1));
             currentLeaveReq.setStatus(2);
             this.leaveReqRepository.save(currentLeaveReq);
             resLeaveReqDTOS.add(leaveReqMapper.convertToResLeaveReqDTO(currentLeaveReq));
 
-            // Tạo đơn nghỉ mới cho phần 2
             LeaveRequest newLeaveReq = leaveReqMapper.convertToLeaveRequest(part2);
             newLeaveReq.setTotalDayLeave(calculateLeaveDays(startDate2, endDate2));
             newLeaveReq.setStatus(2);
@@ -316,7 +333,6 @@ public class LeaveReqServiceImpl implements LeaveReqService {
 
             return resLeaveReqDTOS;
         } else {
-            // Nếu đơn nghỉ nằm trong cùng 1 năm, validate và cập nhật như bình thường
             if (leaveRequestDTO.getLeaveReason() == LeaveTypeEnum.PAID_LEAVE) {
                 validatePaidLeave(leaveRequestDTO, user);
             } else if (leaveRequestDTO.getLeaveReason() == LeaveTypeEnum.SICK_LEAVE) {
@@ -335,8 +351,18 @@ public class LeaveReqServiceImpl implements LeaveReqService {
     @Override
     public void handleApproveLeaveReq(Long id) {
         LeaveRequest currentLeaveReq = this.leaveReqRepository.findByIdAndStatus(id, 2).orElseThrow(() -> new InvalidRequestException("Đơn nghỉ phép không tồn tại hoặc đã được xử lý"));
-        if (this.leaveReqRepository.findByUserAndStatusAndMonth(currentLeaveReq.getUser(), currentLeaveReq.getStartDate(), LeaveTypeEnum.PAID_LEAVE) != null) {
-            throw new InvalidRequestException("Đã hết ngày nghỉ phép tháng này");
+        List<LeaveRequest> overlappingLeaveRequests = this.leaveReqRepository.findAllLeaveRequestByUserAndDateAndStatus(
+                currentLeaveReq.getUser(), currentLeaveReq.getStartDate(), 1);
+        overlappingLeaveRequests.addAll(this.leaveReqRepository.findAllLeaveRequestByUserAndDateAndStatus(
+                currentLeaveReq.getUser(), currentLeaveReq.getEndDate(), 1));
+        boolean hasOverlap = !overlappingLeaveRequests.isEmpty();
+        if(hasOverlap) {
+            throw new InvalidRequestException("Thời gian nghỉ không hợp lệ, đã tồn tại đơn nghỉ phép trong thời gian này: " +
+                    overlappingLeaveRequests.stream()
+                            .map(lr -> String.valueOf(lr.getId()))
+                            .collect(Collectors.joining(", "))
+
+            );
         }
         currentLeaveReq.setStatus(1);
         this.leaveReqRepository.save(currentLeaveReq);

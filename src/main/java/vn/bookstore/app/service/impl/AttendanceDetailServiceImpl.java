@@ -233,7 +233,9 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
 
     @Override
     public List<ResAttendanceDetailDTO> handleGetAllByMonth(YearMonth yearMonth) {
-        List<ResAttendanceDetailDTO> attendanceDetailDTOS = this.attendanceDetailRepository.findAllByMonth(yearMonth).stream()
+        int year = yearMonth.getYear();
+        int month = yearMonth.getMonthValue();
+        List<ResAttendanceDetailDTO> attendanceDetailDTOS = this.attendanceDetailRepository.findAllByMonth(year, month).stream()
                 .map(attendanceDetailMapper::convertToResAttendanceDetailDTO)
                 .collect(Collectors.toList());
         return attendanceDetailDTOS;
