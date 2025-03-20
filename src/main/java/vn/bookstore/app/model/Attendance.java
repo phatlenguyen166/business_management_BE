@@ -32,6 +32,7 @@ public class Attendance {
 
     @OneToOne(mappedBy = "attendance", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Payroll payroll;
+
 }
 
 

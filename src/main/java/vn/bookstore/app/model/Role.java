@@ -32,4 +32,8 @@ public class Role {
     @JsonIgnore
     @OneToMany(mappedBy = "role")
     private List<SeniorityLevel> seniorityLevels;
+
+    @ManyToOne
+    @JoinColumn(name = "allowance_id")
+    private Allowance allowance;
 }
