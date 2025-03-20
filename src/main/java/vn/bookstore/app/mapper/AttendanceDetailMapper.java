@@ -1,17 +1,15 @@
 package vn.bookstore.app.mapper;
 
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 import vn.bookstore.app.dto.response.ResAttendanceDetailDTO;
 import vn.bookstore.app.model.AttendanceDetail;
-import vn.bookstore.app.model.Holiday;
-
-import java.time.LocalTime;
 
 @Mapper(componentModel = "spring")
 public interface AttendanceDetailMapper {
     AttendanceDetailMapper INSTANCE = Mappers.getMapper(AttendanceDetailMapper.class);
-
     @Mapping(source = "id", target = "idString", qualifiedByName = "formatId")
     @Mapping(source = "attendance.user.id", target = "userId")
     @Mapping(source = "attendance.user.id", target = "userIdString", qualifiedByName = "formatIdUser")

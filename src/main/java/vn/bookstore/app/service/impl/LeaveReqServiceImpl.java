@@ -40,11 +40,15 @@ public class LeaveReqServiceImpl implements LeaveReqService {
 
 
     private void validatePaidLeave(ReqLeaveReqDTO leaveReqDTO, User user) {
-         long totalPaidLeaves = this.leaveReqRepository.findLeaveRequestsByUserAndYear(user,leaveReqDTO.getStartDate().getYear(),LeaveTypeEnum.PAID_LEAVE,1)
+        long daysRequested = calculateLeaveDays(leaveReqDTO.getStartDate(), leaveReqDTO.getEndDate());
+        if (daysRequested >12) {
+            throw new InvalidRequestException("Nghỉ phép chỉ được tối đa " + 12 + " ngày 1 năm");
+        }
+        long totalPaidLeaves = this.leaveReqRepository.findLeaveRequestsByUserAndYear(user,leaveReqDTO.getStartDate().getYear(),LeaveTypeEnum.PAID_LEAVE,1)
                  .stream()
                  .mapToLong(LeaveRequest::getTotalDayLeave)
                  .sum();
-        long daysRequested = calculateLeaveDays(leaveReqDTO.getStartDate(), leaveReqDTO.getEndDate());
+
          if (totalPaidLeaves + daysRequested > 12) {
              throw new InvalidRequestException("Bạn đã nghỉ phép " + totalPaidLeaves + " lần trong năm " + leaveReqDTO.getStartDate().getYear() + ". Số ngày nghỉ tối đa là 12 ngày. Không thể nghỉ thêm"  );
          }
@@ -228,11 +232,11 @@ public class LeaveReqServiceImpl implements LeaveReqService {
                 ReqLeaveReqDTO part1 = leaveReqDTO.copy();
                 part1.setStartDate(startDate1);
                 part1.setEndDate(endDate1);
-                validateYearlyLeave(part1, user, LeaveTypeEnum.PAID_LEAVE, 12);
+                validatePaidLeave(part1,user);
                 ReqLeaveReqDTO part2 = leaveReqDTO.copy();
                 part2.setStartDate(startDate2);
                 part2.setEndDate(endDate2);
-                validateYearlyLeave(part2, user, LeaveTypeEnum.PAID_LEAVE, 12);
+                validatePaidLeave(part2,user);
                 LeaveRequest newLeaveReq1 = this.leaveReqMapper.convertToLeaveRequest(part1);
                 newLeaveReq1.setTotalDayLeave(calculateLeaveDays(startDate1, endDate1));
                 newLeaveReq1.setStatus(2);
@@ -264,12 +268,6 @@ public class LeaveReqServiceImpl implements LeaveReqService {
         resLeaveReqDTOS.add(this.leaveReqMapper.convertToResLeaveReqDTO(newLeaveReq));
         return resLeaveReqDTOS;
     }
-
-
-
-
-
-
 
     @Override
     public List<ResLeaveReqDTO> handleGetAllLeaveReq() {

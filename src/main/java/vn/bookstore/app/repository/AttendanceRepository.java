@@ -15,5 +15,6 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     Optional<Attendance> findById(Long id);
     List<Attendance> findAllByOrderByMonthOfYearDesc();
     List<Attendance> findAllByUserOrderByMonthOfYearDesc(User user);
+    List<Attendance> findAllByMonthOfYear(String monthOfYear);
 
 }

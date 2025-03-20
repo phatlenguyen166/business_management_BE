@@ -9,6 +9,7 @@ import vn.bookstore.app.model.*;
 import vn.bookstore.app.repository.*;
 import vn.bookstore.app.service.AttendanceDetailService;
 import vn.bookstore.app.util.constant.AttendanceStatusEnum;
+import vn.bookstore.app.util.constant.LateTypeEnum;
 import vn.bookstore.app.util.constant.LeaveTypeEnum;
 import vn.bookstore.app.util.error.InvalidRequestException;
 import vn.bookstore.app.util.error.NotFoundException;
@@ -34,6 +35,19 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
     private final ContractRepository contractRepository;
 
 
+    public void handleCheckIn(AttendanceDetail attendanceDetail) {
+        if (attendanceDetail.getCheckIn().isAfter(LocalTime.of(9,0)) && attendanceDetail.getCheckIn().isBefore(LocalTime.of(10,0))) {
+            attendanceDetail.setLateTypeEnum(LateTypeEnum.LATE_1);
+        } else if (attendanceDetail.getCheckIn().isAfter(LocalTime.of(10,0)) && attendanceDetail.getCheckIn().isBefore(LocalTime.of(12,0))) {
+            attendanceDetail.setLateTypeEnum(LateTypeEnum.LATE_2);
+        } else if (attendanceDetail.getCheckIn().isAfter(LocalTime.of(13,30)) && attendanceDetail.getCheckIn().isBefore(LocalTime.of(14,0))) {
+            attendanceDetail.setLateTypeEnum(LateTypeEnum.LATE_3);
+        } else if (attendanceDetail.getCheckIn().isAfter(LocalTime.of(14,0))) {
+            attendanceDetail.setLateTypeEnum(LateTypeEnum.LATE_4);
+        }
+        attendanceDetailRepository.save(attendanceDetail);
+    }
+
     @Override
     public ResAttendanceDetailDTO handleCreateAttendanceDetail(ReqAttendanceDetailDTO attendanceDetail) {
         User user = this.userRepository.findUserByIdAndStatus(attendanceDetail.getUserId(), 1).orElseThrow(() -> new NotFoundException("User Không tồn tại"));
@@ -51,8 +65,9 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
             this.attendanceRepository.save(newAttendance);
             AttendanceDetail detail = new AttendanceDetail();
             detail.setAttendance(newAttendance);
-            detail.setCheckIn(LocalTime.from(attendanceDetail.getCheckIn()).now());
+            detail.setCheckIn(attendanceDetail.getCheckIn().toLocalTime());
             detail.setWorkingDay(date);
+            handleCheckIn(detail);
             this.attendanceDetailRepository.save(detail);
             return this.attendanceDetailMapper.convertToResAttendanceDetailDTO(detail);
         }
@@ -60,8 +75,10 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
         detail.setAttendance(attendance);
         detail.setCheckIn(LocalTime.from(attendanceDetail.getCheckIn()));
         detail.setWorkingDay(date);
+        handleCheckIn(detail);
         this.attendanceDetailRepository.save(detail);
-        return this.attendanceDetailMapper.convertToResAttendanceDetailDTO(detail);
+        ResAttendanceDetailDTO test = this.attendanceDetailMapper.convertToResAttendanceDetailDTO(detail);
+        return test;
     }
 
     @Override
@@ -71,7 +88,7 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
         LocalDate date = LocalDate.from(attendanceDetailDTO.getCheckOut());
         Attendance attendance = this.attendanceRepository.findByUserAndMonthOfYear(user, yearMonth.toString());
         AttendanceDetail currAttendanceDetail = this.attendanceDetailRepository.findByAttendanceAndCheckInDate(attendance, date);
-        currAttendanceDetail.setCheckOut(LocalTime.from(attendanceDetailDTO.getCheckOut()).now());
+        currAttendanceDetail.setCheckOut(attendanceDetailDTO.getCheckOut().toLocalTime());
         this.attendanceDetailRepository.save(currAttendanceDetail);
         return this.attendanceDetailMapper.convertToResAttendanceDetailDTO(currAttendanceDetail);
     }
@@ -123,11 +140,10 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
 
     @Override
     public List<ResAttendanceDetailDTO> processDailyAttendance(LocalDateTime dateTime) {
-        LocalDateTime scanDateTime = dateTime; // dateTime nhận từ request
+        LocalDateTime scanDateTime = dateTime;
         LocalDate scannedDate = scanDateTime.toLocalDate();
         LocalDate currentDate = LocalDate.now();
 
-// Tạo thời điểm 23:00 của ngày hiện tại
         LocalDateTime todayAfter23 = currentDate.atTime(23, 0);
         if (scannedDate.isBefore(currentDate)) {
         } else if (scannedDate.equals(currentDate)) {
@@ -136,9 +152,9 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
                 throw new IllegalArgumentException("Scan cho ngày hiện tại chỉ được chấp nhận sau 23:00.");
             }
         } else {
-            // Ngày scan là tương lai -> không cho phép
             throw new IllegalArgumentException("Scan cho ngày tương lai không được chấp nhận.");
         }
+
         LocalDate today = LocalDate.from(scanDateTime);
         List<User> users = getAllUserByActiveContract();
         for (User user : users) {
@@ -150,9 +166,7 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
                 attendance.setMonthOfYear(monthOfYear);
                 attendance = attendanceRepository.save(attendance);
             }
-
             AttendanceDetail optionalAttendanceDetail = attendanceDetailRepository.findByAttendanceAndCheckInDate(attendance, today);
-
             Optional<LeaveRequest> leaveRequestOpt = leaveReqRepository.findLeaveRequestByUserAndDateAndStatus(user, today,1);
             Optional<Holiday> holidayOpt = holidayRepository.findHolidayByDate(today);
             if (optionalAttendanceDetail != null) {
