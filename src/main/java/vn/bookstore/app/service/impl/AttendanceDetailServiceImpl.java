@@ -1,5 +1,6 @@
 package vn.bookstore.app.service.impl;
 
+import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vn.bookstore.app.dto.request.ReqAttendanceDetailDTO;
@@ -44,6 +45,8 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
             attendanceDetail.setLateTypeEnum(LateTypeEnum.LATE_3);
         } else if (attendanceDetail.getCheckIn().isAfter(LocalTime.of(14,0))) {
             attendanceDetail.setLateTypeEnum(LateTypeEnum.LATE_4);
+        } else if (attendanceDetail.getCheckIn().isBefore(LocalTime.of(9,0))) {
+            attendanceDetail.setLateTypeEnum(null);
         }
         attendanceDetailRepository.save(attendanceDetail);
     }
@@ -67,7 +70,6 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
             detail.setAttendance(newAttendance);
             detail.setCheckIn(attendanceDetail.getCheckIn().toLocalTime());
             detail.setWorkingDay(date);
-            handleCheckIn(detail);
             this.attendanceDetailRepository.save(detail);
             return this.attendanceDetailMapper.convertToResAttendanceDetailDTO(detail);
         }
@@ -75,7 +77,6 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
         detail.setAttendance(attendance);
         detail.setCheckIn(LocalTime.from(attendanceDetail.getCheckIn()));
         detail.setWorkingDay(date);
-        handleCheckIn(detail);
         this.attendanceDetailRepository.save(detail);
         ResAttendanceDetailDTO test = this.attendanceDetailMapper.convertToResAttendanceDetailDTO(detail);
         return test;
@@ -89,6 +90,23 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
         Attendance attendance = this.attendanceRepository.findByUserAndMonthOfYear(user, yearMonth.toString());
         AttendanceDetail currAttendanceDetail = this.attendanceDetailRepository.findByAttendanceAndCheckInDate(attendance, date);
         currAttendanceDetail.setCheckOut(attendanceDetailDTO.getCheckOut().toLocalTime());
+        this.attendanceDetailRepository.save(currAttendanceDetail);
+        return this.attendanceDetailMapper.convertToResAttendanceDetailDTO(currAttendanceDetail);
+    }
+
+    @Override
+    public ResAttendanceDetailDTO handleUpdate(ReqAttendanceDetailDTO attendanceDetailDTO) {
+        User user = this.userRepository.findUserByIdAndStatus(attendanceDetailDTO.getUserId(), 1).orElseThrow(() -> new NotFoundException("User Không tồn tại"));
+        YearMonth yearMonth = YearMonth.from(attendanceDetailDTO.getCheckOut());
+        LocalDate date = LocalDate.from(attendanceDetailDTO.getCheckOut());
+        Attendance attendance = this.attendanceRepository.findByUserAndMonthOfYear(user, yearMonth.toString());
+        AttendanceDetail currAttendanceDetail = this.attendanceDetailRepository.findByAttendanceAndCheckInDate(attendance, date);
+        if (attendanceDetailDTO.getCheckIn() != null) {
+           currAttendanceDetail.setCheckIn(attendanceDetailDTO.getCheckIn().toLocalTime());
+        }
+        if (attendanceDetailDTO.getCheckOut() != null) {
+            currAttendanceDetail.setCheckOut(attendanceDetailDTO.getCheckOut().toLocalTime());
+        }
         this.attendanceDetailRepository.save(currAttendanceDetail);
         return this.attendanceDetailMapper.convertToResAttendanceDetailDTO(currAttendanceDetail);
     }
@@ -154,7 +172,6 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
         } else {
             throw new IllegalArgumentException("Scan cho ngày tương lai không được chấp nhận.");
         }
-
         LocalDate today = LocalDate.from(scanDateTime);
         List<User> users = getAllUserByActiveContract();
         for (User user : users) {
@@ -180,6 +197,9 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
                     attendanceDetail.setHoliday(holidayOpt.get());
                 } else {
                     handleCheckOutInValid(attendanceDetail);
+                }
+                if (attendanceDetail.getCheckIn() != null) {
+                    handleCheckIn(attendanceDetail);
                 }
                 attendanceDetailRepository.save(attendanceDetail);
                 updateTotalWorking(attendanceDetail, attendance);

@@ -11,6 +11,7 @@ import vn.bookstore.app.model.Payroll;
 import vn.bookstore.app.service.impl.PayrollServiceImpl;
 import vn.bookstore.app.util.error.InvalidRequestException;
 
+import java.time.Year;
 import java.time.YearMonth;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -33,10 +34,58 @@ public class PayrollController {
         List<ResPayrollDTO> newPayrolls = this.payrollService.createPayroll(yearMonth);
         return ResponseEntity.ok(
                 new ResponseDTO<>(
-                        200,
+                        201,
                         true,
                         null,
                         "Create Payroll successfully",
+                        newPayrolls
+                )
+        );
+    }
+
+    @GetMapping("/payrolls")
+    public ResponseEntity<ResponseDTO<List<ResPayrollDTO>>> GetAllPayroll() {
+        List<ResPayrollDTO> newPayrolls = this.payrollService.getAllPayRoll();
+        return ResponseEntity.ok(
+                new ResponseDTO<>(
+                        200,
+                        true,
+                        null,
+                        "Get All Payroll successfully",
+                        newPayrolls
+                )
+        );
+    }
+
+    @GetMapping("/payrolls/user/{userId}")
+    public ResponseEntity<ResponseDTO<List<ResPayrollDTO>>> GetAllPayrollByUser(@PathVariable Long userId) {
+        List<ResPayrollDTO> newPayrolls = this.payrollService.getAllPayRollByUser(userId);
+        return ResponseEntity.ok(
+                new ResponseDTO<>(
+                        200,
+                        true,
+                        null,
+                        "Get All Payroll successfully",
+                        newPayrolls
+                )
+        );
+    }
+
+    @GetMapping("/payrolls/user/year/{userId}")
+    public ResponseEntity<ResponseDTO<List<ResPayrollDTO>>> GetAllPayrollByUserByYear(@PathVariable Long userId, @RequestParam String yearStr) {
+        Year year;
+        try {
+            year = Year.parse(yearStr);
+        } catch (DateTimeParseException e) {
+            throw new InvalidRequestException("Invalid Year format. Expected format: yyyy");
+        }
+        List<ResPayrollDTO> newPayrolls = this.payrollService.getAllPayRollByUserByYear(userId,year);
+        return ResponseEntity.ok(
+                new ResponseDTO<>(
+                        200,
+                        true,
+                        null,
+                        "Get All Payroll successfully",
                         newPayrolls
                 )
         );

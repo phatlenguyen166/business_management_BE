@@ -11,6 +11,7 @@ import java.util.List;
 public interface AttendanceDetailService {
     public ResAttendanceDetailDTO handleCreateAttendanceDetail(ReqAttendanceDetailDTO attendanceDetail);
     public ResAttendanceDetailDTO handleCheckOut(ReqAttendanceDetailDTO attendanceDetailDTO);
+    public ResAttendanceDetailDTO handleUpdate(ReqAttendanceDetailDTO attendanceDetailDTO);
     public List<ResAttendanceDetailDTO> processDailyAttendance(LocalDateTime localDateTime);
     public List<ResAttendanceDetailDTO> handleGetAll();
     public List<ResAttendanceDetailDTO> handleGetAllByAttendance(Long id);
