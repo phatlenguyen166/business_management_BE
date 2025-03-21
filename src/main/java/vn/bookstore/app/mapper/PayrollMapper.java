@@ -16,9 +16,10 @@ import vn.bookstore.app.service.impl.ContractServiceImpl;
 public interface  PayrollMapper {
     PayrollMapper INSTANCE = Mappers.getMapper(PayrollMapper.class);
 
+    @Mapping(source = "id", target = "idString",qualifiedByName = "formatId")
     @Mapping(source = "payroll.attendance.id", target = "attendanceId")
     @Mapping(source = "payroll.attendance.monthOfYear", target = "monthOfYear")
-    @Mapping(source = "payroll.attendance.user.id", target = "userIdStr")
+    @Mapping(source = "payroll.attendance.user.id", target = "userIdStr",qualifiedByName = "formatIdUser")
     @Mapping(source = "payroll.attendance.user.fullName", target = "fullName")
     @Mapping(source = "payroll.attendance.user", target = "roleName", qualifiedByName = "formatRoleName")
     @Mapping(source = "payroll.attendance.totalWorkingDays", target = "totalWorkingDays")
@@ -32,5 +33,14 @@ public interface  PayrollMapper {
     @Named("formatRoleName")
     static String formatRoleName(User user, @Context ContractServiceImpl contractService) {
         return contractService.getActiveRoleName(user);
+    }
+
+    @Named("formatId")
+    static String formatId(Long id) {
+        return "PR-" + id;
+    }
+    @Named("formatIdUser")
+    static String formatIdUser(Long id) {
+        return "NV-" + id;
     }
 }

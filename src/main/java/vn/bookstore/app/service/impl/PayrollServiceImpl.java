@@ -8,12 +8,14 @@ import vn.bookstore.app.model.*;
 import vn.bookstore.app.repository.*;
 import vn.bookstore.app.service.PayrollService;
 import vn.bookstore.app.util.constant.LateTypeEnum;
+import vn.bookstore.app.util.error.InvalidRequestException;
 import vn.bookstore.app.util.error.NotFoundException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.Year;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -214,6 +216,9 @@ public class PayrollServiceImpl implements PayrollService {
 
     @Override
     public List<ResPayrollDTO> createPayroll(YearMonth yearMonth) {
+        if (!this.payrollRepository.findAllByYearMonth(yearMonth.toString()).isEmpty()) {
+            throw  new InvalidRequestException("Bảng lương tháng này đã được tạo");
+        }
         List<Payroll> payrolls = new ArrayList<>();
         List<Attendance> attendances = this.attendanceRepository.findAllByMonthOfYear(yearMonth.toString());
         for (Attendance attendance : attendances) {
@@ -258,5 +263,27 @@ public class PayrollServiceImpl implements PayrollService {
             payrolls.add(payroll);
         }
         return payrolls.stream().map(payrollMapper::convertToResPayrollDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ResPayrollDTO> getAllPayRoll() {
+        List<Payroll> payrolls = this.payrollRepository.findAll();
+        return payrolls.stream().map(payrollMapper::convertToResPayrollDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ResPayrollDTO> getAllPayRollByUser(Long userId) {
+        User user = this.userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Người dùng không tồn tại"));
+        return this.payrollRepository.findAllPayrollByUserOrderByMonthOfYear(user).stream()
+                .map(payrollMapper::convertToResPayrollDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ResPayrollDTO> getAllPayRollByUserByYear(Long userId, Year year) {
+        User user = this.userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Người dùng không tồn tại"));
+        return this.payrollRepository.findAllPayrollByUserByYear(year.toString(),user).stream()
+                .map(payrollMapper::convertToResPayrollDTO)
+                .collect(Collectors.toList());
     }
 }
