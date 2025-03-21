@@ -1,5 +1,9 @@
 package vn.bookstore.app.service.impl;
 
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.pdf.PdfWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vn.bookstore.app.dto.response.ResPayrollDTO;
@@ -11,12 +15,11 @@ import vn.bookstore.app.util.constant.LateTypeEnum;
 import vn.bookstore.app.util.error.InvalidRequestException;
 import vn.bookstore.app.util.error.NotFoundException;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.Year;
-import java.time.YearMonth;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -285,5 +288,36 @@ public class PayrollServiceImpl implements PayrollService {
         return this.payrollRepository.findAllPayrollByUserByYear(year.toString(),user).stream()
                 .map(payrollMapper::convertToResPayrollDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public ResPayrollDTO getPayrollById(Long id) {
+        Payroll payroll = this.payrollRepository.findPayrollById(id).orElseThrow(() -> new NotFoundException("Bảng lương không tồn tại"));
+        return this.payrollMapper.convertToResPayrollDTO(payroll);
+    }
+
+
+    @Override
+    public void generatePayrollPdf(String filePath, ResPayrollDTO payroll) throws DocumentException, IOException {
+        Document document = new Document();
+        PdfWriter.getInstance(document, new FileOutputStream(filePath));
+        document.open();
+
+        // Tiêu đề báo cáo
+        document.add(new Paragraph("BẢNG LƯƠNG"));
+        document.add(new Paragraph(" ")); // Dòng trống
+
+        // Thêm thông tin từ Payroll
+        document.add(new Paragraph("Standard Working Days: " + payroll.getStandardWorkingDays()));
+        document.add(new Paragraph("Gross Salary: " + payroll.getGrossSalary()));
+        document.add(new Paragraph("Net Salary: " + payroll.getNetSalary()));
+        document.add(new Paragraph("Tax: " + payroll.getTax()));
+        document.add(new Paragraph("Maternity Benefit: " + payroll.getMaternityBenefit()));
+        document.add(new Paragraph("Sick Benefit: " + payroll.getSickBenefit()));
+        document.add(new Paragraph("Employee BHXH: " + payroll.getEmployeeBHXH()));
+        document.add(new Paragraph("Employee BHYT: " + payroll.getEmployeeBHYT()));
+        document.add(new Paragraph("Employee BHTN: " + payroll.getEmployeeBHTN()));
+        document.add(new Paragraph("Penalties: " + payroll.getPenalties()));
+        document.close();
     }
 }

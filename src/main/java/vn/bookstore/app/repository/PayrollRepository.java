@@ -10,6 +10,7 @@ import vn.bookstore.app.model.User;
 
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PayrollRepository extends JpaRepository<Payroll, Long> {
@@ -22,4 +23,6 @@ public interface PayrollRepository extends JpaRepository<Payroll, Long> {
 
     @Query("SELECT pr from Payroll pr where SUBSTRING(pr.attendance.monthOfYear,1,4) =:year AND pr.attendance.user =:user ")
     List<Payroll> findAllPayrollByUserByYear(@Param("year") String year , @Param("user") User user);
+
+    Optional<Payroll> findPayrollById(Long id);
 }
