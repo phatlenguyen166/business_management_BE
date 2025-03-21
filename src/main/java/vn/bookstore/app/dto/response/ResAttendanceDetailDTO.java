@@ -3,12 +3,11 @@ package vn.bookstore.app.dto.response;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import vn.bookstore.app.model.User;
 import vn.bookstore.app.util.constant.AttendanceStatusEnum;
+import vn.bookstore.app.util.constant.LateTypeEnum;
 import vn.bookstore.app.util.constant.LeaveTypeEnum;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Getter
@@ -23,6 +22,8 @@ public class ResAttendanceDetailDTO {
     private AttendanceStatusEnum attendanceStatus;
     @Enumerated(EnumType.STRING)
     private LeaveTypeEnum leaveTypeEnum;
+    @Enumerated(EnumType.STRING)
+    private LateTypeEnum lateTypeEnum;
     private Long userId;
     private String userIdString;
     private String fullName;

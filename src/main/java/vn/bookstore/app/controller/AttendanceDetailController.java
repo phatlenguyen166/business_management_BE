@@ -51,6 +51,20 @@ public class AttendanceDetailController {
         );
     }
 
+    @PutMapping("/attendanceDetails/update")
+    public ResponseEntity<ResponseDTO<ResAttendanceDetailDTO>> update(@Valid @RequestBody ReqAttendanceDetailDTO attendanceDetail) {
+        ResAttendanceDetailDTO attendanceDetailDTO = this.attendanceDetailService.handleUpdate(attendanceDetail);
+        return ResponseEntity.ok(
+                new ResponseDTO<>(
+                        200,
+                        true,
+                        null,
+                        "Update successfully",
+                        attendanceDetailDTO
+                )
+        );
+    }
+
     @PutMapping("/scan")
     public ResponseEntity<ResponseDTO<List<ResAttendanceDetailDTO>>> scanEndOfDay(@RequestParam("dateScan") LocalDateTime dateScan) {
         List<ResAttendanceDetailDTO> resAttendanceDetailDTOS = this.attendanceDetailService.processDailyAttendance(dateScan);
