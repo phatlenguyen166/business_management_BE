@@ -15,6 +15,7 @@ import vn.bookstore.app.mapper.TokenMapper;
 import vn.bookstore.app.model.*;
 import vn.bookstore.app.service.*;
 import vn.bookstore.app.util.error.InvalidDataException;
+
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static vn.bookstore.app.util.constant.TokenType.*;
 
@@ -35,7 +36,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 reqSignInDTO.getUsername(), reqSignInDTO.getPassword()));
 
-        User user = userService.findByUsernameAndStatus(reqSignInDTO.getUsername(),1);
+        User user = userService.findByUsernameAndStatus(reqSignInDTO.getUsername(), 1);
 
         String accessToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
@@ -60,7 +61,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         final String userName = jwtService.extractUsername(refreshToken, REFRESH_TOKEN);
 
-        User user = userService.findByUsernameAndStatus(userName,1);
+        User user = userService.findByUsernameAndStatus(userName, 1);
 
         if (!jwtService.isValid(refreshToken, REFRESH_TOKEN, user)) {
             throw new InvalidDataException("Token không hợp lệ");
@@ -102,7 +103,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         String resetToken = jwtService.generateResetToken(user);
         String confirmLink = "https://localhost:5173/reset-password?token=" + resetToken;
-        emailService.sendEmail(user.getEmail(), "Reset Password", "Click vào link để đặt lại mật khẩu:\n" + confirmLink);
+        emailService.sendEmail(user.getEmail(), "Reset Password", confirmLink);
 
         log.info("--------------> Forgot password reset link: {}", confirmLink);
         return "Password reset link has been sent to your email.";
@@ -124,7 +125,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private User isValidUserByToken(String secretKey) {
         final String userName = jwtService.extractUsername(secretKey, RESET_TOKEN);
-        User user = userService.findByUsernameAndStatus(userName,1);
+        User user = userService.findByUsernameAndStatus(userName, 1);
         if (!jwtService.isValid(secretKey, RESET_TOKEN, user)) {
             throw new InvalidDataException("Reset password fail");
         }

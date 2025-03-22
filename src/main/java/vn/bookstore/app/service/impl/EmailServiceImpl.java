@@ -21,10 +21,12 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public String sendEmail(String toEmail, String subject, String body) {
-        Email from = new Email("phatlenguyen166@gmail.com"); // Email của bạn
+        Email from = new Email("phatlenguyen166@gmail.com");
         Email to = new Email(toEmail);
 
-        Content content = new Content("text/plain", body);
+        String htmlContent = String.format("<h1>Xin chào '!</h1><a href='%s'>Click vào đây để đặt lại mật khẩu</a>", body);
+
+        Content content = new Content("text/html", htmlContent);
         Mail mail = new Mail(from, subject, to, content);
 
         Request request = new Request();
@@ -45,4 +47,5 @@ public class EmailServiceImpl implements EmailService {
             return "Error occurred while sending email: " + e.getMessage();
         }
     }
+
 }
