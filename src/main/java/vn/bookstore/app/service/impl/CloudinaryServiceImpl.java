@@ -2,7 +2,6 @@ package vn.bookstore.app.service.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,7 +13,7 @@ import java.util.Map;
 @Service
 
 public class CloudinaryServiceImpl implements CloudinaryService {
-    private Cloudinary cloudinary;
+    private final Cloudinary cloudinary;
     
     public CloudinaryServiceImpl(
             @Value("${cloudinary.cloud-name}") String cloudName,

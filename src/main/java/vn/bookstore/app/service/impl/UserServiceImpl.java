@@ -29,34 +29,35 @@ public class UserServiceImpl implements UserService {
 //    private final PasswordEncoder passwordEncoder;
 //    private final ContractServiceImpl contractService;
 
-    private  UserRepository userRepository;
-    private  UserConverter userConverter;
-    private  PasswordEncoder passwordEncoder;
-    private  ContractServiceImpl contractService;
+    private UserRepository userRepository;
+    private UserConverter userConverter;
+    private PasswordEncoder passwordEncoder;
+    private ContractServiceImpl contractService;
     private ContractMapper contractMapper;
     private LeaveReqRepository leaveReqRepository;
     private ContractRepository contractRepository;
     private AttendanceRepository attendanceRepository;
     private AttendanceDetailRepository attendanceDetailRepository;
-    public UserServiceImpl (UserRepository userRepository,
-                            UserConverter userConverter,
-                            @Lazy
-                            PasswordEncoder passwordEncoder,
-                            @Lazy
-                            ContractServiceImpl contractService,
-                            ContractMapper contractMapper,
-                            LeaveReqRepository leaveReqRepository,
-                            ContractRepository contractRepository,
-                            AttendanceRepository attendanceRepository,
-                            AttendanceDetailRepository attendanceDetailRepository
-                            ){
-        this.contractService =contractService;
+
+    public UserServiceImpl(UserRepository userRepository,
+                           UserConverter userConverter,
+                           @Lazy
+                           PasswordEncoder passwordEncoder,
+                           @Lazy
+                           ContractServiceImpl contractService,
+                           ContractMapper contractMapper,
+                           LeaveReqRepository leaveReqRepository,
+                           ContractRepository contractRepository,
+                           AttendanceRepository attendanceRepository,
+                           AttendanceDetailRepository attendanceDetailRepository
+    ) {
+        this.contractService = contractService;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.userConverter =userConverter;
+        this.userConverter = userConverter;
         this.contractMapper = contractMapper;
         this.leaveReqRepository = leaveReqRepository;
-        this.contractRepository =contractRepository;
+        this.contractRepository = contractRepository;
         this.attendanceRepository = attendanceRepository;
         this.attendanceDetailRepository = attendanceDetailRepository;
     }
@@ -91,13 +92,13 @@ public class UserServiceImpl implements UserService {
             return this.userConverter.convertToResUserDTO(newUser, resContractDTO);
         } catch (RuntimeException e) {
             this.userRepository.delete(newUser);
-            throw new RuntimeException("Lỗi khi tạo hợp đồng: "+ e.getMessage());
+            throw new RuntimeException("Lỗi khi tạo hợp đồng: " + e.getMessage());
         }
 
     }
 
     public ResUserDTO handleFetchUserById(Long id) {
-        Optional<User> user = userRepository.findByIdAndStatus(id,1);
+        Optional<User> user = userRepository.findByIdAndStatus(id, 1);
         if (user.isPresent()) {
             ResContractDTO contractDTO = contractMapper.convertToResContractDTO(contractService.getActiveContract(user.get().getContracts()));
             return this.userConverter.convertToResUserDTO(user.get(), contractDTO);
@@ -106,7 +107,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public ResUserDTO handleUpdateUser(ReqUserDTO updateUser, Long id) {
-        Optional<User> currentUser = this.userRepository.findByIdAndStatus(id,1);
+        Optional<User> currentUser = this.userRepository.findByIdAndStatus(id, 1);
         String hashPassWord;
         if (updateUser.getPassword() == "" || updateUser.getPassword() == null) {
             hashPassWord = this.passwordEncoder.encode(currentUser.get().getPassword());
@@ -130,9 +131,9 @@ public class UserServiceImpl implements UserService {
     }
 
     public void handleDeleteUser(Long id) {
-        Optional<User> currentUser = this.userRepository.findByIdAndStatus(id,1);
+        Optional<User> currentUser = this.userRepository.findByIdAndStatus(id, 1);
         if (currentUser.isPresent()) {
-            List<LeaveRequest> leaveRequests = this.leaveReqRepository.findByUserAndStatus(currentUser.get(),1);
+            List<LeaveRequest> leaveRequests = this.leaveReqRepository.findByUserAndStatus(currentUser.get(), 1);
             for (LeaveRequest leaveRequest : leaveRequests) {
                 leaveRequest.setStatus(0);
                 this.leaveReqRepository.save(leaveRequest);
@@ -143,7 +144,7 @@ public class UserServiceImpl implements UserService {
                 this.contractRepository.save(contract);
             }
             User user1 = currentUser.get();
-            List<Attendance> attendances =  this.attendanceRepository.findAllByUserOrderByMonthOfYearDesc(user1);
+            List<Attendance> attendances = this.attendanceRepository.findAllByUserOrderByMonthOfYearDesc(user1);
             for (Attendance attendance : attendances) {
                 List<AttendanceDetail> attendanceDetails = this.attendanceDetailRepository.findAllByAttendance(attendance);
                 this.attendanceDetailRepository.deleteAll(attendanceDetails);
@@ -159,7 +160,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public boolean isActive(Long id) {
-        Optional<User> currentUser = this.userRepository.findByIdAndStatus(id,1);
+        Optional<User> currentUser = this.userRepository.findByIdAndStatus(id, 1);
         if (currentUser.isPresent()) {
             if (currentUser.get().getStatus() == 0) {
                 return false;
@@ -177,7 +178,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findUserByEmail(String email) {
         return userRepository.findUserByEmail(email)
-                .orElseThrow(() ->new ResourceNotFoundException("User không tồn tại!."));
+                .orElseThrow(() -> new ResourceNotFoundException("User không tồn tại!."));
+    }
+
+    @Override
+    public User findByUsernameAndStatus(String username, int status) {
+        return userRepository.findByUsernameAndStatus(username, 1)
+                .orElseThrow(() -> new UsernameNotFoundException("Tên đăng nhập hoặc mật khẩu không chính xác"));
+    }
+
+    @Override
+    public User findUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại"));
+    }
+
+    @Override
+    public User findById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại"));
     }
 
 }

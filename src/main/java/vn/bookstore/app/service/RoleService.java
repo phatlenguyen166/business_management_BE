@@ -13,4 +13,7 @@ public interface RoleService {
     public ResRoleDTO handleUpdateRole(Role role, Long id);
     void handleDeleteRole(Long id);
 
+    Role getRoleByUserId(Long id);
+
+
 }

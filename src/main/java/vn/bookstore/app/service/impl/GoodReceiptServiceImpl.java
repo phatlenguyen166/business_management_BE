@@ -1,13 +1,12 @@
 package vn.bookstore.app.service.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Service;
-
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,9 +21,9 @@ import vn.bookstore.app.model.Supplier;
 import vn.bookstore.app.model.User;
 import vn.bookstore.app.repository.GoodReceiptDetailRepository;
 import vn.bookstore.app.repository.GoodReceiptRepository;
-import vn.bookstore.app.repository.ProductRepository;
-import vn.bookstore.app.repository.UserRepository;
 import vn.bookstore.app.service.GoodReceiptService;
+import vn.bookstore.app.service.ProductService;
+import vn.bookstore.app.service.UserService;
 import vn.bookstore.app.util.error.ResourceNotFoundException;
 
 @Slf4j
@@ -33,10 +32,10 @@ import vn.bookstore.app.util.error.ResourceNotFoundException;
 public class GoodReceiptServiceImpl implements GoodReceiptService {
 
     private final GoodReceiptRepository goodReceiptRepository;
-    private final ProductRepository productRepository;
     private final GoodReceiptDetailRepository goodReceiptDetailRepository;
-    private final UserRepository userRepository;
     private final GoodReceiptMapper goodReceiptMapper;
+    private final ProductService productService;
+    private final UserService userService;
 
     @Transactional
     @Override
@@ -45,8 +44,7 @@ public class GoodReceiptServiceImpl implements GoodReceiptService {
             throw new IllegalArgumentException("Danh sách sản phẩm nhập hàng không được trống");
         }
 
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại"));
+        User user = userService.findById(request.getUserId());
 
         GoodReceipt goodReceipt = GoodReceipt.builder()
                 .user(user)
@@ -60,7 +58,7 @@ public class GoodReceiptServiceImpl implements GoodReceiptService {
                 .map(ReqGoodReceiptDetailDTO::getProductId)
                 .toList();
 
-        Map<Long, Product> productMap = productRepository.findAllById(productIds).stream()
+        Map<Long, Product> productMap = productService.findAllById(productIds).stream()
                 .collect(Collectors.toMap(Product::getId, product -> product));
 
         AtomicReference<BigDecimal> totalPrice = new AtomicReference<>(BigDecimal.ZERO);
@@ -84,7 +82,7 @@ public class GoodReceiptServiceImpl implements GoodReceiptService {
                     BigDecimal.ONE.subtract(BigDecimal.valueOf(supplierPercentage)
                             .divide(BigDecimal.valueOf(100))));
 
-                BigDecimal itemTotal = inputPrice.multiply(BigDecimal.valueOf(detailDTO.getQuantity()));
+            BigDecimal itemTotal = inputPrice.multiply(BigDecimal.valueOf(detailDTO.getQuantity()));
             totalPrice.updateAndGet(currentTotal -> currentTotal.add(itemTotal));
 
             return GoodReceiptDetail.builder()
@@ -104,7 +102,7 @@ public class GoodReceiptServiceImpl implements GoodReceiptService {
             }
         });
 
-        productRepository.saveAll(productMap.values());
+        productService.saveAll(new ArrayList<>(productMap.values()));
 
         savedReceipt.setTotalPrice(totalPrice.get());
 

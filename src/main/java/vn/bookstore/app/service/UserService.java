@@ -1,5 +1,6 @@
 package vn.bookstore.app.service;
 
+import jakarta.validation.constraints.NotNull;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import vn.bookstore.app.dto.request.ReqUserDTO;
 import vn.bookstore.app.dto.request.ReqUserWithContractDTO;
@@ -8,6 +9,7 @@ import vn.bookstore.app.model.User;
 
 
 import java.util.List;
+import java.util.Optional;
 
 public interface    UserService {
     UserDetailsService userDetailsService();
@@ -29,5 +31,11 @@ public interface    UserService {
     Long saveUser(User user);
 
     User findUserByEmail(String email);
+
+    User findByUsernameAndStatus(String username, int status);
+
+    User findUserById(Long id);
+
+    User findById(@NotNull(message = "Người dùng không được để trống") Long userId);
 }
 

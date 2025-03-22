@@ -11,6 +11,9 @@ import vn.bookstore.app.mapper.BillMapper;
 import vn.bookstore.app.model.*;
 import vn.bookstore.app.repository.*;
 import vn.bookstore.app.service.BillService;
+import vn.bookstore.app.service.CustomerService;
+import vn.bookstore.app.service.ProductService;
+import vn.bookstore.app.service.UserService;
 import vn.bookstore.app.util.error.ResourceNotFoundException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -25,12 +28,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class BillServiceImpl implements BillService {
 
-    private final UserRepository userRepository;
     private final BillRepository billRepository;
-    private final ProductRepository productRepository;
     private final BillDetailRepository billDetailRepository;
     private final BillMapper billMapper;
-    private final CustomerRepository customerRepository;
+    private final UserService userService;
+    private final ProductService productService;
+    private final CustomerService customerService;
 
     @Override
     @Transactional
@@ -40,12 +43,9 @@ public class BillServiceImpl implements BillService {
         }
 
         log.info("request --------------> : {}", request);
+        User user = userService.findUserById(request.getUserId());
 
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại"));
-
-        Customer customer = customerRepository.findById(request.getCustomerId())
-                .orElseThrow(() -> new ResourceNotFoundException("Khách hàng không tồn tại"));
+        Customer customer = customerService.findById(request.getCustomerId());
 
         Bill bill = Bill.builder()
                 .user(user)
@@ -60,7 +60,7 @@ public class BillServiceImpl implements BillService {
                 .map(ReqBillDetailDTO::getProductId)
                 .collect(Collectors.toList());
 
-        Map<Long, Product> productMap = new HashMap<>(productRepository.findAllById(productIds).stream()
+        Map<Long, Product> productMap = new HashMap<>(productService.findAllById(productIds).stream()
                 .collect(Collectors.toMap(Product::getId, product -> product)));
 
         AtomicReference<BigDecimal> totalPrice = new AtomicReference<>(BigDecimal.ZERO);
@@ -101,7 +101,7 @@ public class BillServiceImpl implements BillService {
         }
 
         billDetailRepository.saveAll(billDetails);
-        productRepository.saveAll(productMap.values());
+        productService.saveAll(new ArrayList<>(productMap.values()));
 
         if (totalPrice.get().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Tổng tiền không hợp lệ");

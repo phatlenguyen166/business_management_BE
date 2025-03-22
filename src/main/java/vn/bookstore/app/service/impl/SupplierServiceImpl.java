@@ -30,7 +30,6 @@ import java.util.Optional;
 public class SupplierServiceImpl implements SupplierService {
     
     private final SupplierRepository supplierRepository;
-    
     private final SupplierMapper supplierMapper;
     
     @Override
@@ -87,6 +86,4 @@ public class SupplierServiceImpl implements SupplierService {
         Supplier newSupplier = supplierRepository.save(supplier);
         return supplierMapper.toResSupplierDTO(newSupplier);
     }
-    
-    
 }

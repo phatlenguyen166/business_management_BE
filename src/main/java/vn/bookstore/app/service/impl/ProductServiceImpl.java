@@ -58,10 +58,20 @@ public class ProductServiceImpl implements ProductService {
         product.setQuantity(0);
         product.setStatus(1);
         product.setSupplier(supplier);
-        log.info("-------> ", product.getImage());
+
         Product savedProduct = productRepository.save(product);
 
         return productMapper.toResProductDTO(savedProduct);
+    }
+
+    @Override
+    public List<Product> findAllById(List<Long> ids) {
+        return productRepository.findAllById(ids);
+    }
+
+    @Override
+    public void saveAll(List<Product> products) {
+        productRepository.saveAll(products);
     }
 
     @Override

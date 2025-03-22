@@ -8,7 +8,6 @@ import vn.bookstore.app.dto.request.ReqCustomerDTO;
 import vn.bookstore.app.dto.response.ResCustomerDTO;
 import vn.bookstore.app.mapper.CustomerMapper;
 import vn.bookstore.app.model.Customer;
-import vn.bookstore.app.model.Customer;
 import vn.bookstore.app.repository.CustomerRepository;
 import vn.bookstore.app.service.CustomerService;
 import vn.bookstore.app.util.error.InvalidRequestException;
@@ -82,5 +81,11 @@ public class CustomerServiceImpl implements CustomerService {
         
         customer.setStatus(0);
         customerRepository.save(customer);
+    }
+
+    @Override
+    public Customer findById(Long id) {
+        return customerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khách hàng không tồn tại"));
     }
 }
