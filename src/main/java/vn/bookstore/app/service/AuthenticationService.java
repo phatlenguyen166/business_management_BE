@@ -1,6 +1,7 @@
 package vn.bookstore.app.service;
 
 import jakarta.servlet.http.HttpServletRequest;
+import vn.bookstore.app.dto.request.ReqChangePasswordDTO;
 import vn.bookstore.app.dto.request.ReqSignInDTO;
 import vn.bookstore.app.dto.response.ResTokenDTO;
 
@@ -12,6 +13,9 @@ public interface AuthenticationService {
     ResTokenDTO refresh(HttpServletRequest request);
     
     String logout(HttpServletRequest request);
-    
+
+    String forgotPassword(String email);
+
+    String resetPassword(ReqChangePasswordDTO secretKey);
 }
 

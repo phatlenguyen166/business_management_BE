@@ -15,6 +15,7 @@ import vn.bookstore.app.model.*;
 import vn.bookstore.app.repository.*;
 import vn.bookstore.app.service.UserService;
 import vn.bookstore.app.util.error.NotFoundException;
+import vn.bookstore.app.util.error.ResourceNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -168,7 +169,15 @@ public class UserServiceImpl implements UserService {
         return false;
     }
 
+    @Override
+    public Long saveUser(User user) {
+        return userRepository.save(user).getId();
+    }
 
-
+    @Override
+    public User findUserByEmail(String email) {
+        return userRepository.findUserByEmail(email)
+                .orElseThrow(() ->new ResourceNotFoundException("User không tồn tại!."));
+    }
 
 }
