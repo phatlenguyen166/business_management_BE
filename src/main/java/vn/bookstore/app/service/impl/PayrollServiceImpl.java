@@ -3,6 +3,7 @@ package vn.bookstore.app.service.impl;
 import com.lowagie.text.*;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.BaseFont;
@@ -323,21 +324,7 @@ public class PayrollServiceImpl implements PayrollService {
         return this.payrollMapper.convertToResPayrollDTO(payroll);
     }
 
-
-    @Override
-    public void generatePayrollPdf(String filePath, ResPayrollDTO payroll) throws DocumentException, IOException {
-        Document document = new Document();
-        PdfWriter.getInstance(document, new FileOutputStream(filePath));
-        document.open();
-        BaseFont bf = BaseFont.createFont(
-                "fonts/times.ttf",      // Đường dẫn tương đối từ thư mục resources
-                BaseFont.IDENTITY_H,    // Hỗ trợ Unicode
-                BaseFont.EMBEDDED       // Nhúng font vào PDF
-        );
-        Font font = new Font(bf, 11);
-        Font boldFont = new Font(bf, 12, Font.BOLD);
-
-        // Header công ty
+    public void headerPdf(Document document, Font boldFont, Font font ){
         Paragraph company = new Paragraph("Công ty: Inverse Enterprise", boldFont);
         company.setAlignment(Element.ALIGN_CENTER);
         document.add(company);
@@ -351,19 +338,18 @@ public class PayrollServiceImpl implements PayrollService {
         title.setSpacingBefore(15);
         title.setSpacingAfter(15);
         document.add(title);
+    }
 
-        // Ngày tháng
+    public void contentPdf(Document document, ResPayrollDTO payroll, Font boldFont, Font font ) {
         Paragraph date = new Paragraph("Kỳ lương: " + payroll.getMonthOfYear(), font);
         date.setAlignment(Element.ALIGN_CENTER);
         date.setSpacingAfter(10);
         document.add(date);
-
         // Tách thông tin nhân viên thành hai bảng nằm ngang
         // Bảng 1: Thông tin nhân viên
         PdfPTable employeeInfoTable = new PdfPTable(2); // 2 cột: nhãn và giá trị
-        employeeInfoTable.setWidthPercentage(100);
-        employeeInfoTable.setWidths(new float[]{1f, 1f});
-
+        employeeInfoTable.setWidthPercentage(200);
+        employeeInfoTable.setWidths(new float[]{1.5f, 2f});
         addInfoRow(employeeInfoTable, "Mã Nhân Viên: ", payroll.getUserIdStr(), font);
         addInfoRow(employeeInfoTable, "Họ và Tên: ", payroll.getFullName(), font);
         addInfoRow(employeeInfoTable, "Chức Danh: ", payroll.getRoleName(), font);
@@ -373,8 +359,8 @@ public class PayrollServiceImpl implements PayrollService {
 
         // Bảng 2: Thông tin ngày công
         PdfPTable attendanceInfoTable = new PdfPTable(2); // 2 cột: nhãn và giá trị
-        attendanceInfoTable.setWidthPercentage(100);
-        attendanceInfoTable.setWidths(new float[]{1f, 1f});
+        attendanceInfoTable.setWidthPercentage(200);
+        attendanceInfoTable.setWidths(new float[]{1.5f, 1f});
 
         addInfoRow(attendanceInfoTable, "Ngày công đi làm: ", String.valueOf(payroll.getTotalWorkingDays()), font);
         addInfoRow(attendanceInfoTable, "Ngày nghỉ lễ: ", String.valueOf(payroll.getTotalHolidayLeaves()), font);
@@ -387,7 +373,7 @@ public class PayrollServiceImpl implements PayrollService {
         PdfPTable infoTables = new PdfPTable(2);
         infoTables.setWidthPercentage(80);
         infoTables.setHorizontalAlignment(Element.ALIGN_CENTER);
-        infoTables.setWidths(new float[]{1f, 1f});
+        infoTables.setWidths(new float[]{2f, 1.5f});
 
         PdfPCell employeeCell = new PdfPCell(employeeInfoTable);
         employeeCell.setBorder(PdfPCell.NO_BORDER);
@@ -396,7 +382,7 @@ public class PayrollServiceImpl implements PayrollService {
         PdfPCell attendanceCell = new PdfPCell(attendanceInfoTable);
         attendanceCell.setBorder(PdfPCell.NO_BORDER);
         infoTables.addCell(attendanceCell);
-
+        infoTables.setSpacingAfter(20);
         document.add(infoTables);
 
         // Bảng thu nhập
@@ -457,8 +443,9 @@ public class PayrollServiceImpl implements PayrollService {
         Paragraph netSalary = new Paragraph("Tổng Số Tiền Lương Thực Nhận: " + payroll.getTotalIncome(), boldFont);
         netSalary.setSpacingBefore(15);
         document.add(netSalary);
+    }
 
-        // Chữ ký
+    public void footerPdf(Document document, Font boldFont, Font font){
         PdfPTable signatureTable = new PdfPTable(2);
         signatureTable.setWidthPercentage(100);
         signatureTable.setSpacingBefore(20);
@@ -467,7 +454,50 @@ public class PayrollServiceImpl implements PayrollService {
         addSignatureCell(signatureTable, "Người nhận tiền\n(Ký và ghi rõ họ tên)", font);
 
         document.add(signatureTable);
+    }
 
+    @Override
+    public void generatePayrollPdf(String filePath, ResPayrollDTO payroll) throws DocumentException, IOException {
+        Document document = new Document();
+        PdfWriter.getInstance(document, new FileOutputStream(filePath));
+        document.open();
+        BaseFont bf = BaseFont.createFont(
+                "fonts/times.ttf",      // Đường dẫn tương đối từ thư mục resources
+                BaseFont.IDENTITY_H,    // Hỗ trợ Unicode
+                BaseFont.EMBEDDED       // Nhúng font vào PDF
+        );
+        Font font = new Font(bf, 11);
+        Font boldFont = new Font(bf, 12, Font.BOLD);
+
+        headerPdf(document,boldFont,font);
+        contentPdf(document,payroll,boldFont,font);
+        footerPdf(document,boldFont,font);
+
+        document.close();
+    }
+
+    @Override
+    public void generatePayrollByYearPdf(String filePath, List<ResPayrollDTO> Payrolls) throws IOException {
+        Document document = new Document();
+        PdfWriter.getInstance(document, new FileOutputStream(filePath));
+        document.open();
+        BaseFont bf = BaseFont.createFont(
+                "fonts/times.ttf",      // Đường dẫn tương đối từ thư mục resources
+                BaseFont.IDENTITY_H,    // Hỗ trợ Unicode
+                BaseFont.EMBEDDED       // Nhúng font vào PDF
+        );
+        Font font = new Font(bf, 11);
+        Font boldFont = new Font(bf, 12, Font.BOLD);
+
+        headerPdf(document,boldFont,font);
+
+        for (ResPayrollDTO payroll : Payrolls) {
+            contentPdf(document,payroll,boldFont,font);
+            Paragraph spacing = new Paragraph(" ");
+            spacing.setSpacingAfter(50f); // Điều chỉnh số theo nhu cầu
+            document.add(spacing);
+        }
+        footerPdf(document,boldFont,font);
         document.close();
     }
 
@@ -518,142 +548,5 @@ public class PayrollServiceImpl implements PayrollService {
         cell.setPadding(5);
         return cell;
     }
-//    public void generatePayrollPdf(String filePath, ResPayrollDTO payroll) throws DocumentException, IOException {
-//        Document document = new Document();
-//        PdfWriter.getInstance(document, new FileOutputStream(filePath));
-//        document.open();
-//        BaseFont bf = BaseFont.createFont(
-//                "fonts/times.ttf",      // Đường dẫn tương đối từ thư mục resources
-//                BaseFont.IDENTITY_H,    // Hỗ trợ Unicode
-//                BaseFont.EMBEDDED       // Nhúng font vào PDF
-//        );
-//        Font font = new Font(bf, 11);
-//        Font boldFont = new Font(bf, 12, Font.BOLD);
-//
-//        // Header công ty
-//        Paragraph company = new Paragraph("Công ty: Inverse Enterprise", boldFont);
-//        company.setAlignment(com.lowagie.text.Element.ALIGN_CENTER);
-//        document.add(company);
-//
-//        Paragraph address = new Paragraph("Địa chỉ: 273 An Dương Vương, Phường 3, Quận 5, Thành phố Hồ Chí Minh" , font);
-//        address.setAlignment(Element.ALIGN_CENTER);
-//        document.add(address);
-//
-//        Paragraph title = new Paragraph("PHIẾU LƯƠNG", boldFont);
-//        title.setAlignment(Element.ALIGN_CENTER);
-//        title.setSpacingBefore(15);
-//        title.setSpacingAfter(15);
-//        document.add(title);
-//
-//        // Ngày tháng
-//        Paragraph date = new Paragraph("Kỳ lương: " + payroll.getMonthOfYear(), font);
-//        date.setAlignment(Element.ALIGN_CENTER);
-//        document.add(date);
-//
-//        // Thông tin nhân viên
-//        PdfPTable infoTable = new PdfPTable(5);
-//        infoTable.setWidthPercentage(80);
-//        infoTable.setHorizontalAlignment(Element.ALIGN_CENTER);
-//
-//        addInfoRow(infoTable, "Mã Nhân Viên: ", payroll.getUserIdStr(), font);
-//        addInfoRow(infoTable, ""," ", font);
-//        addInfoRow(infoTable, "Họ và Tên: ", payroll.getFullName(), font);
-//        addInfoRow(infoTable, "Chức Danh: ", payroll.getRoleName(), font);
-//        addInfoRow(infoTable, "Lương Cơ bản: ",payroll.getBaseSalary().toPlainString(), font);
-//
-//        addInfoRow(infoTable, "Hệ số lương: ",String.valueOf(payroll.getSalaryCoefficient()), font);
-//        addInfoRow(infoTable, "Ngày công đi làm: ", String.valueOf(payroll.getTotalWorkingDays()), font);
-//        addInfoRow(infoTable, "Ngày công chuẩn: ", String.valueOf(payroll.getStandardWorkingDays()), font);
-//        document.add(infoTable);
-//
-//        // Bảng thu nhập và khấu trừ
-//        PdfPTable mainTable = new PdfPTable(5);
-//        mainTable.setWidthPercentage(100);
-//        mainTable.setWidths(new float[]{1f, 3f, 1f ,1f, 3f});
-//
-//        // Header bảng
-//        addTableHeader(mainTable, "STT", "Các Khoản Thu Nhập","  ", "STT", "Các Khoản Trừ Vào Lương", boldFont);
-//
-//        // Nội dung bảng
-//        addTableRow(mainTable, "1", "Lương Chính: " + payroll.getGrossSalary().toPlainString(), " " ,"1", "Bảo Hiểm Bắt Buộc", font);
-//        addTableRow(mainTable, "2", "Phụ Cấp: " + payroll.getAllowance().toPlainString()," ", "1.1", "Bảo hiểm xã hội (8%): " + payroll.getEmployeeBHXH(), font);
-//        addSubTableRow(mainTable, "3", "Phụ cấp thai sản: " + payroll.getAllowance().toPlainString(), " ", "1.2", "Bảo hiểm y tế (1.5%): " + payroll.getEmployeeBHYT(), font);
-//        addSubTableRow(mainTable, "4", "Phụ cấp nghỉ ốm: " + payroll.getSickBenefit().toPlainString() ," ", "1.3", "Bảo hiểm thất nghiệp (1%): " + payroll.getEmployeeBHTN(), font);
-//        addSubTableRow(mainTable, "", "" ," ", "2", "Thuế TNCN: " + payroll.getTax(), font);
-//        addSubTableRow(mainTable, "", "" ," ", "3", "Phạt: " + payroll.getPenalties(), font);
-//        addSubTableRow(mainTable, "", "" ," ", "4", "Khác: ", font);
-//
-//        // Tổng cộng
-//        addTotalRow(mainTable, "Tổng Cộng",payroll.getGrossSalary().toPlainString(), "Tổng Cộng",totalCP(payroll.getEmployeeBHXH(),payroll.getEmployeeBHTN(),payroll.getEmployeeBHYT(),payroll.getPenalties(),payroll.getTax()).toPlainString(), boldFont);
-//        document.add(mainTable);
-//
-//        // Tổng lương thực nhận
-//        Paragraph netSalary = new Paragraph("Tổng Số Tiền Lương Thực Nhận: " + payroll.getTotalIncome(), boldFont);
-//        netSalary.setSpacingBefore(15);
-//        document.add(netSalary);
-//
-//        // Chữ ký
-//        PdfPTable signatureTable = new PdfPTable(2);
-//        signatureTable.setWidthPercentage(100);
-//        signatureTable.setSpacingBefore(20);
-//
-//        addSignatureCell(signatureTable, "Người lập phiếu\n(Ký và ghi rõ họ tên)", font);
-//        addSignatureCell(signatureTable, "Người nhận tiền\n(Ký và ghi rõ họ tên)", font);
-//
-//        document.add(signatureTable);
-//
-//        document.close();
-//    }
-//
-//    // Các phương thức hỗ trợ
-//    private void addInfoRow(PdfPTable table, String label, String value, Font font) {
-//        table.addCell(createCell(label, font));
-//        table.addCell(createCell(value, font));
-//    }
-//
-//    private void addTableHeader(PdfPTable table, String col1, String col2, String col3, String col4,String col5, Font font) {
-//        table.addCell(createCell(col1, font));
-//        table.addCell(createCell(col2, font));
-//        table.addCell(createCell(col3, font));
-//        table.addCell(createCell(col4, font));
-//        table.addCell(createCell(col5, font));
-//
-//    }
-//
-//    private void addTableRow(PdfPTable table, String col1, String col2, String col3, String col4,String col5, Font font) {
-//        table.addCell(createCell(col1, font));
-//        table.addCell(createCell(col2, font));
-//        table.addCell(createCell(col3, font));
-//        table.addCell(createCell(col4, font));
-//        table.addCell(createCell(col5, font));
-//    }
-//
-//    private void addSubTableRow(PdfPTable table, String col1, String col2, String col3, String col4,String col5, Font font) {
-//        table.addCell(createCell("   " + col1, font)); // Thụt lề
-//        table.addCell(createCell(col2, font));
-//        table.addCell(createCell(col3, font));
-//        table.addCell(createCell(col4, font));
-//        table.addCell(createCell(col5, font));
-//    }
-//
-//    private void addTotalRow(PdfPTable table, String label1, String value1, String label2, String value2, Font font) {
-//        table.addCell(createCell("", font));
-//        table.addCell(createCell(label1 + ": " + value1, font));
-//        table.addCell(createCell("", font));
-//        table.addCell(createCell(label2 + ": " + value2, font));
-//    }
-//
-//    private void addSignatureCell(PdfPTable table, String text, Font font) {
-//        PdfPCell cell = createCell(text, font);
-//        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-//        cell.setPaddingTop(20);
-//        table.addCell(cell);
-//    }
-//
-//    private PdfPCell createCell(String content, Font font) {
-//        PdfPCell cell = new PdfPCell(new Phrase(content, font));
-//        cell.setBorderWidth(0.5f);
-//        cell.setPadding(5);
-//        return cell;
-//    }
+
 }
