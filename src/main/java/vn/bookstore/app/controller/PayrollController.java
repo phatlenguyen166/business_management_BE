@@ -129,4 +129,30 @@ public class PayrollController {
         }
     }
 
+    @GetMapping("/payrolls/export/year/{userId}")
+    public ResponseEntity<ResponseDTO> exportPayrollByYear(@PathVariable Long userId,@RequestParam String yearStr) {
+        Year year;
+        try {
+            year = Year.parse(yearStr);
+        } catch (DateTimeParseException e) {
+            throw new InvalidRequestException("Invalid Year format. Expected format: yyyy");
+        }
+        List<ResPayrollDTO> Payrolls = this.payrollService.getAllPayRollByUserByYear(userId,year);
+        String filePath = "PayrollReport_NV-" + userId + "_" + year + ".pdf";
+        try {
+            payrollService.generatePayrollByYearPdf(filePath, Payrolls);
+            return ResponseEntity.ok(
+                    new ResponseDTO<>(
+                            200,
+                            true,
+                            null,
+                            "Reject LeaveRequest successfully",
+                            null
+                    )
+            );
+        } catch (Exception e) {
+            throw new InvalidRequestException(e.getMessage());
+        }
+    }
+
 }

@@ -17,5 +17,6 @@ public interface PayrollService {
     List<ResPayrollDTO> getAllPayRollByUserByYear(Long userId, Year year);
     ResPayrollDTO getPayrollById(Long id);
     void generatePayrollPdf(String filePath, ResPayrollDTO payroll) throws IOException;
+    void generatePayrollByYearPdf(String filePath, List<ResPayrollDTO> Payrolls) throws IOException;
 
 }

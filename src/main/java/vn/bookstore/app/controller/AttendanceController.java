@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.bookstore.app.dto.response.ResAttendanceDTO;
-import vn.bookstore.app.dto.response.ResAttendanceDetailDTO;
 import vn.bookstore.app.dto.response.ResponseDTO;
 import vn.bookstore.app.service.impl.AttendanceServiceImpl;
 import vn.bookstore.app.util.error.InvalidRequestException;
