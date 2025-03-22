@@ -10,6 +10,7 @@ import vn.bookstore.app.repository.UserRepository;
 import vn.bookstore.app.service.AttendanceService;
 import vn.bookstore.app.util.error.NotFoundException;
 
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,5 +38,13 @@ public class AttendanceServiceImpl implements AttendanceService {
                 .collect(Collectors.toList());
         return resAttendanceDTOS;
 
+    }
+
+    @Override
+    public List<ResAttendanceDTO> handleGetAllByMonth(YearMonth yearMonth) {
+        List<ResAttendanceDTO> resAttendanceDTOS = this.attendanceRepository.findAllByMonthOfYear(yearMonth.toString()).stream()
+                .map(attendanceMapper::convertToResAttendanceDTO)
+                .collect(Collectors.toList());
+        return resAttendanceDTOS;
     }
 }

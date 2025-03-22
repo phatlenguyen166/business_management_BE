@@ -1,8 +1,13 @@
 package vn.bookstore.app.service.impl;
 
+import com.lowagie.text.*;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Font;
 import com.lowagie.text.Paragraph;
+import com.lowagie.text.pdf.BaseFont;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -90,14 +96,18 @@ public class PayrollServiceImpl implements PayrollService {
         return penalty;
     }
 
+
     public BigDecimal calculateGrossSalary(BigDecimal baseSalary, float salaryCoefficient, int standardWorkingDays,
-                                           int totalWorkingDays, BigDecimal otherAllowances, int totalPaidLeaves) {
+                                           int totalWorkingDays,int totalPaidLeaves, BigDecimal otherAllowances ) {
         BigDecimal totalBaseSalary = baseSalary.multiply(BigDecimal.valueOf(salaryCoefficient));
         BigDecimal dailySalary = totalBaseSalary.divide(BigDecimal.valueOf(standardWorkingDays), 4, RoundingMode.HALF_UP);
         int totalLeaveDays = standardWorkingDays - (totalWorkingDays + totalPaidLeaves);
-        BigDecimal actualBasicSalary = totalBaseSalary.subtract(dailySalary.multiply(BigDecimal.valueOf(totalLeaveDays)));
+        BigDecimal actualBasicSalary =  totalBaseSalary.subtract(dailySalary.multiply(BigDecimal.valueOf(totalLeaveDays)));
         return actualBasicSalary.add(otherAllowances);
     }
+
+
+
 
     public BigDecimal calculateCompanyBHXH(BigDecimal grossSalary) {
         return grossSalary.multiply(BigDecimal.valueOf(0.175)).setScale(2, RoundingMode.HALF_UP);
@@ -216,7 +226,6 @@ public class PayrollServiceImpl implements PayrollService {
         }
     }
 
-
     @Override
     public List<ResPayrollDTO> createPayroll(YearMonth yearMonth) {
         if (!this.payrollRepository.findAllByYearMonth(yearMonth.toString()).isEmpty()) {
@@ -240,7 +249,7 @@ public class PayrollServiceImpl implements PayrollService {
             payroll.setAllowance(otherAllowances);
             BigDecimal penalties = calPenalties(baseSalary, standardWorkingDays, salaryCoefficient, attendance);
             payroll.setPenalties(penalties);
-            BigDecimal grossSalary = calculateGrossSalary(baseSalary, salaryCoefficient, standardWorkingDays, totalWorkingDays, otherAllowances,attendance.getTotalPaidLeaves());
+            BigDecimal grossSalary = calculateGrossSalary(baseSalary, salaryCoefficient, standardWorkingDays, totalWorkingDays, attendance.getTotalPaidLeaves(),otherAllowances);
             payroll.setGrossSalary(grossSalary);
             BigDecimal employeeBHXH = calculateEmployeeBHXH(grossSalary);
             payroll.setEmployeeBHXH(employeeBHXH);
@@ -266,6 +275,24 @@ public class PayrollServiceImpl implements PayrollService {
             payrolls.add(payroll);
         }
         return payrolls.stream().map(payrollMapper::convertToResPayrollDTO).collect(Collectors.toList());
+    }
+
+    public BigDecimal calculateDeductions(BigDecimal employeeBHXH, BigDecimal employeeBHTN, BigDecimal employeeBHYT, BigDecimal penalties, BigDecimal tax) {
+        return employeeBHTN.add(employeeBHXH).add(employeeBHYT).add(penalties).add(tax);
+    }
+    public BigDecimal calculateBenefit(BigDecimal maternityBenefit, BigDecimal sickLeaveBenefit ) {
+        return maternityBenefit.add(sickLeaveBenefit);
+    }
+
+    public String getFormatTotalBaseSalary(Payroll payroll) {
+        BigDecimal total = payroll.getBaseSalary().multiply(BigDecimal.valueOf(payroll.getSalaryCoefficient()));
+        DecimalFormat decimalFormat = new DecimalFormat("#,###");
+        return decimalFormat.format(total);
+    }
+
+    public String getFormatBigDecimal(BigDecimal bigDecimal) {
+        DecimalFormat decimalFormat = new DecimalFormat("#,###");
+        return decimalFormat.format(bigDecimal);
     }
 
     @Override
@@ -302,22 +329,331 @@ public class PayrollServiceImpl implements PayrollService {
         Document document = new Document();
         PdfWriter.getInstance(document, new FileOutputStream(filePath));
         document.open();
+        BaseFont bf = BaseFont.createFont(
+                "fonts/times.ttf",      // Đường dẫn tương đối từ thư mục resources
+                BaseFont.IDENTITY_H,    // Hỗ trợ Unicode
+                BaseFont.EMBEDDED       // Nhúng font vào PDF
+        );
+        Font font = new Font(bf, 11);
+        Font boldFont = new Font(bf, 12, Font.BOLD);
 
-        // Tiêu đề báo cáo
-        document.add(new Paragraph("BẢNG LƯƠNG"));
-        document.add(new Paragraph(" ")); // Dòng trống
+        // Header công ty
+        Paragraph company = new Paragraph("Công ty: Inverse Enterprise", boldFont);
+        company.setAlignment(Element.ALIGN_CENTER);
+        document.add(company);
 
-        // Thêm thông tin từ Payroll
-        document.add(new Paragraph("Standard Working Days: " + payroll.getStandardWorkingDays()));
-        document.add(new Paragraph("Gross Salary: " + payroll.getGrossSalary()));
-        document.add(new Paragraph("Net Salary: " + payroll.getNetSalary()));
-        document.add(new Paragraph("Tax: " + payroll.getTax()));
-        document.add(new Paragraph("Maternity Benefit: " + payroll.getMaternityBenefit()));
-        document.add(new Paragraph("Sick Benefit: " + payroll.getSickBenefit()));
-        document.add(new Paragraph("Employee BHXH: " + payroll.getEmployeeBHXH()));
-        document.add(new Paragraph("Employee BHYT: " + payroll.getEmployeeBHYT()));
-        document.add(new Paragraph("Employee BHTN: " + payroll.getEmployeeBHTN()));
-        document.add(new Paragraph("Penalties: " + payroll.getPenalties()));
+        Paragraph address = new Paragraph("Địa chỉ: 273 An Dương Vương, Phường 3, Quận 5, Thành phố Hồ Chí Minh", font);
+        address.setAlignment(Element.ALIGN_CENTER);
+        document.add(address);
+
+        Paragraph title = new Paragraph("PHIẾU LƯƠNG", boldFont);
+        title.setAlignment(Element.ALIGN_CENTER);
+        title.setSpacingBefore(15);
+        title.setSpacingAfter(15);
+        document.add(title);
+
+        // Ngày tháng
+        Paragraph date = new Paragraph("Kỳ lương: " + payroll.getMonthOfYear(), font);
+        date.setAlignment(Element.ALIGN_CENTER);
+        date.setSpacingAfter(10);
+        document.add(date);
+
+        // Tách thông tin nhân viên thành hai bảng nằm ngang
+        // Bảng 1: Thông tin nhân viên
+        PdfPTable employeeInfoTable = new PdfPTable(2); // 2 cột: nhãn và giá trị
+        employeeInfoTable.setWidthPercentage(100);
+        employeeInfoTable.setWidths(new float[]{1f, 1f});
+
+        addInfoRow(employeeInfoTable, "Mã Nhân Viên: ", payroll.getUserIdStr(), font);
+        addInfoRow(employeeInfoTable, "Họ và Tên: ", payroll.getFullName(), font);
+        addInfoRow(employeeInfoTable, "Chức Danh: ", payroll.getRoleName(), font);
+        addInfoRow(employeeInfoTable, "Lương Cơ bản: ", payroll.getBaseSalary(), font);
+        addInfoRow(employeeInfoTable, "Hệ số lương: ", String.valueOf(payroll.getSalaryCoefficient()), font);
+        addInfoRow(employeeInfoTable, "Ngày công chuẩn: ", String.valueOf(payroll.getStandardWorkingDays()), font);
+
+        // Bảng 2: Thông tin ngày công
+        PdfPTable attendanceInfoTable = new PdfPTable(2); // 2 cột: nhãn và giá trị
+        attendanceInfoTable.setWidthPercentage(100);
+        attendanceInfoTable.setWidths(new float[]{1f, 1f});
+
+        addInfoRow(attendanceInfoTable, "Ngày công đi làm: ", String.valueOf(payroll.getTotalWorkingDays()), font);
+        addInfoRow(attendanceInfoTable, "Ngày nghỉ lễ: ", String.valueOf(payroll.getTotalHolidayLeaves()), font);
+        addInfoRow(attendanceInfoTable, "Ngày nghỉ phép: ", String.valueOf(payroll.getTotalPaidLeaves()), font);
+        addInfoRow(attendanceInfoTable, "Nghỉ ốm: ", String.valueOf(payroll.getTotalSickLeaves()), font);
+        addInfoRow(attendanceInfoTable, "Nghỉ thai sản: ", String.valueOf(payroll.getTotalMaternityLeaves()), font);
+        addInfoRow(attendanceInfoTable, "Nghỉ không phép: ", String.valueOf(payroll.getTotalUnpaidLeaves()), font);
+
+        // Đặt hai bảng cạnh nhau
+        PdfPTable infoTables = new PdfPTable(2);
+        infoTables.setWidthPercentage(80);
+        infoTables.setHorizontalAlignment(Element.ALIGN_CENTER);
+        infoTables.setWidths(new float[]{1f, 1f});
+
+        PdfPCell employeeCell = new PdfPCell(employeeInfoTable);
+        employeeCell.setBorder(PdfPCell.NO_BORDER);
+        infoTables.addCell(employeeCell);
+
+        PdfPCell attendanceCell = new PdfPCell(attendanceInfoTable);
+        attendanceCell.setBorder(PdfPCell.NO_BORDER);
+        infoTables.addCell(attendanceCell);
+
+        document.add(infoTables);
+
+        // Bảng thu nhập
+        PdfPTable incomeTable = new PdfPTable(2);
+        incomeTable.setWidthPercentage(100);
+        incomeTable.setWidths(new float[]{1f, 3f});
+
+        // Header bảng thu nhập
+        addTableHeader(incomeTable, "STT", "Các Khoản Thu Nhập", boldFont);
+
+        // Nội dung bảng thu nhập
+        addTableRow(incomeTable, "1", "Lương Chính: " + payroll.getMainSalary(), font);
+        addTableRow(incomeTable, "2", "Phụ Cấp: " + payroll.getAllowance(), font);
+
+        // Tổng cộng bảng thu nhập
+        addTotalRow(incomeTable, "Tổng Cộng: " + payroll.getGrossSalary(), font);
+
+        // Thêm khoảng cách sau bảng thu nhập
+        incomeTable.setSpacingAfter(15);
+        document.add(incomeTable);
+
+        // Bảng khấu trừ
+        PdfPTable deductionsTable = new PdfPTable(2);
+        deductionsTable.setWidthPercentage(100);
+        deductionsTable.setWidths(new float[]{1f, 3f});
+
+        // Header bảng khấu trừ
+        addTableHeader(deductionsTable, "STT", "Các Khoản Trừ Vào Lương", boldFont);
+
+        // Nội dung bảng khấu trừ
+        addTableRow(deductionsTable,"1", "Bảo Hiểm Bắt Buộc", font);
+        addSubTableRow(deductionsTable, "1.1", "Bảo hiểm xã hội (8%): " + payroll.getEmployeeBHXH(), font);
+        addSubTableRow(deductionsTable, "1.2", "Bảo hiểm y tế (1.5%): " + payroll.getEmployeeBHYT(), font);
+        addSubTableRow(deductionsTable, "1.3", "Bảo hiểm thất nghiệp (1%): " + payroll.getEmployeeBHTN(), font);
+        addTableRow(deductionsTable,"2", "Thuế TNCN: " + payroll.getTax(), font);
+        addTableRow(deductionsTable,"3", "Phạt: " + payroll.getPenalties(), font);
+        addTableRow(deductionsTable,"4", "Khác: ", font);
+
+        // Tổng cộng bảng khấu trừ
+        addTotalRow(deductionsTable, "Tổng Cộng: " + payroll.getDeductions() , font);
+        deductionsTable.setSpacingAfter(15);
+        document.add(deductionsTable);
+
+
+        PdfPTable allowanceTable = new PdfPTable(2);
+        allowanceTable.setWidthPercentage(100);
+        allowanceTable.setWidths(new float[]{1f, 3f});
+
+        addTableHeader(allowanceTable, "STT", "Các Khoản Phụ Cấp BHXH", boldFont);
+        // Nội dung bảng khấu trừ
+        addTableRow(allowanceTable,"1", "Phụ cấp thai sản: " + payroll.getMaternityBenefit(), font);
+        addTableRow(allowanceTable,"2", "Phụ cấp nghỉ ốm: " + payroll.getSickBenefit(), font);
+        // Tổng cộng bảng khấu trừ
+        addTotalRow(allowanceTable, "Tổng Cộng: " + payroll.getTotalBenefit(), font);
+        document.add(allowanceTable);
+
+        // Tổng lương thực nhận
+        Paragraph netSalary = new Paragraph("Tổng Số Tiền Lương Thực Nhận: " + payroll.getTotalIncome(), boldFont);
+        netSalary.setSpacingBefore(15);
+        document.add(netSalary);
+
+        // Chữ ký
+        PdfPTable signatureTable = new PdfPTable(2);
+        signatureTable.setWidthPercentage(100);
+        signatureTable.setSpacingBefore(20);
+
+        addSignatureCell(signatureTable, "Người lập phiếu\n(Ký và ghi rõ họ tên)", font);
+        addSignatureCell(signatureTable, "Người nhận tiền\n(Ký và ghi rõ họ tên)", font);
+
+        document.add(signatureTable);
+
         document.close();
     }
+
+    // Các phương thức hỗ trợ
+    private void addInfoRow(PdfPTable table, String label, String value, Font font) {
+        table.addCell(createCellNoBorder(label, font));
+        table.addCell(createCellNoBorder(value, font));
+    }
+
+    private void addTableHeader(PdfPTable table, String col1, String col2, Font font) {
+        table.addCell(createCellWithBorder(col1, font));
+        table.addCell(createCellWithBorder(col2, font));
+    }
+
+    private void addTableRow(PdfPTable table, String col1, String col2, Font font) {
+        table.addCell(createCellWithBorder(col1, font));
+        table.addCell(createCellWithBorder(col2, font));
+    }
+
+    private void addSubTableRow(PdfPTable table, String col1, String col2, Font font) {
+        table.addCell(createCellWithBorder("   " + col1, font)); // Thụt lề
+        table.addCell(createCellWithBorder(col2, font));
+    }
+
+    private void addTotalRow(PdfPTable table, String value, Font font) {
+        table.addCell(createCellWithBorder("", font));
+        table.addCell(createCellWithBorder(value, font));
+    }
+
+    private void addSignatureCell(PdfPTable table, String text, Font font) {
+        PdfPCell cell = createCellWithBorder(text, font);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cell.setPaddingTop(20);
+        table.addCell(cell);
+    }
+
+    private PdfPCell createCellWithBorder(String content, Font font) {
+        PdfPCell cell = new PdfPCell(new Phrase(content, font));
+        cell.setBorder(PdfPCell.BOX);
+        cell.setBorderWidth(0.5f);
+        cell.setPadding(5);
+        return cell;
+    }
+
+    private PdfPCell createCellNoBorder(String content, Font font) {
+        PdfPCell cell = new PdfPCell(new Phrase(content, font));
+        cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setPadding(5);
+        return cell;
+    }
+//    public void generatePayrollPdf(String filePath, ResPayrollDTO payroll) throws DocumentException, IOException {
+//        Document document = new Document();
+//        PdfWriter.getInstance(document, new FileOutputStream(filePath));
+//        document.open();
+//        BaseFont bf = BaseFont.createFont(
+//                "fonts/times.ttf",      // Đường dẫn tương đối từ thư mục resources
+//                BaseFont.IDENTITY_H,    // Hỗ trợ Unicode
+//                BaseFont.EMBEDDED       // Nhúng font vào PDF
+//        );
+//        Font font = new Font(bf, 11);
+//        Font boldFont = new Font(bf, 12, Font.BOLD);
+//
+//        // Header công ty
+//        Paragraph company = new Paragraph("Công ty: Inverse Enterprise", boldFont);
+//        company.setAlignment(com.lowagie.text.Element.ALIGN_CENTER);
+//        document.add(company);
+//
+//        Paragraph address = new Paragraph("Địa chỉ: 273 An Dương Vương, Phường 3, Quận 5, Thành phố Hồ Chí Minh" , font);
+//        address.setAlignment(Element.ALIGN_CENTER);
+//        document.add(address);
+//
+//        Paragraph title = new Paragraph("PHIẾU LƯƠNG", boldFont);
+//        title.setAlignment(Element.ALIGN_CENTER);
+//        title.setSpacingBefore(15);
+//        title.setSpacingAfter(15);
+//        document.add(title);
+//
+//        // Ngày tháng
+//        Paragraph date = new Paragraph("Kỳ lương: " + payroll.getMonthOfYear(), font);
+//        date.setAlignment(Element.ALIGN_CENTER);
+//        document.add(date);
+//
+//        // Thông tin nhân viên
+//        PdfPTable infoTable = new PdfPTable(5);
+//        infoTable.setWidthPercentage(80);
+//        infoTable.setHorizontalAlignment(Element.ALIGN_CENTER);
+//
+//        addInfoRow(infoTable, "Mã Nhân Viên: ", payroll.getUserIdStr(), font);
+//        addInfoRow(infoTable, ""," ", font);
+//        addInfoRow(infoTable, "Họ và Tên: ", payroll.getFullName(), font);
+//        addInfoRow(infoTable, "Chức Danh: ", payroll.getRoleName(), font);
+//        addInfoRow(infoTable, "Lương Cơ bản: ",payroll.getBaseSalary().toPlainString(), font);
+//
+//        addInfoRow(infoTable, "Hệ số lương: ",String.valueOf(payroll.getSalaryCoefficient()), font);
+//        addInfoRow(infoTable, "Ngày công đi làm: ", String.valueOf(payroll.getTotalWorkingDays()), font);
+//        addInfoRow(infoTable, "Ngày công chuẩn: ", String.valueOf(payroll.getStandardWorkingDays()), font);
+//        document.add(infoTable);
+//
+//        // Bảng thu nhập và khấu trừ
+//        PdfPTable mainTable = new PdfPTable(5);
+//        mainTable.setWidthPercentage(100);
+//        mainTable.setWidths(new float[]{1f, 3f, 1f ,1f, 3f});
+//
+//        // Header bảng
+//        addTableHeader(mainTable, "STT", "Các Khoản Thu Nhập","  ", "STT", "Các Khoản Trừ Vào Lương", boldFont);
+//
+//        // Nội dung bảng
+//        addTableRow(mainTable, "1", "Lương Chính: " + payroll.getGrossSalary().toPlainString(), " " ,"1", "Bảo Hiểm Bắt Buộc", font);
+//        addTableRow(mainTable, "2", "Phụ Cấp: " + payroll.getAllowance().toPlainString()," ", "1.1", "Bảo hiểm xã hội (8%): " + payroll.getEmployeeBHXH(), font);
+//        addSubTableRow(mainTable, "3", "Phụ cấp thai sản: " + payroll.getAllowance().toPlainString(), " ", "1.2", "Bảo hiểm y tế (1.5%): " + payroll.getEmployeeBHYT(), font);
+//        addSubTableRow(mainTable, "4", "Phụ cấp nghỉ ốm: " + payroll.getSickBenefit().toPlainString() ," ", "1.3", "Bảo hiểm thất nghiệp (1%): " + payroll.getEmployeeBHTN(), font);
+//        addSubTableRow(mainTable, "", "" ," ", "2", "Thuế TNCN: " + payroll.getTax(), font);
+//        addSubTableRow(mainTable, "", "" ," ", "3", "Phạt: " + payroll.getPenalties(), font);
+//        addSubTableRow(mainTable, "", "" ," ", "4", "Khác: ", font);
+//
+//        // Tổng cộng
+//        addTotalRow(mainTable, "Tổng Cộng",payroll.getGrossSalary().toPlainString(), "Tổng Cộng",totalCP(payroll.getEmployeeBHXH(),payroll.getEmployeeBHTN(),payroll.getEmployeeBHYT(),payroll.getPenalties(),payroll.getTax()).toPlainString(), boldFont);
+//        document.add(mainTable);
+//
+//        // Tổng lương thực nhận
+//        Paragraph netSalary = new Paragraph("Tổng Số Tiền Lương Thực Nhận: " + payroll.getTotalIncome(), boldFont);
+//        netSalary.setSpacingBefore(15);
+//        document.add(netSalary);
+//
+//        // Chữ ký
+//        PdfPTable signatureTable = new PdfPTable(2);
+//        signatureTable.setWidthPercentage(100);
+//        signatureTable.setSpacingBefore(20);
+//
+//        addSignatureCell(signatureTable, "Người lập phiếu\n(Ký và ghi rõ họ tên)", font);
+//        addSignatureCell(signatureTable, "Người nhận tiền\n(Ký và ghi rõ họ tên)", font);
+//
+//        document.add(signatureTable);
+//
+//        document.close();
+//    }
+//
+//    // Các phương thức hỗ trợ
+//    private void addInfoRow(PdfPTable table, String label, String value, Font font) {
+//        table.addCell(createCell(label, font));
+//        table.addCell(createCell(value, font));
+//    }
+//
+//    private void addTableHeader(PdfPTable table, String col1, String col2, String col3, String col4,String col5, Font font) {
+//        table.addCell(createCell(col1, font));
+//        table.addCell(createCell(col2, font));
+//        table.addCell(createCell(col3, font));
+//        table.addCell(createCell(col4, font));
+//        table.addCell(createCell(col5, font));
+//
+//    }
+//
+//    private void addTableRow(PdfPTable table, String col1, String col2, String col3, String col4,String col5, Font font) {
+//        table.addCell(createCell(col1, font));
+//        table.addCell(createCell(col2, font));
+//        table.addCell(createCell(col3, font));
+//        table.addCell(createCell(col4, font));
+//        table.addCell(createCell(col5, font));
+//    }
+//
+//    private void addSubTableRow(PdfPTable table, String col1, String col2, String col3, String col4,String col5, Font font) {
+//        table.addCell(createCell("   " + col1, font)); // Thụt lề
+//        table.addCell(createCell(col2, font));
+//        table.addCell(createCell(col3, font));
+//        table.addCell(createCell(col4, font));
+//        table.addCell(createCell(col5, font));
+//    }
+//
+//    private void addTotalRow(PdfPTable table, String label1, String value1, String label2, String value2, Font font) {
+//        table.addCell(createCell("", font));
+//        table.addCell(createCell(label1 + ": " + value1, font));
+//        table.addCell(createCell("", font));
+//        table.addCell(createCell(label2 + ": " + value2, font));
+//    }
+//
+//    private void addSignatureCell(PdfPTable table, String text, Font font) {
+//        PdfPCell cell = createCell(text, font);
+//        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+//        cell.setPaddingTop(20);
+//        table.addCell(cell);
+//    }
+//
+//    private PdfPCell createCell(String content, Font font) {
+//        PdfPCell cell = new PdfPCell(new Phrase(content, font));
+//        cell.setBorderWidth(0.5f);
+//        cell.setPadding(5);
+//        return cell;
+//    }
 }
