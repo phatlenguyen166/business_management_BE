@@ -61,6 +61,6 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public Role getRoleByUserId(Long id) {
         return roleRepository.findRoleByUserId(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy role với Id:" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Nhân viên đã chấm dứt hợp đồng"));
     }
 }
