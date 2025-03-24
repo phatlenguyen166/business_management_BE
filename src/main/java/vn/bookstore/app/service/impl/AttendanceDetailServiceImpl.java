@@ -185,14 +185,7 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
         LocalDate scannedDate = scanDateTime.toLocalDate();
         LocalDate currentDate = LocalDate.now();
 
-        LocalDateTime todayAfter23 = currentDate.atTime(23, 0);
-        if (scannedDate.isBefore(currentDate)) {
-        } else if (scannedDate.equals(currentDate)) {
-            if (scanDateTime.isAfter(todayAfter23) || scanDateTime.equals(todayAfter23)) {
-            } else {
-                throw new IllegalArgumentException("Scan cho ngày hiện tại chỉ được chấp nhận sau 23:00.");
-            }
-        } else {
+        if (scannedDate.isAfter(currentDate)) {
             throw new IllegalArgumentException("Scan cho ngày tương lai không được chấp nhận.");
         }
         LocalDate today = LocalDate.from(scanDateTime);
