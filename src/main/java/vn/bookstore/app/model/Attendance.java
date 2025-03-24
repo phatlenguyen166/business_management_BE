@@ -22,6 +22,7 @@ public class Attendance {
     private int totalMaternityLeaves;
     private int totalUnpaidLeaves;
     private int totalHolidayLeaves;
+    private int standardWorkingDays;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

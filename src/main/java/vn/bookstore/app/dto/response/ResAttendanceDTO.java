@@ -17,5 +17,8 @@ public class ResAttendanceDTO {
     private int totalUnpaidLeaves;
     private int totalHolidayLeaves;
     private Long userId;
+    private int standardWorkingDays;
+    private String fullName;
+    private String userIdString;
 
 }

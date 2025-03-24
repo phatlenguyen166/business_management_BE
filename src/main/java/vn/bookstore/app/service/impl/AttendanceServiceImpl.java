@@ -4,12 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vn.bookstore.app.dto.response.ResAttendanceDTO;
 import vn.bookstore.app.mapper.AttendanceMapper;
+import vn.bookstore.app.model.Holiday;
 import vn.bookstore.app.model.User;
 import vn.bookstore.app.repository.AttendanceRepository;
+import vn.bookstore.app.repository.HolidayRepository;
 import vn.bookstore.app.repository.UserRepository;
 import vn.bookstore.app.service.AttendanceService;
 import vn.bookstore.app.util.error.NotFoundException;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +25,9 @@ public class AttendanceServiceImpl implements AttendanceService {
     private final AttendanceRepository attendanceRepository;
     private final AttendanceMapper attendanceMapper;
     private final UserRepository userRepository;
+
+
+
 
     @Override
     public List<ResAttendanceDTO> handleGetAll() {
