@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class PayrollServiceImpl implements PayrollService {
-    private final HolidayRepository holidayRepository;
+
     private final UserRepository userRepository;
     private final SeniorityLevelRepository seniorityLevelRepository;
     private final ContractRepository contractRepository;
@@ -45,29 +45,7 @@ public class PayrollServiceImpl implements PayrollService {
     private final PayrollRepository payrollRepository;
     private final PayrollMapper payrollMapper;
 
-    public boolean isHoliday(LocalDate date, List<Holiday> holidays) {
-        for (Holiday holiday : holidays) {
-            if (!date.isBefore(holiday.getStartDate()) && !date.isAfter(holiday.getEndDate())) {
-                return true;
-            }
-        }
-        return false;
-    }
 
-    public int getStandardWorkingDays(YearMonth yearMonth) {
-        int workingDays = 0;
-        List<Holiday> holidays = holidayRepository.findAllByStatus(1);
-        for (int day = 1; day <= yearMonth.lengthOfMonth(); day++) {
-            LocalDate date = yearMonth.atDay(day);
-            DayOfWeek dayOfWeek = date.getDayOfWeek();
-            if (dayOfWeek != DayOfWeek.SATURDAY && dayOfWeek != DayOfWeek.SUNDAY && !isHoliday(date, holidays)) {
-                workingDays++;
-            }
-        }
-        System.out.println(workingDays);
-        return workingDays;
-
-    }
 
 
 
@@ -243,8 +221,7 @@ public class PayrollServiceImpl implements PayrollService {
             payroll.setBaseSalary(baseSalary);
             float salaryCoefficient = contract.getSeniorityLevel().getSalaryCoefficient();
             payroll.setSalaryCoefficient(salaryCoefficient);
-            int standardWorkingDays = getStandardWorkingDays(yearMonth);
-            payroll.setStandardWorkingDays(standardWorkingDays);
+            int standardWorkingDays = attendance.getStandardWorkingDays();
             int totalWorkingDays = attendance.getTotalWorkingDays();
             BigDecimal otherAllowances = contract.getSeniorityLevel().getRole().getAllowance().getAllowance();
             payroll.setAllowance(otherAllowances);

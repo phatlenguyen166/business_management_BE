@@ -42,7 +42,7 @@ public class PayrollMapperHelper {
     @Named("formatMainSalary")
     public String formatMainSalary(Payroll payroll) {
         BigDecimal total = this.payrollService.calculateGrossSalary(payroll.getBaseSalary(),
-                payroll.getSalaryCoefficient(),payroll.getStandardWorkingDays(),
+                payroll.getSalaryCoefficient(),payroll.getAttendance().getStandardWorkingDays(),
                 payroll.getAttendance().getTotalWorkingDays(),payroll.getAttendance().getTotalPaidLeaves(), payroll.getAllowance());
         return this.payrollService.getFormatBigDecimal(total.subtract(payroll.getAllowance()));
     }

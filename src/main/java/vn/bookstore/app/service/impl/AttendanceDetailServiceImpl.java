@@ -15,10 +15,7 @@ import vn.bookstore.app.util.constant.LeaveTypeEnum;
 import vn.bookstore.app.util.error.InvalidRequestException;
 import vn.bookstore.app.util.error.NotFoundException;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.YearMonth;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +32,31 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
     private final LeaveReqRepository leaveReqRepository;
     private final ContractRepository contractRepository;
 
+
+
+    public boolean isHoliday(LocalDate date, List<Holiday> holidays) {
+        for (Holiday holiday : holidays) {
+            if (!date.isBefore(holiday.getStartDate()) && !date.isAfter(holiday.getEndDate())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int getStandardWorkingDays(YearMonth yearMonth) {
+        int workingDays = 0;
+        List<Holiday> holidays = holidayRepository.findAllByStatus(1);
+        for (int day = 1; day <= yearMonth.lengthOfMonth(); day++) {
+            LocalDate date = yearMonth.atDay(day);
+            DayOfWeek dayOfWeek = date.getDayOfWeek();
+            if (dayOfWeek != DayOfWeek.SATURDAY && dayOfWeek != DayOfWeek.SUNDAY && !isHoliday(date, holidays)) {
+                workingDays++;
+            }
+        }
+        System.out.println(workingDays);
+        return workingDays;
+
+    }
 
     public void handleCheckIn(AttendanceDetail attendanceDetail) {
         if (attendanceDetail.getCheckIn().isAfter(LocalTime.of(9,0)) && attendanceDetail.getCheckIn().isBefore(LocalTime.of(10,0))) {
@@ -63,6 +85,7 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
         }
         if (attendance == null) {
             Attendance newAttendance = new Attendance();
+            newAttendance.setStandardWorkingDays(getStandardWorkingDays(YearMonth.from(attendanceDetail.getCheckIn())));
             newAttendance.setUser(user);
             newAttendance.setMonthOfYear(yearMonth.toString());
             this.attendanceRepository.save(newAttendance);
@@ -179,6 +202,7 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
             Attendance attendance = attendanceRepository.findByUserAndMonthOfYear(user, monthOfYear);
             if (attendance == null) {
                 attendance = new Attendance();
+                attendance.setStandardWorkingDays(getStandardWorkingDays(YearMonth.from(scannedDate)));
                 attendance.setUser(user);
                 attendance.setMonthOfYear(monthOfYear);
                 attendance = attendanceRepository.save(attendance);

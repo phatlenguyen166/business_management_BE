@@ -15,7 +15,6 @@ public class Payroll {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    private int standardWorkingDays;
     @Column(precision = 19, scale = 4, nullable = false)
     private BigDecimal maternityBenefit;
     @Column(precision = 19, scale = 4, nullable = false)
