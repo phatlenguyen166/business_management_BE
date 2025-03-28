@@ -1,23 +1,32 @@
 package vn.bookstore.app.service.impl;
 
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import vn.bookstore.app.dto.request.ReqChangePasswordDTO;
 import vn.bookstore.app.dto.request.ReqSignInDTO;
 import vn.bookstore.app.dto.response.ResTokenDTO;
 import vn.bookstore.app.mapper.TokenMapper;
-import vn.bookstore.app.model.*;
-import vn.bookstore.app.service.*;
+import vn.bookstore.app.model.Role;
+import vn.bookstore.app.model.Token;
+import vn.bookstore.app.model.User;
+import vn.bookstore.app.service.AuthenticationService;
+import vn.bookstore.app.service.EmailService;
+import vn.bookstore.app.service.JwtService;
+import vn.bookstore.app.service.RoleService;
+import vn.bookstore.app.service.TokenService;
+import vn.bookstore.app.service.UserService;
+import static vn.bookstore.app.util.constant.TokenType.ACCESS_TOKEN;
+import static vn.bookstore.app.util.constant.TokenType.REFRESH_TOKEN;
+import static vn.bookstore.app.util.constant.TokenType.RESET_TOKEN;
 import vn.bookstore.app.util.error.InvalidDataException;
-
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static vn.bookstore.app.util.constant.TokenType.*;
 
 @Slf4j
 @Service
@@ -32,6 +41,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final EmailService emailService;
     private final RoleService roleService;
 
+    @Override
     public ResTokenDTO authenticate(ReqSignInDTO reqSignInDTO) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 reqSignInDTO.getUsername(), reqSignInDTO.getPassword()));
@@ -52,7 +62,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return generateTokenResponse(user, accessToken, refreshToken);
     }
 
-
+    @Override
     public ResTokenDTO refresh(HttpServletRequest request) {
         String refreshToken = request.getHeader(AUTHORIZATION);
         if (StringUtils.isBlank(refreshToken)) {
@@ -72,7 +82,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return generateTokenResponse(user, accessToken, refreshToken);
     }
 
-
+    @Override
     public String logout(HttpServletRequest request) {
         log.info("---------- logout ----------");
 
@@ -93,7 +103,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return TokenMapper.INSTANCE.mapToResTokenDTO(user, accessToken, refreshToken, role);
     }
 
-
     @Override
     public String forgotPassword(String email) {
         User user = userService.findUserByEmail(email);
@@ -102,7 +111,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         String resetToken = jwtService.generateResetToken(user);
-        String confirmLink = "https://localhost:5173/reset-password?token=" + resetToken;
+        String confirmLink = "http://localhost:5173/forgot-password?token=" + resetToken;
         emailService.sendEmail(user.getEmail(), "Reset Password", confirmLink);
 
         log.info("--------------> Forgot password reset link: {}", confirmLink);
