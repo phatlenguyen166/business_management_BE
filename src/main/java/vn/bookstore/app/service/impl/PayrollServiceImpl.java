@@ -296,6 +296,13 @@ public class PayrollServiceImpl implements PayrollService {
     }
 
     @Override
+    public List<ResPayrollDTO> getAllPayRollByMonth(YearMonth yearMonth) {
+        return this.payrollRepository.findAllByYearMonth(yearMonth.toString()).stream()
+                .map(payrollMapper::convertToResPayrollDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public ResPayrollDTO getPayrollById(Long id) {
         Payroll payroll = this.payrollRepository.findPayrollById(id).orElseThrow(() -> new NotFoundException("Bảng lương không tồn tại"));
         return this.payrollMapper.convertToResPayrollDTO(payroll);

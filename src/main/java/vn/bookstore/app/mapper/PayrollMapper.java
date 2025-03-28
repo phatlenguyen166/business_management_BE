@@ -44,8 +44,6 @@ public interface  PayrollMapper {
     @Mapping(source = "maternityBenefit", target = "maternityBenefit", qualifiedByName = "formatBigDecimal")
     @Mapping(source = "sickBenefit", target = "sickBenefit", qualifiedByName = "formatBigDecimal")
     @Mapping(source = "payroll.attendance.standardWorkingDays", target = "standardWorkingDays")
-
-
     ResPayrollDTO convertToResPayrollDTO(Payroll payroll);
 
 

@@ -66,15 +66,15 @@ public class AttendanceDetailController {
     }
 
     @PutMapping("/scan")
-    public ResponseEntity<ResponseDTO<List<ResAttendanceDetailDTO>>> scanEndOfDay(@RequestParam("dateScan") LocalDateTime dateScan) {
-        List<ResAttendanceDetailDTO> resAttendanceDetailDTOS = this.attendanceDetailService.processDailyAttendance(dateScan);
+    public ResponseEntity<ResponseDTO> scanEndOfDay(@RequestParam("dateScan") LocalDateTime dateScan) {
+         this.attendanceDetailService.processDailyAttendance(dateScan);
         return ResponseEntity.ok(
                 new ResponseDTO<>(
                         200,
                         true,
                         null,
                         "Scan successfully",
-                        resAttendanceDetailDTOS
+                        null
                 )
         );
     }
@@ -157,6 +157,26 @@ public class AttendanceDetailController {
                         null,
                         "Get all attendanceDetails By LocalDate successfully",
                         resAttendanceDetailDTOS
+                )
+        );
+    }
+
+    @GetMapping("/attendanceDetails/checkExist/{userId}")
+    public ResponseEntity<ResponseDTO<String>> checkExistAttendanceDetail(@RequestParam("date") String dateString, @PathVariable Long userId) {
+        LocalDate date;
+        try {
+            date = LocalDate.parse(dateString);
+        } catch (DateTimeParseException e) {
+            throw new InvalidRequestException("Invalid yearMonth format. Expected format: yyyy-MM-dd");
+        }
+        String result = this.attendanceDetailService.checkExistAttendanceDetail(date, userId);
+        return ResponseEntity.ok(
+                new ResponseDTO<>(
+                        200,
+                        true,
+                        null,
+                        "Get all attendanceDetails By LocalDate successfully",
+                        result
                 )
         );
     }
