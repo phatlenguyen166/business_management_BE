@@ -1,28 +1,33 @@
 package vn.bookstore.app.service.impl;
 
-import jakarta.transaction.Transactional;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+
+import jakarta.transaction.Transactional;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import vn.bookstore.app.dto.request.ReqProductDTO;
 import vn.bookstore.app.dto.response.ResProductDTO;
 import vn.bookstore.app.mapper.ProductMapper;
+import vn.bookstore.app.model.Author;
+import vn.bookstore.app.model.Category;
 import vn.bookstore.app.model.Product;
 import vn.bookstore.app.model.Supplier;
+import vn.bookstore.app.repository.AuthorRepository;
+import vn.bookstore.app.repository.CategoryRepository;
 import vn.bookstore.app.repository.ProductRepository;
 import vn.bookstore.app.repository.SupplierRepository;
 import vn.bookstore.app.service.CloudinaryService;
 import vn.bookstore.app.service.ProductService;
 import vn.bookstore.app.util.error.InvalidRequestException;
 import vn.bookstore.app.util.error.ResourceNotFoundException;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -33,6 +38,8 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
     private final CloudinaryService cloudinaryService;
     private final SupplierRepository supplierRepository;
+    private final AuthorRepository authorRepository;
+    private final CategoryRepository categoryRepository;
 
     @Transactional
     @Override
@@ -50,7 +57,23 @@ public class ProductServiceImpl implements ProductService {
         // Get supplier
         Supplier supplier = supplierRepository.findById(reqProductDTO.getSupplierId())
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Không tìm thấy nhà cung cấp với ID: " + reqProductDTO.getSupplierId()));
+                "Không tìm thấy nhà cung cấp với ID: " + reqProductDTO.getSupplierId()));
+
+        // Get author if provided
+        Author author = null;
+        if (reqProductDTO.getAuthorId() != null) {
+            author = authorRepository.findById(reqProductDTO.getAuthorId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                    "Không tìm thấy tác giả với ID: " + reqProductDTO.getAuthorId()));
+        }
+
+        // Get category if provided
+        Category category = null;
+        if (reqProductDTO.getCategoryId() != null) {
+            category = categoryRepository.findById(reqProductDTO.getCategoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                    "Không tìm thấy danh mục với ID: " + reqProductDTO.getCategoryId()));
+        }
 
         String imageUrl = cloudinaryService.uploadFile(imageFile);
         Product product = productMapper.toProduct(reqProductDTO);
@@ -58,6 +81,8 @@ public class ProductServiceImpl implements ProductService {
         product.setQuantity(0);
         product.setStatus(1);
         product.setSupplier(supplier);
+        product.setAuthor(author);
+        product.setCategory(category);
 
         Product savedProduct = productRepository.save(product);
 
@@ -107,8 +132,24 @@ public class ProductServiceImpl implements ProductService {
         if (reqProductDTO.getSupplierId() != null) {
             Supplier supplier = supplierRepository.findById(reqProductDTO.getSupplierId())
                     .orElseThrow(() -> new ResourceNotFoundException(
-                            "Không tìm thấy nhà cung cấp với ID: " + reqProductDTO.getSupplierId()));
+                    "Không tìm thấy nhà cung cấp với ID: " + reqProductDTO.getSupplierId()));
             product.setSupplier(supplier);
+        }
+
+        // Update author if provided
+        if (reqProductDTO.getAuthorId() != null) {
+            Author author = authorRepository.findById(reqProductDTO.getAuthorId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                    "Không tìm thấy tác giả với ID: " + reqProductDTO.getAuthorId()));
+            product.setAuthor(author);
+        }
+
+        // Update category if provided
+        if (reqProductDTO.getCategoryId() != null) {
+            Category category = categoryRepository.findById(reqProductDTO.getCategoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                    "Không tìm thấy danh mục với ID: " + reqProductDTO.getCategoryId()));
+            product.setCategory(category);
         }
 
         Product updatedProduct = productRepository.save(product);
@@ -130,8 +171,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void deleteProduct(Long id) {
-        Product product = productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm " +
-                "thấy sản phẩm với ID: " + id));
+        Product product = productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm "
+                + "thấy sản phẩm với ID: " + id));
 
         product.setStatus(0);
         productRepository.save(product);
