@@ -74,7 +74,7 @@ public class PayrollController {
     }
 
     @GetMapping("/payrolls/user/year/{userId}")
-    public ResponseEntity<ResponseDTO<List<ResPayrollDTO>>> GetAllPayrollByUserByYear(@PathVariable Long userId, @RequestParam String yearStr) {
+    public ResponseEntity<ResponseDTO<List<ResPayrollDTO>>> GetAllPayrollByUserByYear(@PathVariable Long userId, @RequestParam("year") String yearStr) {
         Year year;
         try {
             year = Year.parse(yearStr);
@@ -92,6 +92,26 @@ public class PayrollController {
                 )
         );
     }
+    @GetMapping("/payrolls/month")
+    public ResponseEntity<ResponseDTO<List<ResPayrollDTO>>> GetAllPayrollByMonth(@RequestParam("yearMonth") String yearMonthStr) {
+        YearMonth yearMonth;
+        try {
+            yearMonth = YearMonth.parse(yearMonthStr);
+        } catch (DateTimeParseException e) {
+            throw new InvalidRequestException("Invalid Year format. Expected format: yyyy-mm");
+        }
+        List<ResPayrollDTO> Payrolls = this.payrollService.getAllPayRollByMonth(yearMonth);
+        return ResponseEntity.ok(
+                new ResponseDTO<>(
+                        200,
+                        true,
+                        null,
+                        "Get All Payroll successfully",
+                        Payrolls
+                )
+        );
+    }
+
     @GetMapping("/payrolls/{id}")
     public ResponseEntity<ResponseDTO<ResPayrollDTO>> GetAllPayrollById(@PathVariable Long id) {
       ResPayrollDTO payrollDTO = this.payrollService.getPayrollById(id);

@@ -180,11 +180,10 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
     }
 
     @Override
-    public List<ResAttendanceDetailDTO> processDailyAttendance(LocalDateTime dateTime) {
+    public void processDailyAttendance(LocalDateTime dateTime) {
         LocalDateTime scanDateTime = dateTime;
         LocalDate scannedDate = scanDateTime.toLocalDate();
         LocalDate currentDate = LocalDate.now();
-
         if (scannedDate.isAfter(currentDate)) {
             throw new IllegalArgumentException("Scan cho ngày tương lai không được chấp nhận.");
         }
@@ -205,6 +204,8 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
             Optional<Holiday> holidayOpt = holidayRepository.findHolidayByDate(today);
             if (optionalAttendanceDetail != null) {
                 AttendanceDetail attendanceDetail = optionalAttendanceDetail;
+                AttendanceStatusEnum oldStatus = attendanceDetail.getAttendanceStatus();
+                LeaveTypeEnum oldLeaveType = attendanceDetail.getLeaveTypeEnum();
                 if (leaveRequestOpt.isPresent()) {
                     attendanceDetail.setAttendanceStatus(AttendanceStatusEnum.ON_LEAVE);
                     attendanceDetail.setLeaveTypeEnum(leaveRequestOpt.get().getLeaveReason());
@@ -219,7 +220,26 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
                     handleCheckIn(attendanceDetail);
                 }
                 attendanceDetailRepository.save(attendanceDetail);
-                updateTotalWorking(attendanceDetail, attendance);
+                if (oldStatus != attendanceDetail.getAttendanceStatus() || oldLeaveType != attendanceDetail.getLeaveTypeEnum()) {
+                    if (oldStatus == AttendanceStatusEnum.ABSENT) {
+                        attendance.setTotalUnpaidLeaves(attendance.getTotalUnpaidLeaves() - 1);
+                        this.attendanceRepository.save(attendance);
+                    } else if (oldStatus == AttendanceStatusEnum.PRESENT) {
+                        attendance.setTotalPaidLeaves(attendance.getTotalPaidLeaves() - 1);
+                        this.attendanceRepository.save(attendance);
+                    }else if (oldStatus == AttendanceStatusEnum.ON_LEAVE) {
+                        if (oldLeaveType == LeaveTypeEnum.HOLIDAY) {
+                            attendance.setTotalHolidayLeaves(attendance.getTotalHolidayLeaves() - 1);
+                        } else if (oldLeaveType == LeaveTypeEnum.SICK_LEAVE) {
+                            attendance.setTotalSickLeaves(attendance.getTotalSickLeaves()-1);
+                        } else if (oldLeaveType == LeaveTypeEnum.MATERNITY_LEAVE) {
+                            attendance.setTotalMaternityLeaves(attendance.getTotalMaternityLeaves()-1);
+                        }else if (oldLeaveType == LeaveTypeEnum.PAID_LEAVE) {
+                            attendance.setTotalPaidLeaves(attendance.getTotalPaidLeaves()-1);
+                        }
+                    }
+                    updateTotalWorking(attendanceDetail, attendance);
+                }
             } else {
                 AttendanceDetail newDetail = new AttendanceDetail();
                 newDetail.setAttendance(attendance);
@@ -238,7 +258,6 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
                 updateTotalWorking(newDetail, attendance);
             }
         }
-        return handleGetAll();
     }
 
 
@@ -290,5 +309,15 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
                 .map(attendanceDetailMapper::convertToResAttendanceDetailDTO)
                 .collect(Collectors.toList());
         return attendanceDetailDTOS;
+    }
+
+    @Override
+    public String checkExistAttendanceDetail(LocalDate date, Long userId) {
+        User user = this.userRepository.findUserByIdAndStatus(userId,1).orElseThrow(() -> new NotFoundException("User not found"));
+        if (attendanceDetailRepository.existsByWorkingDayAndUser(date,user)) {
+            return "AttendanceDetail already exist";
+        } else {
+            return "AttendanceDetail not exist";
+        }
     }
 }

@@ -15,6 +15,7 @@ public interface PayrollService {
     List<ResPayrollDTO> getAllPayRoll();
     List<ResPayrollDTO> getAllPayRollByUser(Long userId);
     List<ResPayrollDTO> getAllPayRollByUserByYear(Long userId, Year year);
+    List<ResPayrollDTO> getAllPayRollByMonth(YearMonth yearMonth);
     ResPayrollDTO getPayrollById(Long id);
     void generatePayrollPdf(String filePath, ResPayrollDTO payroll) throws IOException;
     void generatePayrollByYearPdf(String filePath, List<ResPayrollDTO> Payrolls) throws IOException;

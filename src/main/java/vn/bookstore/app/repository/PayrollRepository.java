@@ -15,7 +15,7 @@ import java.util.Optional;
 @Repository
 public interface PayrollRepository extends JpaRepository<Payroll, Long> {
     Payroll findPayrollByAttendance(Attendance attendance);
-    @Query("SELECT p FROM Payroll p WHERE p.attendance.monthOfYear = :yearMonth")
+    @Query("SELECT p FROM Payroll p WHERE p.attendance.monthOfYear =:yearMonth")
     List<Payroll> findAllByYearMonth(@Param("yearMonth") String yearMonth);
 
     @Query("SELECT pr from Payroll pr where pr.attendance.user =:user order by pr.attendance.monthOfYear ")
