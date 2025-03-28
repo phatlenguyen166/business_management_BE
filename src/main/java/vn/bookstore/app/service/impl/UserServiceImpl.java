@@ -178,7 +178,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findUserByEmail(String email) {
         return userRepository.findUserByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User không tồn tại!."));
+                .orElseThrow(() -> new ResourceNotFoundException("Email không tồn tại!."));
     }
 
     @Override
