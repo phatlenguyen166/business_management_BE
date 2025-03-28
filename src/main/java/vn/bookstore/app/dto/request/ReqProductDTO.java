@@ -1,13 +1,16 @@
 package vn.bookstore.app.dto.request;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.math.BigDecimal;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -36,5 +39,9 @@ public class ReqProductDTO {
     @NotNull(message = "Nhà cung cấp không được để trống")
     private Long supplierId;
 
-    private MultipartFile imageFile;
+    @NotNull(message = "Tác giả không được để trống")
+    private Long authorId;
+
+    @NotNull(message = "Danh mục không được để trống")
+    private Long categoryId;
 }
