@@ -120,8 +120,19 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
     @Override
     public ResAttendanceDetailDTO handleUpdate(ReqAttendanceDetailDTO attendanceDetailDTO) {
         User user = this.userRepository.findUserByIdAndStatus(attendanceDetailDTO.getUserId(), 1).orElseThrow(() -> new NotFoundException("User Không tồn tại"));
-        YearMonth yearMonth = YearMonth.from(attendanceDetailDTO.getCheckOut());
-        LocalDate date = LocalDate.from(attendanceDetailDTO.getCheckOut());
+        YearMonth yearMonth = null;
+        LocalDate date = null;
+
+        if (attendanceDetailDTO.getCheckIn() != null) {
+            yearMonth = YearMonth.from(attendanceDetailDTO.getCheckIn());
+            date = LocalDate.from(attendanceDetailDTO.getCheckIn());
+        } else if (attendanceDetailDTO.getCheckOut() != null) {
+            yearMonth = YearMonth.from(attendanceDetailDTO.getCheckOut());
+            date = LocalDate.from(attendanceDetailDTO.getCheckOut());
+        }
+        if (yearMonth == null || date == null) {
+            throw new InvalidRequestException("CheckIn và CheckOut đều null, không thể xác định ngày làm việc.");
+        }
         Attendance attendance = this.attendanceRepository.findByUserAndMonthOfYear(user, yearMonth.toString());
         AttendanceDetail currAttendanceDetail = this.attendanceDetailRepository.findByAttendanceAndCheckInDate(attendance, date);
         if (attendanceDetailDTO.getCheckIn() != null) {

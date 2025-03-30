@@ -12,7 +12,6 @@ public class ReqAttendanceDetailDTO {
     private Long userId;
 
     private LocalDateTime checkIn;
-
     private LocalDateTime checkOut;
 
 }
