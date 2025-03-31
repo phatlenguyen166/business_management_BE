@@ -54,9 +54,15 @@ public class AttendanceDetailController {
     @PutMapping("/attendanceDetails/update")
     public ResponseEntity<ResponseDTO<ResAttendanceDetailDTO>> update(@Valid @RequestBody ReqAttendanceDetailDTO attendanceDetail) {
         ResAttendanceDetailDTO attendanceDetailDTO = this.attendanceDetailService.handleUpdate(attendanceDetail);
+        int status;
+        if (attendanceDetail.getCheckIn() != null && attendanceDetail.getCheckOut() != null && attendanceDetailDTO != null) {
+            status = 400;
+        }else {
+            status = 200;
+        }
         return ResponseEntity.ok(
                 new ResponseDTO<>(
-                        200,
+                        status,
                         true,
                         null,
                         "Update successfully",

@@ -130,18 +130,18 @@ public class PayrollController {
 
 
     @GetMapping("/payrolls/export/{id}")
-    public ResponseEntity<ResponseDTO> exportPayroll(@PathVariable Long id) {
+    public ResponseEntity<ResponseDTO<String>> exportPayroll(@PathVariable Long id) {
         ResPayrollDTO payrollDTO = this.payrollService.getPayrollById(id);
         String filePath = "PayrollReport_" + payrollDTO.getUserIdStr() + "_" + payrollDTO.getMonthOfYear() + ".pdf";
         try {
-            payrollService.generatePayrollPdf(filePath, payrollDTO);
+            String fullFilePath = payrollService.generatePayrollPdf(filePath, payrollDTO);
             return ResponseEntity.ok(
                     new ResponseDTO<>(
                             200,
                             true,
                             null,
                             "Reject LeaveRequest successfully",
-                            null
+                            fullFilePath
                     )
             );
         } catch (Exception e) {
@@ -150,7 +150,7 @@ public class PayrollController {
     }
 
     @GetMapping("/payrolls/export/year/{userId}")
-    public ResponseEntity<ResponseDTO> exportPayrollByYear(@PathVariable Long userId,@RequestParam String yearStr) {
+    public ResponseEntity<ResponseDTO<String>> exportPayrollByYear(@PathVariable Long userId,@RequestParam("year") String yearStr) {
         Year year;
         try {
             year = Year.parse(yearStr);
@@ -160,19 +160,39 @@ public class PayrollController {
         List<ResPayrollDTO> Payrolls = this.payrollService.getAllPayRollByUserByYear(userId,year);
         String filePath = "PayrollReport_NV-" + userId + "_" + year + ".pdf";
         try {
-            payrollService.generatePayrollByYearPdf(filePath, Payrolls);
+            String fullFilePath = payrollService.generatePayrollByYearPdf(filePath, Payrolls);
             return ResponseEntity.ok(
                     new ResponseDTO<>(
                             200,
                             true,
                             null,
                             "Reject LeaveRequest successfully",
-                            null
+                            fullFilePath
                     )
             );
         } catch (Exception e) {
             throw new InvalidRequestException(e.getMessage());
         }
+    }
+
+    @GetMapping("/payrolls/year")
+    public ResponseEntity<ResponseDTO<List<ResPayrollDTO>>> getAllPayrollByYear(@RequestParam("year") String yearStr) {
+        Year year;
+        try {
+            year = Year.parse(yearStr);
+        } catch (DateTimeParseException e) {
+            throw new InvalidRequestException("Invalid Year format. Expected format: yyyy");
+        }
+        List<ResPayrollDTO> Payrolls = this.payrollService.getAllPayRollByYear(year);
+            return ResponseEntity.ok(
+                    new ResponseDTO<>(
+                            200,
+                            true,
+                            null,
+                            "Get All Payrolls By Year",
+                            Payrolls
+                    )
+            );
     }
 
 }

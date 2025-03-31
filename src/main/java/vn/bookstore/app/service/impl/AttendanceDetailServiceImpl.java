@@ -33,7 +33,6 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
     private final ContractRepository contractRepository;
 
 
-
     public boolean isHoliday(LocalDate date, List<Holiday> holidays) {
         for (Holiday holiday : holidays) {
             if (!date.isBefore(holiday.getStartDate()) && !date.isAfter(holiday.getEndDate())) {
@@ -59,15 +58,15 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
     }
 
     public void handleCheckIn(AttendanceDetail attendanceDetail) {
-        if (attendanceDetail.getCheckIn().isAfter(LocalTime.of(9,0)) && attendanceDetail.getCheckIn().isBefore(LocalTime.of(10,0))) {
+        if (attendanceDetail.getCheckIn().isAfter(LocalTime.of(9, 0)) && attendanceDetail.getCheckIn().isBefore(LocalTime.of(10, 0))) {
             attendanceDetail.setLateTypeEnum(LateTypeEnum.LATE_1);
-        } else if (attendanceDetail.getCheckIn().isAfter(LocalTime.of(10,0)) && attendanceDetail.getCheckIn().isBefore(LocalTime.of(12,0))) {
+        } else if (attendanceDetail.getCheckIn().isAfter(LocalTime.of(10, 0)) && attendanceDetail.getCheckIn().isBefore(LocalTime.of(12, 0))) {
             attendanceDetail.setLateTypeEnum(LateTypeEnum.LATE_2);
-        } else if (attendanceDetail.getCheckIn().isAfter(LocalTime.of(13,30)) && attendanceDetail.getCheckIn().isBefore(LocalTime.of(14,0))) {
+        } else if (attendanceDetail.getCheckIn().isAfter(LocalTime.of(13, 30)) && attendanceDetail.getCheckIn().isBefore(LocalTime.of(14, 0))) {
             attendanceDetail.setLateTypeEnum(LateTypeEnum.LATE_3);
-        } else if (attendanceDetail.getCheckIn().isAfter(LocalTime.of(14,0))) {
+        } else if (attendanceDetail.getCheckIn().isAfter(LocalTime.of(14, 0))) {
             attendanceDetail.setLateTypeEnum(LateTypeEnum.LATE_4);
-        } else if (attendanceDetail.getCheckIn().isBefore(LocalTime.of(9,0))) {
+        } else if (attendanceDetail.getCheckIn().isBefore(LocalTime.of(9, 0))) {
             attendanceDetail.setLateTypeEnum(null);
         }
         attendanceDetailRepository.save(attendanceDetail);
@@ -130,20 +129,66 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
             yearMonth = YearMonth.from(attendanceDetailDTO.getCheckOut());
             date = LocalDate.from(attendanceDetailDTO.getCheckOut());
         }
-        if (yearMonth == null || date == null) {
+        if (date == null) {
             throw new InvalidRequestException("CheckIn và CheckOut đều null, không thể xác định ngày làm việc.");
         }
         Attendance attendance = this.attendanceRepository.findByUserAndMonthOfYear(user, yearMonth.toString());
         AttendanceDetail currAttendanceDetail = this.attendanceDetailRepository.findByAttendanceAndCheckInDate(attendance, date);
-        if (attendanceDetailDTO.getCheckIn() != null) {
-           currAttendanceDetail.setCheckIn(attendanceDetailDTO.getCheckIn().toLocalTime());
-        }
-        if (attendanceDetailDTO.getCheckOut() != null) {
+        if (attendanceDetailDTO.getCheckIn() != null && attendanceDetailDTO.getCheckOut() != null) {
+            if (!attendanceDetailDTO.getCheckIn().toLocalDate().equals(attendanceDetailDTO.getCheckOut().toLocalDate())) {
+                throw new InvalidRequestException("CheckIn và CheckOut phải cùng 1 ngày}");
+            } else {
+                currAttendanceDetail.setCheckIn(attendanceDetailDTO.getCheckIn().toLocalTime());
+                currAttendanceDetail.setCheckOut(attendanceDetailDTO.getCheckOut().toLocalTime());
+                this.attendanceDetailRepository.save(currAttendanceDetail);
+                AttendanceStatusEnum oldStatus = currAttendanceDetail.getAttendanceStatus();
+                LeaveTypeEnum oldLeaveType = currAttendanceDetail.getLeaveTypeEnum();
+                handleCheckOutInValid(currAttendanceDetail);
+                handleCheckIn(currAttendanceDetail);
+                updateStatus(attendance, currAttendanceDetail, oldLeaveType, oldStatus);
+            }
+        } else if (attendanceDetailDTO.getCheckIn() != null) {
+            currAttendanceDetail.setCheckIn(attendanceDetailDTO.getCheckIn().toLocalTime());
+            this.attendanceDetailRepository.save(currAttendanceDetail);
+            AttendanceStatusEnum oldStatus = currAttendanceDetail.getAttendanceStatus();
+            LeaveTypeEnum oldLeaveType = currAttendanceDetail.getLeaveTypeEnum();
+            handleCheckIn(currAttendanceDetail);
+            updateStatus(attendance, currAttendanceDetail, oldLeaveType, oldStatus);
+        } else if (attendanceDetailDTO.getCheckOut() != null) {
             currAttendanceDetail.setCheckOut(attendanceDetailDTO.getCheckOut().toLocalTime());
+            AttendanceStatusEnum oldStatus = currAttendanceDetail.getAttendanceStatus();
+            LeaveTypeEnum oldLeaveType = currAttendanceDetail.getLeaveTypeEnum();
+            handleCheckOutInValid(currAttendanceDetail);
+            updateStatus(attendance, currAttendanceDetail, oldLeaveType, oldStatus);
         }
         this.attendanceDetailRepository.save(currAttendanceDetail);
         return this.attendanceDetailMapper.convertToResAttendanceDetailDTO(currAttendanceDetail);
     }
+
+    public void updateStatus(Attendance attendance, AttendanceDetail currAttendanceDetail, LeaveTypeEnum oldLeaveType, AttendanceStatusEnum oldStatus) {
+        if (oldStatus != currAttendanceDetail.getAttendanceStatus() || oldLeaveType != currAttendanceDetail.getLeaveTypeEnum()) {
+            if (oldStatus == AttendanceStatusEnum.ABSENT) {
+                attendance.setTotalUnpaidLeaves(attendance.getTotalUnpaidLeaves() - 1);
+                this.attendanceRepository.save(attendance);
+            } else if (oldStatus == AttendanceStatusEnum.PRESENT) {
+                attendance.setTotalPaidLeaves(attendance.getTotalPaidLeaves() - 1);
+                this.attendanceRepository.save(attendance);
+            } else if (oldStatus == AttendanceStatusEnum.ON_LEAVE) {
+                if (oldLeaveType == LeaveTypeEnum.HOLIDAY) {
+                    attendance.setTotalHolidayLeaves(attendance.getTotalHolidayLeaves() - 1);
+                } else if (oldLeaveType == LeaveTypeEnum.SICK_LEAVE) {
+                    attendance.setTotalSickLeaves(attendance.getTotalSickLeaves() - 1);
+                } else if (oldLeaveType == LeaveTypeEnum.MATERNITY_LEAVE) {
+                    attendance.setTotalMaternityLeaves(attendance.getTotalMaternityLeaves() - 1);
+                } else if (oldLeaveType == LeaveTypeEnum.PAID_LEAVE) {
+                    attendance.setTotalPaidLeaves(attendance.getTotalPaidLeaves() - 1);
+                }
+            }
+            updateTotalWorking(currAttendanceDetail, attendance);
+        }
+    }
+
+
 
     public void handleCheckOutInValid(AttendanceDetail attendanceDetail) {
         if (attendanceDetail.getCheckOut() != null) {
@@ -183,11 +228,11 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
         List<User> usersActive = new ArrayList<>();
         List<Contract> contracts = this.contractRepository.getAllByStatus(1);
         for (Contract contract : contracts) {
-            if(this.userRepository.findUserByIdAndStatus(contract.getUser().getId(),1).isPresent()) {
+            if (this.userRepository.findUserByIdAndStatus(contract.getUser().getId(), 1).isPresent()) {
                 usersActive.add(contract.getUser());
             }
         }
-        return  usersActive;
+        return usersActive;
     }
 
     @Override
@@ -211,7 +256,7 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
                 attendance = attendanceRepository.save(attendance);
             }
             AttendanceDetail optionalAttendanceDetail = attendanceDetailRepository.findByAttendanceAndCheckInDate(attendance, today);
-            Optional<LeaveRequest> leaveRequestOpt = leaveReqRepository.findLeaveRequestByUserAndDateAndStatus(user, today,1);
+            Optional<LeaveRequest> leaveRequestOpt = leaveReqRepository.findLeaveRequestByUserAndDateAndStatus(user, today, 1);
             Optional<Holiday> holidayOpt = holidayRepository.findHolidayByDate(today);
             if (optionalAttendanceDetail != null) {
                 AttendanceDetail attendanceDetail = optionalAttendanceDetail;
@@ -231,26 +276,7 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
                     handleCheckIn(attendanceDetail);
                 }
                 attendanceDetailRepository.save(attendanceDetail);
-                if (oldStatus != attendanceDetail.getAttendanceStatus() || oldLeaveType != attendanceDetail.getLeaveTypeEnum()) {
-                    if (oldStatus == AttendanceStatusEnum.ABSENT) {
-                        attendance.setTotalUnpaidLeaves(attendance.getTotalUnpaidLeaves() - 1);
-                        this.attendanceRepository.save(attendance);
-                    } else if (oldStatus == AttendanceStatusEnum.PRESENT) {
-                        attendance.setTotalPaidLeaves(attendance.getTotalPaidLeaves() - 1);
-                        this.attendanceRepository.save(attendance);
-                    }else if (oldStatus == AttendanceStatusEnum.ON_LEAVE) {
-                        if (oldLeaveType == LeaveTypeEnum.HOLIDAY) {
-                            attendance.setTotalHolidayLeaves(attendance.getTotalHolidayLeaves() - 1);
-                        } else if (oldLeaveType == LeaveTypeEnum.SICK_LEAVE) {
-                            attendance.setTotalSickLeaves(attendance.getTotalSickLeaves()-1);
-                        } else if (oldLeaveType == LeaveTypeEnum.MATERNITY_LEAVE) {
-                            attendance.setTotalMaternityLeaves(attendance.getTotalMaternityLeaves()-1);
-                        }else if (oldLeaveType == LeaveTypeEnum.PAID_LEAVE) {
-                            attendance.setTotalPaidLeaves(attendance.getTotalPaidLeaves()-1);
-                        }
-                    }
-                    updateTotalWorking(attendanceDetail, attendance);
-                }
+                updateStatus(attendance, attendanceDetail, oldLeaveType, oldStatus);
             } else {
                 AttendanceDetail newDetail = new AttendanceDetail();
                 newDetail.setAttendance(attendance);
@@ -292,16 +318,16 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
 
     @Override
     public List<ResAttendanceDetailDTO> handleGetAllByUser(Long id) {
-      User user = this.userRepository.findUserByIdAndStatus(id,1).orElseThrow(() -> new NotFoundException("User not found"));
-       List<Attendance> attendances = this.attendanceRepository.findAllByUserOrderByMonthOfYearDesc(user);
-       List<AttendanceDetail> attendanceDetails = new ArrayList<>();
-       for (Attendance attendance : attendances) {
-           List<AttendanceDetail> details = attendanceDetailRepository.findAllByAttendance(attendance);
-           attendanceDetails.addAll(details);
-       }
-       return attendanceDetails.stream().
-               map(attendanceDetailMapper::convertToResAttendanceDetailDTO)
-               .collect(Collectors.toList());
+        User user = this.userRepository.findUserByIdAndStatus(id, 1).orElseThrow(() -> new NotFoundException("User not found"));
+        List<Attendance> attendances = this.attendanceRepository.findAllByUserOrderByMonthOfYearDesc(user);
+        List<AttendanceDetail> attendanceDetails = new ArrayList<>();
+        for (Attendance attendance : attendances) {
+            List<AttendanceDetail> details = attendanceDetailRepository.findAllByAttendance(attendance);
+            attendanceDetails.addAll(details);
+        }
+        return attendanceDetails.stream().
+                map(attendanceDetailMapper::convertToResAttendanceDetailDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -324,8 +350,8 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
 
     @Override
     public String checkExistAttendanceDetail(LocalDate date, Long userId) {
-        User user = this.userRepository.findUserByIdAndStatus(userId,1).orElseThrow(() -> new NotFoundException("User not found"));
-        if (attendanceDetailRepository.existsByWorkingDayAndUser(date,user)) {
+        User user = this.userRepository.findUserByIdAndStatus(userId, 1).orElseThrow(() -> new NotFoundException("User not found"));
+        if (attendanceDetailRepository.existsByWorkingDayAndUser(date, user)) {
             return "AttendanceDetail already exist";
         } else {
             return "AttendanceDetail not exist";

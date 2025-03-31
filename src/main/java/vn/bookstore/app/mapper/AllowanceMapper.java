@@ -18,7 +18,7 @@ public interface AllowanceMapper {
 
     @Mapping(source = "id", target = "idString",qualifiedByName = "formatId")
     @Mapping(source = "allowance", target = "allowance", qualifiedByName = "formatBigDecimal")
-    @Mapping(source = "roles", target = "roleId", qualifiedByName = "mapRolesToIds")
+    @Mapping(source = "roles", target = "roleName", qualifiedByName = "mapRolesToIds")
     ResAllowanceDTO convertToResAllowanceDTO(Allowance allowance);
 
     @Named("formatId")
@@ -26,11 +26,11 @@ public interface AllowanceMapper {
         return "AL-" + id;
     }
     @Named("mapRolesToIds")
-    static java.util.List<Long> mapRolesToIds(java.util.List<Role> roles) {
+    static java.util.List<String> mapRolesToIds(java.util.List<Role> roles) {
         if (roles == null) {
             return new ArrayList<>();
         }
-        return roles.stream().map(Role::getId).collect(Collectors.toList());
+        return roles.stream().map(Role::getName).collect(Collectors.toList());
     }
 
 

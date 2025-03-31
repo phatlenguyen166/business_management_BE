@@ -21,6 +21,7 @@ import vn.bookstore.app.util.constant.LateTypeEnum;
 import vn.bookstore.app.util.error.InvalidRequestException;
 import vn.bookstore.app.util.error.NotFoundException;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -303,6 +304,13 @@ public class PayrollServiceImpl implements PayrollService {
     }
 
     @Override
+    public List<ResPayrollDTO> getAllPayRollByYear(Year year) {
+        return this.payrollRepository.findAllPayrollByYear(year.toString()).stream()
+                .map(payrollMapper::convertToResPayrollDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public ResPayrollDTO getPayrollById(Long id) {
         Payroll payroll = this.payrollRepository.findPayrollById(id).orElseThrow(() -> new NotFoundException("Bảng lương không tồn tại"));
         return this.payrollMapper.convertToResPayrollDTO(payroll);
@@ -441,9 +449,16 @@ public class PayrollServiceImpl implements PayrollService {
     }
 
     @Override
-    public void generatePayrollPdf(String filePath, ResPayrollDTO payroll) throws DocumentException, IOException {
+    public String generatePayrollPdf(String filePath, ResPayrollDTO payroll) throws DocumentException, IOException {
+        String folderPath = "payroll";
+        File folder = new File(folderPath);
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
+        // Đường dẫn đầy đủ của file
+        String fullFilePath = folderPath + "/" + filePath;
         Document document = new Document();
-        PdfWriter.getInstance(document, new FileOutputStream(filePath));
+        PdfWriter.getInstance(document, new FileOutputStream(fullFilePath));
         document.open();
         BaseFont bf = BaseFont.createFont(
                 "fonts/times.ttf",      // Đường dẫn tương đối từ thư mục resources
@@ -456,14 +471,22 @@ public class PayrollServiceImpl implements PayrollService {
         headerPdf(document,boldFont,font);
         contentPdf(document,payroll,boldFont,font);
         footerPdf(document,boldFont,font);
-
         document.close();
+        return fullFilePath;
     }
 
     @Override
-    public void generatePayrollByYearPdf(String filePath, List<ResPayrollDTO> Payrolls) throws IOException {
+    public String generatePayrollByYearPdf(String filePath, List<ResPayrollDTO> Payrolls) throws IOException {
+        String folderPath = "payroll";
+        File folder = new File(folderPath);
+        // Tạo thư mục nếu chưa tồn tại
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
+        // Đường dẫn đầy đủ của file
+        String fullFilePath = folderPath + "/" + filePath;
         Document document = new Document();
-        PdfWriter.getInstance(document, new FileOutputStream(filePath));
+        PdfWriter.getInstance(document, new FileOutputStream(fullFilePath));
         document.open();
         BaseFont bf = BaseFont.createFont(
                 "fonts/times.ttf",      // Đường dẫn tương đối từ thư mục resources
@@ -483,6 +506,7 @@ public class PayrollServiceImpl implements PayrollService {
         }
         footerPdf(document,boldFont,font);
         document.close();
+        return fullFilePath;
     }
 
     // Các phương thức hỗ trợ
