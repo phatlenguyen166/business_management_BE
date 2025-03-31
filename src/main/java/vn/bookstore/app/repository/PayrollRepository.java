@@ -24,5 +24,8 @@ public interface PayrollRepository extends JpaRepository<Payroll, Long> {
     @Query("SELECT pr from Payroll pr where SUBSTRING(pr.attendance.monthOfYear,1,4) =:year AND pr.attendance.user =:user ")
     List<Payroll> findAllPayrollByUserByYear(@Param("year") String year , @Param("user") User user);
 
+    @Query("SELECT pr from Payroll pr where SUBSTRING(pr.attendance.monthOfYear,1,4) =:year ")
+    List<Payroll> findAllPayrollByYear(@Param("year") String year );
+
     Optional<Payroll> findPayrollById(Long id);
 }

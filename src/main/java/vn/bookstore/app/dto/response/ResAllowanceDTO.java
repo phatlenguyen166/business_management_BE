@@ -18,6 +18,6 @@ public class ResAllowanceDTO {
     private Long id;
     private String idString;
     private String allowance;
-    private List<Long> roleId;
+    private List<String> roleName;
 
 }
