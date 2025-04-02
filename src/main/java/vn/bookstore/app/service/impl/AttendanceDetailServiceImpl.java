@@ -58,7 +58,7 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
     }
 
     public void handleCheckIn(AttendanceDetail attendanceDetail) {
-        if (attendanceDetail.getCheckIn().isAfter(LocalTime.of(9, 0)) && attendanceDetail.getCheckIn().isBefore(LocalTime.of(10, 0))) {
+        if (attendanceDetail.getCheckIn().isAfter(LocalTime.of(8, 30)) && attendanceDetail.getCheckIn().isBefore(LocalTime.of(10, 0))) {
             attendanceDetail.setLateTypeEnum(LateTypeEnum.LATE_1);
         } else if (attendanceDetail.getCheckIn().isAfter(LocalTime.of(10, 0)) && attendanceDetail.getCheckIn().isBefore(LocalTime.of(12, 0))) {
             attendanceDetail.setLateTypeEnum(LateTypeEnum.LATE_2);
@@ -228,7 +228,7 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
         List<User> usersActive = new ArrayList<>();
         List<Contract> contracts = this.contractRepository.getAllByStatus(1);
         for (Contract contract : contracts) {
-            if (this.userRepository.findUserByIdAndStatus(contract.getUser().getId(), 1).isPresent()) {
+            if (this.userRepository.findUserByIdAndStatusAndUsernameNot(contract.getUser().getId(), 1,"ADMIN").isPresent()) {
                 usersActive.add(contract.getUser());
             }
         }
