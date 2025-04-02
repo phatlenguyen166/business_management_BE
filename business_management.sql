@@ -1,3761 +1,695 @@
-CREATE DATABASE IF NOT EXISTS `business_management` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-
+CREATE DATABASE  IF NOT EXISTS `business_management` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `business_management`;
-
--- MySQL dump 10.13  Distrib 8.0.41, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.36, for Win64 (x86_64)
 --
 -- Host: localhost    Database: business_management
 -- ------------------------------------------------------
--- Server version	8.0.41
+-- Server version	8.0.37
+
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-
 /*!50503 SET NAMES utf8 */;
-
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-
 /*!40103 SET TIME_ZONE='+00:00' */;
-
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
 -- Table structure for table `allowances`
 --
+
 DROP TABLE IF EXISTS `allowances`;
-
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-
 /*!50503 SET character_set_client = utf8mb4 */;
-
-CREATE TABLE
-  `allowances` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
-    `allowance` decimal(38, 2) DEFAULT NULL,
-    PRIMARY KEY (`id`)
-  ) ENGINE = InnoDB AUTO_INCREMENT = 3 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
+CREATE TABLE `allowances` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `allowance` decimal(38,2) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `allowances`
 --
+
 LOCK TABLES `allowances` WRITE;
-
 /*!40000 ALTER TABLE `allowances` DISABLE KEYS */;
-
-INSERT INTO
-  `allowances`
-VALUES
-  (1, 500000.00),
-  (2, 300000.00);
-
+INSERT INTO `allowances` VALUES (1,500000.00),(2,300000.00);
 /*!40000 ALTER TABLE `allowances` ENABLE KEYS */;
-
 UNLOCK TABLES;
 
 --
 -- Table structure for table `attendance_details`
 --
+
 DROP TABLE IF EXISTS `attendance_details`;
-
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-
 /*!50503 SET character_set_client = utf8mb4 */;
-
-CREATE TABLE
-  `attendance_details` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
-    `attendance_status` enum ('ABSENT', 'ON_LEAVE', 'PRESENT') DEFAULT NULL,
-    `check_in` time(6) DEFAULT NULL,
-    `check_out` time(6) DEFAULT NULL,
-    `leave_type_enum` enum (
-      'HOLIDAY',
-      'MATERNITY_LEAVE',
-      'PAID_LEAVE',
-      'SICK_LEAVE'
-    ) DEFAULT NULL,
-    `working_day` date DEFAULT NULL,
-    `attendance_id` bigint NOT NULL,
-    `holiday_id` bigint DEFAULT NULL,
-    `late_type_enum` enum ('LATE_1', 'LATE_2', 'LATE_3', 'LATE_4') DEFAULT NULL,
-    PRIMARY KEY (`id`),
-    KEY `FK1d74vxn7muwg3w6matb0tkf9c` (`attendance_id`),
-    KEY `FK9otly272s6xvcvno3urlwihlf` (`holiday_id`),
-    CONSTRAINT `FK1d74vxn7muwg3w6matb0tkf9c` FOREIGN KEY (`attendance_id`) REFERENCES `attendances` (`id`),
-    CONSTRAINT `FK9otly272s6xvcvno3urlwihlf` FOREIGN KEY (`holiday_id`) REFERENCES `holidays` (`id`)
-  ) ENGINE = InnoDB AUTO_INCREMENT = 173 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
+CREATE TABLE `attendance_details` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `attendance_status` enum('ABSENT','ON_LEAVE','PRESENT') DEFAULT NULL,
+  `check_in` time(6) DEFAULT NULL,
+  `check_out` time(6) DEFAULT NULL,
+  `late_type_enum` enum('LATE_1','LATE_2','LATE_3','LATE_4') DEFAULT NULL,
+  `leave_type_enum` enum('HOLIDAY','MATERNITY_LEAVE','PAID_LEAVE','SICK_LEAVE') DEFAULT NULL,
+  `working_day` date DEFAULT NULL,
+  `attendance_id` bigint NOT NULL,
+  `holiday_id` bigint DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK1d74vxn7muwg3w6matb0tkf9c` (`attendance_id`),
+  KEY `FK9otly272s6xvcvno3urlwihlf` (`holiday_id`),
+  CONSTRAINT `FK1d74vxn7muwg3w6matb0tkf9c` FOREIGN KEY (`attendance_id`) REFERENCES `attendances` (`id`),
+  CONSTRAINT `FK9otly272s6xvcvno3urlwihlf` FOREIGN KEY (`holiday_id`) REFERENCES `holidays` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1097 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `attendance_details`
 --
+
 LOCK TABLES `attendance_details` WRITE;
-
 /*!40000 ALTER TABLE `attendance_details` DISABLE KEYS */;
-
-INSERT INTO
-  `attendance_details`
-VALUES
-  (
-    1,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'HOLIDAY',
-    '2025-01-01',
-    1,
-    1,
-    NULL
-  ),
-  (
-    2,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-02',
-    1,
-    NULL,
-    NULL
-  ),
-  (
-    3,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-03',
-    1,
-    NULL,
-    NULL
-  ),
-  (
-    4,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-06',
-    1,
-    NULL,
-    NULL
-  ),
-  (
-    5,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-07',
-    1,
-    NULL,
-    NULL
-  ),
-  (
-    6,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-08',
-    1,
-    NULL,
-    NULL
-  ),
-  (
-    7,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-09',
-    1,
-    NULL,
-    NULL
-  ),
-  (
-    8,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'PAID_LEAVE',
-    '2025-01-10',
-    1,
-    NULL,
-    NULL
-  ),
-  (
-    9,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-13',
-    1,
-    NULL,
-    NULL
-  ),
-  (
-    10,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-14',
-    1,
-    NULL,
-    NULL
-  ),
-  (
-    11,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-15',
-    1,
-    NULL,
-    NULL
-  ),
-  (
-    12,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-16',
-    1,
-    NULL,
-    NULL
-  ),
-  (
-    13,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-17',
-    1,
-    NULL,
-    NULL
-  ),
-  (
-    14,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-20',
-    1,
-    NULL,
-    NULL
-  ),
-  (
-    15,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-21',
-    1,
-    NULL,
-    NULL
-  ),
-  (
-    16,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-22',
-    1,
-    NULL,
-    NULL
-  ),
-  (
-    17,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-23',
-    1,
-    NULL,
-    NULL
-  ),
-  (
-    18,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-24',
-    1,
-    NULL,
-    NULL
-  ),
-  (
-    19,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-27',
-    1,
-    NULL,
-    NULL
-  ),
-  (
-    20,
-    'ON_LEAVE',
-    '00:00:00.000000',
-    '00:00:00.000000',
-    NULL,
-    '2025-01-28',
-    1,
-    2,
-    NULL
-  ),
-  (
-    21,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'HOLIDAY',
-    '2025-01-29',
-    1,
-    2,
-    NULL
-  ),
-  (
-    22,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'HOLIDAY',
-    '2025-01-30',
-    1,
-    2,
-    NULL
-  ),
-  (
-    23,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'HOLIDAY',
-    '2025-01-31',
-    1,
-    2,
-    NULL
-  ),
-  (
-    24,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'HOLIDAY',
-    '2025-01-01',
-    2,
-    1,
-    NULL
-  ),
-  (
-    25,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-02',
-    2,
-    NULL,
-    NULL
-  ),
-  (
-    26,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-03',
-    2,
-    NULL,
-    NULL
-  ),
-  (
-    27,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-06',
-    2,
-    NULL,
-    NULL
-  ),
-  (
-    28,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-07',
-    2,
-    NULL,
-    NULL
-  ),
-  (
-    29,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-08',
-    2,
-    NULL,
-    NULL
-  ),
-  (
-    30,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-09',
-    2,
-    NULL,
-    NULL
-  ),
-  (
-    31,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-10',
-    2,
-    NULL,
-    NULL
-  ),
-  (
-    32,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-13',
-    2,
-    NULL,
-    NULL
-  ),
-  (
-    33,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-14',
-    2,
-    NULL,
-    NULL
-  ),
-  (
-    34,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-15',
-    2,
-    NULL,
-    NULL
-  ),
-  (
-    35,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-16',
-    2,
-    NULL,
-    NULL
-  ),
-  (
-    36,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-17',
-    2,
-    NULL,
-    NULL
-  ),
-  (
-    37,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'PAID_LEAVE',
-    '2025-01-20',
-    2,
-    NULL,
-    NULL
-  ),
-  (
-    38,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'PAID_LEAVE',
-    '2025-01-21',
-    2,
-    NULL,
-    NULL
-  ),
-  (
-    39,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'PAID_LEAVE',
-    '2025-01-22',
-    2,
-    NULL,
-    NULL
-  ),
-  (
-    40,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'PAID_LEAVE',
-    '2025-01-23',
-    2,
-    NULL,
-    NULL
-  ),
-  (
-    41,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'PAID_LEAVE',
-    '2025-01-24',
-    2,
-    NULL,
-    NULL
-  ),
-  (
-    42,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-27',
-    2,
-    NULL,
-    NULL
-  ),
-  (
-    43,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-28',
-    2,
-    NULL,
-    NULL
-  ),
-  (
-    44,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'HOLIDAY',
-    '2025-01-29',
-    2,
-    2,
-    NULL
-  ),
-  (
-    45,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'HOLIDAY',
-    '2025-01-30',
-    2,
-    2,
-    NULL
-  ),
-  (
-    46,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'HOLIDAY',
-    '2025-01-31',
-    2,
-    2,
-    NULL
-  ),
-  (
-    47,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'HOLIDAY',
-    '2025-01-01',
-    3,
-    1,
-    NULL
-  ),
-  (
-    48,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-02',
-    3,
-    NULL,
-    NULL
-  ),
-  (
-    49,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-03',
-    3,
-    NULL,
-    NULL
-  ),
-  (
-    50,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-06',
-    3,
-    NULL,
-    NULL
-  ),
-  (
-    51,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-07',
-    3,
-    NULL,
-    NULL
-  ),
-  (
-    52,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-08',
-    3,
-    NULL,
-    NULL
-  ),
-  (
-    53,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-09',
-    3,
-    NULL,
-    NULL
-  ),
-  (
-    54,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-10',
-    3,
-    NULL,
-    NULL
-  ),
-  (
-    55,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-13',
-    3,
-    NULL,
-    NULL
-  ),
-  (
-    56,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-14',
-    3,
-    NULL,
-    NULL
-  ),
-  (
-    57,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-15',
-    3,
-    NULL,
-    NULL
-  ),
-  (
-    58,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-16',
-    3,
-    NULL,
-    NULL
-  ),
-  (
-    59,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-17',
-    3,
-    NULL,
-    NULL
-  ),
-  (
-    60,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-20',
-    3,
-    NULL,
-    NULL
-  ),
-  (
-    61,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-21',
-    3,
-    NULL,
-    NULL
-  ),
-  (
-    62,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-22',
-    3,
-    NULL,
-    NULL
-  ),
-  (
-    63,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-23',
-    3,
-    NULL,
-    NULL
-  ),
-  (
-    64,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-24',
-    3,
-    NULL,
-    NULL
-  ),
-  (
-    65,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-27',
-    3,
-    NULL,
-    NULL
-  ),
-  (
-    66,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-28',
-    3,
-    NULL,
-    NULL
-  ),
-  (
-    67,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'HOLIDAY',
-    '2025-01-29',
-    3,
-    2,
-    NULL
-  ),
-  (
-    68,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'HOLIDAY',
-    '2025-01-30',
-    3,
-    2,
-    NULL
-  ),
-  (
-    69,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'HOLIDAY',
-    '2025-01-31',
-    3,
-    2,
-    NULL
-  ),
-  (
-    70,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'HOLIDAY',
-    '2025-01-01',
-    4,
-    1,
-    NULL
-  ),
-  (
-    71,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-02',
-    4,
-    NULL,
-    NULL
-  ),
-  (
-    72,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-03',
-    4,
-    NULL,
-    NULL
-  ),
-  (
-    73,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-06',
-    4,
-    NULL,
-    NULL
-  ),
-  (
-    74,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-07',
-    4,
-    NULL,
-    NULL
-  ),
-  (
-    75,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-08',
-    4,
-    NULL,
-    NULL
-  ),
-  (
-    76,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-09',
-    4,
-    NULL,
-    NULL
-  ),
-  (
-    77,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-10',
-    4,
-    NULL,
-    NULL
-  ),
-  (
-    78,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-13',
-    4,
-    NULL,
-    NULL
-  ),
-  (
-    79,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-14',
-    4,
-    NULL,
-    NULL
-  ),
-  (
-    80,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-15',
-    4,
-    NULL,
-    NULL
-  ),
-  (
-    81,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-16',
-    4,
-    NULL,
-    NULL
-  ),
-  (
-    82,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-17',
-    4,
-    NULL,
-    NULL
-  ),
-  (
-    83,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-20',
-    4,
-    NULL,
-    NULL
-  ),
-  (
-    84,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-21',
-    4,
-    NULL,
-    NULL
-  ),
-  (
-    85,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-22',
-    4,
-    NULL,
-    NULL
-  ),
-  (
-    86,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-23',
-    4,
-    NULL,
-    NULL
-  ),
-  (
-    87,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-24',
-    4,
-    NULL,
-    NULL
-  ),
-  (
-    88,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-01-27',
-    4,
-    NULL,
-    NULL
-  ),
-  (
-    89,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'PAID_LEAVE',
-    '2025-01-28',
-    4,
-    NULL,
-    NULL
-  ),
-  (
-    90,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'HOLIDAY',
-    '2025-01-29',
-    4,
-    2,
-    NULL
-  ),
-  (
-    91,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'HOLIDAY',
-    '2025-01-30',
-    4,
-    2,
-    NULL
-  ),
-  (
-    92,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'HOLIDAY',
-    '2025-01-31',
-    4,
-    2,
-    NULL
-  ),
-  (
-    93,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'HOLIDAY',
-    '2025-02-03',
-    5,
-    2,
-    NULL
-  ),
-  (
-    94,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-04',
-    5,
-    NULL,
-    NULL
-  ),
-  (
-    95,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-05',
-    5,
-    NULL,
-    NULL
-  ),
-  (
-    96,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-06',
-    5,
-    NULL,
-    NULL
-  ),
-  (
-    97,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-07',
-    5,
-    NULL,
-    NULL
-  ),
-  (
-    98,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-10',
-    5,
-    NULL,
-    NULL
-  ),
-  (
-    99,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-11',
-    5,
-    NULL,
-    NULL
-  ),
-  (
-    100,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-12',
-    5,
-    NULL,
-    NULL
-  ),
-  (
-    101,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-13',
-    5,
-    NULL,
-    NULL
-  ),
-  (
-    102,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-14',
-    5,
-    NULL,
-    NULL
-  ),
-  (
-    103,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-17',
-    5,
-    NULL,
-    NULL
-  ),
-  (
-    104,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-18',
-    5,
-    NULL,
-    NULL
-  ),
-  (
-    105,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-19',
-    5,
-    NULL,
-    NULL
-  ),
-  (
-    106,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-20',
-    5,
-    NULL,
-    NULL
-  ),
-  (
-    107,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-21',
-    5,
-    NULL,
-    NULL
-  ),
-  (
-    108,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-24',
-    5,
-    NULL,
-    NULL
-  ),
-  (
-    109,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-25',
-    5,
-    NULL,
-    NULL
-  ),
-  (
-    110,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-26',
-    5,
-    NULL,
-    NULL
-  ),
-  (
-    111,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-27',
-    5,
-    NULL,
-    NULL
-  ),
-  (
-    112,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-28',
-    5,
-    NULL,
-    NULL
-  ),
-  (
-    113,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'HOLIDAY',
-    '2025-02-03',
-    6,
-    2,
-    NULL
-  ),
-  (
-    114,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-04',
-    6,
-    NULL,
-    NULL
-  ),
-  (
-    115,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-05',
-    6,
-    NULL,
-    NULL
-  ),
-  (
-    116,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-06',
-    6,
-    NULL,
-    NULL
-  ),
-  (
-    117,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-07',
-    6,
-    NULL,
-    NULL
-  ),
-  (
-    118,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-10',
-    6,
-    NULL,
-    NULL
-  ),
-  (
-    119,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-11',
-    6,
-    NULL,
-    NULL
-  ),
-  (
-    120,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-12',
-    6,
-    NULL,
-    NULL
-  ),
-  (
-    121,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-13',
-    6,
-    NULL,
-    NULL
-  ),
-  (
-    122,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-14',
-    6,
-    NULL,
-    NULL
-  ),
-  (
-    123,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-17',
-    6,
-    NULL,
-    NULL
-  ),
-  (
-    124,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-18',
-    6,
-    NULL,
-    NULL
-  ),
-  (
-    125,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-19',
-    6,
-    NULL,
-    NULL
-  ),
-  (
-    126,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-20',
-    6,
-    NULL,
-    NULL
-  ),
-  (
-    127,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-21',
-    6,
-    NULL,
-    NULL
-  ),
-  (
-    128,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-24',
-    6,
-    NULL,
-    NULL
-  ),
-  (
-    129,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-25',
-    6,
-    NULL,
-    NULL
-  ),
-  (
-    130,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-26',
-    6,
-    NULL,
-    NULL
-  ),
-  (
-    131,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-27',
-    6,
-    NULL,
-    NULL
-  ),
-  (
-    132,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-28',
-    6,
-    NULL,
-    NULL
-  ),
-  (
-    133,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'HOLIDAY',
-    '2025-02-03',
-    7,
-    2,
-    NULL
-  ),
-  (
-    134,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-04',
-    7,
-    NULL,
-    NULL
-  ),
-  (
-    135,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'MATERNITY_LEAVE',
-    '2025-02-05',
-    7,
-    NULL,
-    NULL
-  ),
-  (
-    136,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'MATERNITY_LEAVE',
-    '2025-02-06',
-    7,
-    NULL,
-    NULL
-  ),
-  (
-    137,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'MATERNITY_LEAVE',
-    '2025-02-07',
-    7,
-    NULL,
-    NULL
-  ),
-  (
-    138,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'MATERNITY_LEAVE',
-    '2025-02-10',
-    7,
-    NULL,
-    NULL
-  ),
-  (
-    139,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-11',
-    7,
-    NULL,
-    NULL
-  ),
-  (
-    140,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-12',
-    7,
-    NULL,
-    NULL
-  ),
-  (
-    141,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-13',
-    7,
-    NULL,
-    NULL
-  ),
-  (
-    142,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-14',
-    7,
-    NULL,
-    NULL
-  ),
-  (
-    143,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-17',
-    7,
-    NULL,
-    NULL
-  ),
-  (
-    144,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-18',
-    7,
-    NULL,
-    NULL
-  ),
-  (
-    145,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-19',
-    7,
-    NULL,
-    NULL
-  ),
-  (
-    146,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-20',
-    7,
-    NULL,
-    NULL
-  ),
-  (
-    147,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-21',
-    7,
-    NULL,
-    NULL
-  ),
-  (
-    148,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-24',
-    7,
-    NULL,
-    NULL
-  ),
-  (
-    149,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-25',
-    7,
-    NULL,
-    NULL
-  ),
-  (
-    150,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-26',
-    7,
-    NULL,
-    NULL
-  ),
-  (
-    151,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-27',
-    7,
-    NULL,
-    NULL
-  ),
-  (
-    152,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-28',
-    7,
-    NULL,
-    NULL
-  ),
-  (
-    153,
-    'ON_LEAVE',
-    NULL,
-    NULL,
-    'HOLIDAY',
-    '2025-02-03',
-    8,
-    2,
-    NULL
-  ),
-  (
-    154,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-04',
-    8,
-    NULL,
-    NULL
-  ),
-  (
-    155,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-05',
-    8,
-    NULL,
-    NULL
-  ),
-  (
-    156,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-06',
-    8,
-    NULL,
-    NULL
-  ),
-  (
-    157,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-07',
-    8,
-    NULL,
-    NULL
-  ),
-  (
-    158,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-10',
-    8,
-    NULL,
-    NULL
-  ),
-  (
-    159,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-11',
-    8,
-    NULL,
-    NULL
-  ),
-  (
-    160,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-12',
-    8,
-    NULL,
-    NULL
-  ),
-  (
-    161,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-13',
-    8,
-    NULL,
-    NULL
-  ),
-  (
-    162,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-14',
-    8,
-    NULL,
-    NULL
-  ),
-  (
-    163,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-17',
-    8,
-    NULL,
-    NULL
-  ),
-  (
-    164,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-18',
-    8,
-    NULL,
-    NULL
-  ),
-  (
-    165,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-19',
-    8,
-    NULL,
-    NULL
-  ),
-  (
-    166,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-20',
-    8,
-    NULL,
-    NULL
-  ),
-  (
-    167,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-21',
-    8,
-    NULL,
-    NULL
-  ),
-  (
-    168,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-24',
-    8,
-    NULL,
-    NULL
-  ),
-  (
-    169,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-25',
-    8,
-    NULL,
-    NULL
-  ),
-  (
-    170,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-26',
-    8,
-    NULL,
-    NULL
-  ),
-  (
-    171,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-27',
-    8,
-    NULL,
-    NULL
-  ),
-  (
-    172,
-    'PRESENT',
-    '08:30:00.000000',
-    '17:30:00.000000',
-    NULL,
-    '2025-02-28',
-    8,
-    NULL,
-    NULL
-  );
-
+INSERT INTO `attendance_details` VALUES (1,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-02',25,NULL),(2,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-02',26,NULL),(3,'PRESENT','09:00:00.000000','17:30:29.000000','LATE_1',NULL,'2025-01-02',27,NULL),(4,'PRESENT','07:59:00.000000','17:30:29.000000',NULL,NULL,'2025-01-02',28,NULL),(5,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-01',25,1),(6,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-01',26,1),(7,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-01',27,1),(8,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-01',28,1),(9,'PRESENT','07:59:00.000000','17:30:29.000000',NULL,NULL,'2025-01-03',25,NULL),(10,'PRESENT','07:59:00.000000','17:30:29.000000',NULL,NULL,'2025-01-03',26,NULL),(11,'PRESENT','07:59:00.000000','17:30:29.000000',NULL,NULL,'2025-01-03',27,NULL),(12,'PRESENT','07:59:00.000000','17:30:29.000000',NULL,NULL,'2025-01-03',28,NULL),(13,'PRESENT','07:59:00.000000','17:30:29.000000',NULL,NULL,'2025-01-04',28,NULL),(14,'PRESENT','07:59:00.000000','17:30:29.000000',NULL,NULL,'2025-01-04',27,NULL),(15,'PRESENT','08:59:00.000000','17:30:29.000000','LATE_1',NULL,'2025-01-04',26,NULL),(16,'PRESENT','09:59:00.000000','17:30:29.000000','LATE_1',NULL,'2025-01-04',25,NULL),(17,'PRESENT','07:59:00.000000','17:30:29.000000',NULL,NULL,'2025-01-07',25,NULL),(18,'PRESENT','07:59:00.000000','17:30:29.000000',NULL,NULL,'2025-01-07',26,NULL),(19,'PRESENT','07:59:00.000000','17:30:29.000000',NULL,NULL,'2025-01-07',27,NULL),(20,'PRESENT','07:59:00.000000','17:30:29.000000',NULL,NULL,'2025-01-07',28,NULL),(21,'PRESENT','07:59:00.000000','17:30:29.000000',NULL,NULL,'2025-01-08',26,NULL),(22,'PRESENT','07:59:00.000000','17:30:29.000000',NULL,NULL,'2025-01-08',27,NULL),(23,'PRESENT','07:59:00.000000','17:30:29.000000',NULL,NULL,'2025-01-08',28,NULL),(24,'ON_LEAVE',NULL,NULL,NULL,'PAID_LEAVE','2025-01-08',25,NULL),(25,'PRESENT','07:59:00.000000','17:30:29.000000',NULL,NULL,'2025-01-09',26,NULL),(26,'PRESENT','07:59:00.000000','17:30:29.000000',NULL,NULL,'2025-01-09',27,NULL),(27,'PRESENT','07:59:00.000000','17:30:29.000000',NULL,NULL,'2025-01-09',28,NULL),(28,'ON_LEAVE',NULL,NULL,NULL,'PAID_LEAVE','2025-01-09',25,NULL),(29,'PRESENT','07:59:00.000000','17:30:29.000000',NULL,NULL,'2025-01-10',26,NULL),(30,'PRESENT','07:59:00.000000','17:30:29.000000',NULL,NULL,'2025-01-10',27,NULL),(31,'PRESENT','07:59:00.000000','17:30:29.000000',NULL,NULL,'2025-01-10',28,NULL),(32,'ON_LEAVE',NULL,NULL,NULL,'PAID_LEAVE','2025-01-10',25,NULL),(33,'PRESENT','10:59:00.000000','17:30:29.000000','LATE_2',NULL,'2025-01-13',25,NULL),(34,'PRESENT','08:59:00.000000','17:30:29.000000','LATE_1',NULL,'2025-01-13',26,NULL),(35,'PRESENT','08:59:00.000000','17:30:29.000000','LATE_1',NULL,'2025-01-13',27,NULL),(36,'PRESENT','08:59:00.000000','17:30:29.000000','LATE_1',NULL,'2025-01-13',28,NULL),(37,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-14',25,NULL),(38,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-14',26,NULL),(39,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-14',27,NULL),(40,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-14',28,NULL),(41,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-15',25,NULL),(42,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-15',26,NULL),(43,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-15',28,NULL),(44,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-16',25,NULL),(45,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-16',26,NULL),(46,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-16',28,NULL),(47,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-17',25,NULL),(48,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-17',26,NULL),(49,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-17',28,NULL),(50,'ON_LEAVE',NULL,NULL,NULL,'SICK_LEAVE','2025-01-15',27,NULL),(51,'ON_LEAVE',NULL,NULL,NULL,'SICK_LEAVE','2025-01-16',27,NULL),(52,'ON_LEAVE',NULL,NULL,NULL,'SICK_LEAVE','2025-01-17',27,NULL),(53,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-20',25,NULL),(54,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-20',26,NULL),(55,'ON_LEAVE','08:00:00.000000',NULL,NULL,'SICK_LEAVE','2025-01-20',27,NULL),(56,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-20',28,NULL),(57,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-21',25,NULL),(58,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-21',26,NULL),(59,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-21',27,NULL),(60,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-21',28,NULL),(61,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-22',25,NULL),(62,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-23',25,NULL),(63,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-22',26,NULL),(64,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-22',27,NULL),(65,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-22',28,NULL),(66,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-23',26,NULL),(67,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-23',27,NULL),(68,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-23',28,NULL),(69,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-24',25,NULL),(70,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-24',26,NULL),(71,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-24',27,NULL),(72,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-24',28,NULL),(73,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-27',26,NULL),(74,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-27',27,NULL),(75,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-27',28,NULL),(76,'ABSENT',NULL,NULL,NULL,NULL,'2025-01-27',25,NULL),(77,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-28',25,2),(78,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-28',26,2),(79,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-28',27,2),(80,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-28',28,2),(81,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-29',25,2),(82,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-29',26,2),(83,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-29',27,2),(84,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-29',28,2),(85,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-30',25,2),(86,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-30',26,2),(87,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-30',27,2),(88,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-30',28,2),(89,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-31',25,2),(90,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-31',26,2),(91,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-31',27,2),(92,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-31',28,2),(93,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-02-01',33,2),(94,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-02-01',34,2),(95,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-02-01',35,2),(96,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-02-01',36,2),(97,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-02-01',37,2),(98,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-02-01',38,2),(99,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-02-01',39,2),(100,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-02-01',40,2),(101,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-02-02',33,2),(102,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-02-02',34,2),(103,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-02-02',35,2),(104,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-02-02',36,2),(105,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-02-02',37,2),(106,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-02-02',38,2),(107,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-02-02',39,2),(108,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-02-02',40,2),(109,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-02-03',33,2),(110,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-02-03',34,2),(111,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-02-03',35,2),(112,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-02-03',36,2),(113,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-02-03',37,2),(114,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-02-03',38,2),(115,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-02-03',39,2),(116,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-02-03',40,2),(117,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-04',33,NULL),(118,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-04',34,NULL),(119,'ABSENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-04',35,NULL),(120,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-04',36,NULL),(121,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-04',37,NULL),(122,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-04',38,NULL),(123,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-04',39,NULL),(124,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-04',40,NULL),(125,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-05',40,NULL),(126,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-05',39,NULL),(127,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-05',38,NULL),(128,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-05',37,NULL),(129,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-05',36,NULL),(130,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-05',35,NULL),(131,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-05',34,NULL),(132,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-05',33,NULL),(133,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-06',33,NULL),(134,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-06',34,NULL),(135,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-06',35,NULL),(136,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-06',36,NULL),(137,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-06',37,NULL),(138,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-06',38,NULL),(139,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-06',39,NULL),(140,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-06',40,NULL),(141,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-07',40,NULL),(142,'PRESENT','13:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-07',39,NULL),(143,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-07',38,NULL),(144,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-07',37,NULL),(145,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-07',36,NULL),(146,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-07',35,NULL),(147,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-07',34,NULL),(148,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-07',33,NULL),(165,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-10',33,NULL),(166,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-10',34,NULL),(167,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-10',35,NULL),(168,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-10',36,NULL),(169,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-10',37,NULL),(170,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-10',38,NULL),(171,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-10',39,NULL),(172,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-10',40,NULL),(189,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-11',33,NULL),(190,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-11',34,NULL),(191,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-11',35,NULL),(192,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-11',36,NULL),(193,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-11',37,NULL),(194,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-11',38,NULL),(195,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-11',39,NULL),(196,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-11',40,NULL),(197,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-12',33,NULL),(198,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-12',34,NULL),(199,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-12',35,NULL),(200,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-12',36,NULL),(201,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-12',37,NULL),(202,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-12',38,NULL),(203,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-12',39,NULL),(204,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-12',40,NULL),(205,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-13',33,NULL),(206,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-13',34,NULL),(207,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-13',35,NULL),(208,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-13',36,NULL),(209,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-13',37,NULL),(210,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-13',38,NULL),(211,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-13',39,NULL),(212,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-13',40,NULL),(213,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-14',33,NULL),(214,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-14',34,NULL),(215,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-14',35,NULL),(216,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-14',36,NULL),(217,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-14',37,NULL),(218,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-14',38,NULL),(219,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-14',39,NULL),(220,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-14',40,NULL),(221,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-17',33,NULL),(222,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-17',34,NULL),(223,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-17',35,NULL),(224,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-17',36,NULL),(225,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-17',37,NULL),(226,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-17',38,NULL),(227,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-17',39,NULL),(228,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-17',40,NULL),(229,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-18',33,NULL),(230,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-18',34,NULL),(231,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-18',35,NULL),(232,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-18',36,NULL),(233,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-18',37,NULL),(234,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-18',38,NULL),(235,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-18',39,NULL),(236,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-18',40,NULL),(237,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-19',33,NULL),(238,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-19',34,NULL),(239,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-19',35,NULL),(240,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-19',36,NULL),(241,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-19',37,NULL),(242,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-19',38,NULL),(243,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-19',39,NULL),(244,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-19',40,NULL),(245,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-20',33,NULL),(246,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-20',34,NULL),(247,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-20',35,NULL),(248,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-20',36,NULL),(249,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-20',37,NULL),(250,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-20',38,NULL),(251,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-20',39,NULL),(252,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-20',40,NULL),(253,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-21',33,NULL),(254,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-21',34,NULL),(255,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-21',35,NULL),(256,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-21',36,NULL),(257,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-21',37,NULL),(258,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-21',38,NULL),(259,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-21',39,NULL),(260,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-21',40,NULL),(261,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-24',33,NULL),(262,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-24',34,NULL),(263,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-24',35,NULL),(264,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-24',36,NULL),(265,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-24',37,NULL),(266,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-24',38,NULL),(267,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-24',39,NULL),(268,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-24',40,NULL),(269,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-25',33,NULL),(270,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-25',34,NULL),(271,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-25',35,NULL),(272,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-25',36,NULL),(273,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-25',37,NULL),(274,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-25',38,NULL),(275,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-25',39,NULL),(276,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-25',40,NULL),(277,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-26',33,NULL),(278,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-26',34,NULL),(279,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-26',35,NULL),(280,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-26',36,NULL),(281,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-26',37,NULL),(282,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-26',38,NULL),(283,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-26',39,NULL),(284,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-26',40,NULL),(285,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-27',33,NULL),(286,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-27',34,NULL),(287,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-27',35,NULL),(288,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-27',36,NULL),(289,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-27',37,NULL),(290,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-27',38,NULL),(291,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-27',39,NULL),(292,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-27',40,NULL),(293,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-28',33,NULL),(294,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-28',34,NULL),(295,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-28',35,NULL),(296,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-28',36,NULL),(297,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-28',37,NULL),(298,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-28',38,NULL),(299,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-28',39,NULL),(300,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-02-28',40,NULL),(301,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-03',41,NULL),(302,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-03',42,NULL),(303,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-03',43,NULL),(304,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-03',44,NULL),(305,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-03',45,NULL),(306,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-03',46,NULL),(307,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-03',47,NULL),(308,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-03',48,NULL),(309,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-04',41,NULL),(310,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-04',42,NULL),(311,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-04',43,NULL),(312,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-04',44,NULL),(313,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-04',45,NULL),(314,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-04',46,NULL),(315,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-04',47,NULL),(316,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-04',48,NULL),(317,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-05',41,NULL),(318,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-05',42,NULL),(319,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-05',43,NULL),(320,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-05',44,NULL),(321,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-05',45,NULL),(322,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-05',46,NULL),(323,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-05',47,NULL),(324,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-05',48,NULL),(325,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-06',41,NULL),(326,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-06',42,NULL),(327,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-06',43,NULL),(328,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-06',44,NULL),(329,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-06',45,NULL),(330,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-06',46,NULL),(331,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-06',47,NULL),(332,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-06',48,NULL),(333,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-07',41,NULL),(334,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-07',42,NULL),(335,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-07',43,NULL),(336,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-07',44,NULL),(337,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-07',45,NULL),(338,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-07',46,NULL),(339,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-07',47,NULL),(340,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-07',48,NULL),(341,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-10',41,NULL),(342,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-10',42,NULL),(343,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-10',43,NULL),(344,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-10',44,NULL),(345,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-10',45,NULL),(346,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-10',46,NULL),(347,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-10',47,NULL),(348,'PRESENT','08:30:00.000000','17:30:29.000000',NULL,NULL,'2025-03-10',48,NULL),(349,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-11',41,NULL),(350,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-11',42,NULL),(351,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-11',43,NULL),(352,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-11',44,NULL),(353,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-11',45,NULL),(354,'PRESENT','09:00:00.000000','17:30:29.000000','LATE_1',NULL,'2025-03-11',46,NULL),(355,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-11',47,NULL),(356,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-11',48,NULL),(357,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-12',41,NULL),(358,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-12',42,NULL),(359,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-12',43,NULL),(360,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-12',44,NULL),(361,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-12',45,NULL),(362,'PRESENT','09:00:00.000000','17:30:29.000000','LATE_1',NULL,'2025-03-12',46,NULL),(363,'PRESENT','14:00:00.000000','17:30:29.000000','LATE_4',NULL,'2025-03-12',47,NULL),(364,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-12',48,NULL),(365,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-13',41,NULL),(366,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-13',42,NULL),(367,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-13',43,NULL),(368,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-13',44,NULL),(369,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-13',45,NULL),(370,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-13',46,NULL),(371,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-13',47,NULL),(372,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-13',48,NULL),(373,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-14',41,NULL),(374,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-14',42,NULL),(375,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-14',43,NULL),(376,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-14',44,NULL),(377,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-14',45,NULL),(378,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-14',46,NULL),(379,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-14',47,NULL),(380,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-14',48,NULL),(381,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-17',41,NULL),(382,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-17',42,NULL),(383,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-17',43,NULL),(384,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-17',44,NULL),(385,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-17',45,NULL),(386,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-17',46,NULL),(387,'ABSENT',NULL,NULL,NULL,NULL,'2025-03-17',47,NULL),(388,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-17',48,NULL),(389,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-18',41,NULL),(390,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-18',42,NULL),(391,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-18',43,NULL),(392,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-18',44,NULL),(393,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-18',45,NULL),(394,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-18',46,NULL),(395,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-18',47,NULL),(396,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-18',48,NULL),(397,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-19',41,NULL),(398,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-19',42,NULL),(399,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-19',43,NULL),(400,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-19',44,NULL),(401,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-19',45,NULL),(402,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-19',46,NULL),(403,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-19',47,NULL),(404,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-19',48,NULL),(405,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-20',41,NULL),(406,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-20',42,NULL),(407,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-20',43,NULL),(408,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-20',44,NULL),(409,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-20',45,NULL),(410,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-20',46,NULL),(411,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-20',47,NULL),(412,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-20',48,NULL),(413,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-21',41,NULL),(414,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-21',42,NULL),(415,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-21',43,NULL),(416,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-21',44,NULL),(417,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-21',45,NULL),(418,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-21',46,NULL),(419,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-21',47,NULL),(420,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-21',48,NULL),(429,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-24',41,NULL),(430,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-24',42,NULL),(431,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-24',43,NULL),(432,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-24',44,NULL),(433,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-24',45,NULL),(434,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-24',46,NULL),(435,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-24',47,NULL),(436,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-24',48,NULL),(437,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-25',41,NULL),(438,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-25',42,NULL),(439,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-25',43,NULL),(440,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-25',44,NULL),(441,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-25',45,NULL),(442,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-25',46,NULL),(443,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-25',47,NULL),(444,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-25',48,NULL),(445,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-26',41,NULL),(446,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-26',42,NULL),(447,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-26',43,NULL),(448,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-26',44,NULL),(449,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-26',45,NULL),(450,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-26',46,NULL),(451,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-26',47,NULL),(452,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-26',48,NULL),(453,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-27',41,NULL),(454,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-27',42,NULL),(455,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-27',43,NULL),(456,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-27',44,NULL),(457,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-27',45,NULL),(458,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-27',46,NULL),(459,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-27',47,NULL),(460,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-27',48,NULL),(461,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-28',41,NULL),(462,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-28',42,NULL),(463,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-28',43,NULL),(464,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-28',44,NULL),(465,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-28',45,NULL),(466,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-28',46,NULL),(467,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-28',47,NULL),(468,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-03-28',48,NULL),(469,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-01',29,1),(470,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-01',30,1),(471,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-01',31,1),(472,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-01',32,1),(473,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-02',29,NULL),(474,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-02',30,NULL),(475,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-02',31,NULL),(476,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-02',32,NULL),(477,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-03',29,NULL),(478,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-03',30,NULL),(479,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-03',31,NULL),(480,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-03',32,NULL),(481,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-04',29,NULL),(482,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-04',30,NULL),(483,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-04',31,NULL),(484,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-04',32,NULL),(485,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-07',29,NULL),(486,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-07',30,NULL),(487,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-07',31,NULL),(488,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-07',32,NULL),(489,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-08',29,NULL),(490,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-08',30,NULL),(491,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-08',31,NULL),(492,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-08',32,NULL),(493,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-09',29,NULL),(494,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-09',30,NULL),(495,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-09',31,NULL),(496,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-09',32,NULL),(497,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-10',29,NULL),(498,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-10',30,NULL),(499,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-10',31,NULL),(500,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-10',32,NULL),(501,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-13',29,NULL),(502,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-13',30,NULL),(503,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-13',31,NULL),(504,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-13',32,NULL),(505,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-14',29,NULL),(506,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-14',30,NULL),(507,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-14',31,NULL),(508,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-14',32,NULL),(509,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-15',29,NULL),(510,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-15',30,NULL),(511,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-15',31,NULL),(512,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-15',32,NULL),(513,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-16',29,NULL),(514,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-16',30,NULL),(515,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-16',31,NULL),(516,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-16',32,NULL),(517,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-17',29,NULL),(518,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-17',30,NULL),(519,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-17',31,NULL),(520,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-17',32,NULL),(521,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-20',29,NULL),(522,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-20',30,NULL),(523,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-20',31,NULL),(524,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-20',32,NULL),(525,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-21',29,NULL),(526,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-21',30,NULL),(527,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-21',31,NULL),(528,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-21',32,NULL),(529,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-22',29,NULL),(530,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-22',30,NULL),(531,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-22',31,NULL),(532,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-22',32,NULL),(533,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-23',29,NULL),(534,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-23',30,NULL),(535,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-23',31,NULL),(536,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-23',32,NULL),(537,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-24',29,NULL),(538,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-24',30,NULL),(539,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-24',31,NULL),(540,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-24',32,NULL),(541,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-27',29,NULL),(542,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-27',30,NULL),(543,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-27',31,NULL),(544,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2025-01-27',32,NULL),(545,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-28',29,2),(546,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-28',30,2),(547,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-28',31,2),(548,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-28',32,2),(549,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-29',29,2),(550,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-29',30,2),(551,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-29',31,2),(552,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-29',32,2),(553,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-30',29,2),(554,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-30',30,2),(555,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-30',31,2),(556,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-30',32,2),(557,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-31',29,2),(558,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-31',30,2),(559,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-31',31,2),(560,'ON_LEAVE',NULL,NULL,NULL,'HOLIDAY','2025-01-31',32,2),(561,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-02',17,NULL),(562,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-02',18,NULL),(563,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-02',19,NULL),(564,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-02',20,NULL),(565,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-02',21,NULL),(566,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-02',22,NULL),(567,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-02',23,NULL),(568,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-02',24,NULL),(569,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-03',17,NULL),(570,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-03',18,NULL),(571,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-03',19,NULL),(572,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-03',20,NULL),(573,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-03',21,NULL),(574,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-03',22,NULL),(575,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-03',23,NULL),(576,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-03',24,NULL),(577,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-04',17,NULL),(578,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-04',18,NULL),(579,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-04',19,NULL),(580,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-04',20,NULL),(581,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-04',21,NULL),(582,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-04',22,NULL),(583,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-04',23,NULL),(584,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-04',24,NULL),(585,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-05',17,NULL),(586,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-05',18,NULL),(587,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-05',19,NULL),(588,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-05',20,NULL),(589,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-05',21,NULL),(590,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-05',22,NULL),(591,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-05',23,NULL),(592,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-05',24,NULL),(593,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-06',17,NULL),(594,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-06',18,NULL),(595,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-06',19,NULL),(596,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-06',20,NULL),(597,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-06',21,NULL),(598,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-06',22,NULL),(599,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-06',23,NULL),(600,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-06',24,NULL),(601,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-09',17,NULL),(602,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-09',18,NULL),(603,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-09',19,NULL),(604,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-09',20,NULL),(605,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-09',21,NULL),(606,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-09',22,NULL),(607,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-09',23,NULL),(608,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-09',24,NULL),(609,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-10',17,NULL),(610,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-10',18,NULL),(611,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-10',19,NULL),(612,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-10',20,NULL),(613,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-10',21,NULL),(614,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-10',22,NULL),(615,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-10',23,NULL),(616,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-10',24,NULL),(617,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-11',17,NULL),(618,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-11',18,NULL),(619,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-11',19,NULL),(620,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-11',20,NULL),(621,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-11',21,NULL),(622,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-11',22,NULL),(623,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-11',23,NULL),(624,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-11',24,NULL),(625,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-12',17,NULL),(626,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-12',18,NULL),(627,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-12',19,NULL),(628,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-12',20,NULL),(629,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-12',21,NULL),(630,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-12',22,NULL),(631,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-12',23,NULL),(632,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-12',24,NULL),(633,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-13',17,NULL),(634,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-13',18,NULL),(635,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-13',19,NULL),(636,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-13',20,NULL),(637,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-13',21,NULL),(638,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-13',22,NULL),(639,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-13',23,NULL),(640,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-13',24,NULL),(641,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-16',17,NULL),(642,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-16',18,NULL),(643,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-16',19,NULL),(644,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-16',20,NULL),(645,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-16',21,NULL),(646,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-16',22,NULL),(647,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-16',23,NULL),(648,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-16',24,NULL),(649,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-17',17,NULL),(650,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-17',18,NULL),(651,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-17',19,NULL),(652,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-17',20,NULL),(653,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-17',21,NULL),(654,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-17',22,NULL),(655,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-17',23,NULL),(656,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-17',24,NULL),(657,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-18',17,NULL),(658,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-18',18,NULL),(659,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-18',19,NULL),(660,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-18',20,NULL),(661,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-18',21,NULL),(662,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-18',22,NULL),(663,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-18',23,NULL),(664,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-18',24,NULL),(665,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-19',17,NULL),(666,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-19',18,NULL),(667,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-19',19,NULL),(668,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-19',20,NULL),(669,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-19',21,NULL),(670,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-19',22,NULL),(671,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-19',23,NULL),(672,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-19',24,NULL),(673,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-20',17,NULL),(674,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-20',18,NULL),(675,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-20',19,NULL),(676,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-20',20,NULL),(677,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-20',21,NULL),(678,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-20',22,NULL),(679,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-20',23,NULL),(680,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-20',24,NULL),(681,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-23',17,NULL),(682,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-23',18,NULL),(683,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-23',19,NULL),(684,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-23',20,NULL),(685,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-23',21,NULL),(686,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-23',22,NULL),(687,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-23',23,NULL),(688,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-23',24,NULL),(689,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-24',17,NULL),(690,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-24',18,NULL),(691,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-24',19,NULL),(692,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-24',20,NULL),(693,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-24',21,NULL),(694,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-24',22,NULL),(695,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-24',23,NULL),(696,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-24',24,NULL),(697,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-25',17,NULL),(698,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-25',18,NULL),(699,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-25',19,NULL),(700,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-25',20,NULL),(701,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-25',21,NULL),(702,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-25',22,NULL),(703,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-25',23,NULL),(704,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-25',24,NULL),(705,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-26',17,NULL),(706,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-26',18,NULL),(707,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-26',19,NULL),(708,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-26',20,NULL),(709,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-26',21,NULL),(710,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-26',22,NULL),(711,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-26',23,NULL),(712,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-26',24,NULL),(713,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-27',17,NULL),(714,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-27',18,NULL),(715,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-27',19,NULL),(716,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-27',20,NULL),(717,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-27',21,NULL),(718,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-27',22,NULL),(719,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-27',23,NULL),(720,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-27',24,NULL),(721,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-30',17,NULL),(722,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-30',18,NULL),(723,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-30',19,NULL),(724,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-30',20,NULL),(725,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-30',21,NULL),(726,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-30',22,NULL),(727,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-30',23,NULL),(728,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-30',24,NULL),(729,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-31',17,NULL),(730,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-31',18,NULL),(731,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-31',19,NULL),(732,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-31',20,NULL),(733,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-31',21,NULL),(734,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-31',22,NULL),(735,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-31',23,NULL),(736,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-12-31',24,NULL),(745,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-01',9,NULL),(746,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-01',10,NULL),(747,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-01',11,NULL),(748,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-01',12,NULL),(749,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-01',13,NULL),(750,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-01',14,NULL),(751,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-01',15,NULL),(752,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-01',16,NULL),(753,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-04',9,NULL),(754,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-04',10,NULL),(755,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-04',11,NULL),(756,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-04',12,NULL),(757,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-04',13,NULL),(758,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-04',14,NULL),(759,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-04',15,NULL),(760,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-04',16,NULL),(761,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-05',9,NULL),(762,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-05',10,NULL),(763,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-05',11,NULL),(764,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-05',12,NULL),(765,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-05',13,NULL),(766,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-05',14,NULL),(767,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-05',15,NULL),(768,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-05',16,NULL),(769,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-06',9,NULL),(770,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-06',10,NULL),(771,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-06',11,NULL),(772,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-06',12,NULL),(773,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-06',13,NULL),(774,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-06',14,NULL),(775,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-06',15,NULL),(776,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-06',16,NULL),(777,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-07',9,NULL),(778,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-07',10,NULL),(779,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-07',11,NULL),(780,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-07',12,NULL),(781,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-07',13,NULL),(782,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-07',14,NULL),(783,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-07',15,NULL),(784,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-07',16,NULL),(785,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-08',9,NULL),(786,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-08',10,NULL),(787,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-08',11,NULL),(788,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-08',12,NULL),(789,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-08',13,NULL),(790,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-08',14,NULL),(791,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-08',15,NULL),(792,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-08',16,NULL),(793,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-11',9,NULL),(794,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-11',10,NULL),(795,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-11',11,NULL),(796,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-11',12,NULL),(797,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-11',13,NULL),(798,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-11',14,NULL),(799,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-11',15,NULL),(800,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-11',16,NULL),(801,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-12',9,NULL),(802,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-12',10,NULL),(803,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-12',11,NULL),(804,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-12',12,NULL),(805,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-12',13,NULL),(806,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-12',14,NULL),(807,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-12',15,NULL),(808,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-12',16,NULL),(809,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-13',9,NULL),(810,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-13',10,NULL),(811,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-13',11,NULL),(812,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-13',12,NULL),(813,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-13',13,NULL),(814,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-13',14,NULL),(815,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-13',15,NULL),(816,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-13',16,NULL),(817,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-14',9,NULL),(818,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-14',10,NULL),(819,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-14',11,NULL),(820,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-14',12,NULL),(821,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-14',13,NULL),(822,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-14',14,NULL),(823,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-14',15,NULL),(824,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-14',16,NULL),(825,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-15',9,NULL),(826,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-15',10,NULL),(827,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-15',11,NULL),(828,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-15',12,NULL),(829,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-15',13,NULL),(830,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-15',14,NULL),(831,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-15',15,NULL),(832,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-15',16,NULL),(833,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-18',9,NULL),(834,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-18',10,NULL),(835,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-18',11,NULL),(836,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-18',12,NULL),(837,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-18',13,NULL),(838,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-18',14,NULL),(839,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-18',15,NULL),(840,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-18',16,NULL),(841,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-19',9,NULL),(842,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-19',10,NULL),(843,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-19',11,NULL),(844,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-19',12,NULL),(845,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-19',13,NULL),(846,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-19',14,NULL),(847,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-19',15,NULL),(848,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-19',16,NULL),(849,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-20',9,NULL),(850,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-20',10,NULL),(851,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-20',11,NULL),(852,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-20',12,NULL),(853,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-20',13,NULL),(854,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-20',14,NULL),(855,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-20',15,NULL),(856,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-20',16,NULL),(857,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-21',9,NULL),(858,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-21',10,NULL),(859,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-21',11,NULL),(860,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-21',12,NULL),(861,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-21',13,NULL),(862,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-21',14,NULL),(863,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-21',15,NULL),(864,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-21',16,NULL),(865,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-22',9,NULL),(866,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-22',10,NULL),(867,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-22',11,NULL),(868,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-22',12,NULL),(869,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-22',13,NULL),(870,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-22',14,NULL),(871,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-22',15,NULL),(872,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-22',16,NULL),(873,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-25',9,NULL),(874,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-25',10,NULL),(875,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-25',11,NULL),(876,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-25',12,NULL),(877,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-25',13,NULL),(878,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-25',14,NULL),(879,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-25',15,NULL),(880,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-25',16,NULL),(881,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-26',9,NULL),(882,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-26',10,NULL),(883,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-26',11,NULL),(884,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-26',12,NULL),(885,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-26',13,NULL),(886,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-26',14,NULL),(887,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-26',15,NULL),(888,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-26',16,NULL),(889,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-27',9,NULL),(890,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-27',10,NULL),(891,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-27',11,NULL),(892,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-27',12,NULL),(893,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-27',13,NULL),(894,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-27',14,NULL),(895,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-27',15,NULL),(896,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-27',16,NULL),(897,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-28',9,NULL),(898,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-28',10,NULL),(899,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-28',11,NULL),(900,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-28',12,NULL),(901,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-28',13,NULL),(902,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-28',14,NULL),(903,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-28',15,NULL),(904,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-28',16,NULL),(905,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-29',9,NULL),(906,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-29',10,NULL),(907,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-29',11,NULL),(908,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-29',12,NULL),(909,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-29',13,NULL),(910,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-29',14,NULL),(911,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-29',15,NULL),(912,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-11-29',16,NULL),(913,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-01',1,NULL),(914,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-01',2,NULL),(915,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-01',3,NULL),(916,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-01',4,NULL),(917,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-01',5,NULL),(918,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-01',6,NULL),(919,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-01',7,NULL),(920,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-01',8,NULL),(921,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-02',1,NULL),(922,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-02',2,NULL),(923,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-02',3,NULL),(924,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-02',4,NULL),(925,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-02',5,NULL),(926,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-02',6,NULL),(927,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-02',7,NULL),(928,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-02',8,NULL),(929,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-03',1,NULL),(930,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-03',2,NULL),(931,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-03',3,NULL),(932,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-03',4,NULL),(933,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-03',5,NULL),(934,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-03',6,NULL),(935,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-03',7,NULL),(936,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-03',8,NULL),(937,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-04',1,NULL),(938,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-04',2,NULL),(939,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-04',3,NULL),(940,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-04',4,NULL),(941,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-04',5,NULL),(942,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-04',6,NULL),(943,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-04',7,NULL),(944,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-04',8,NULL),(945,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-07',1,NULL),(946,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-07',2,NULL),(947,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-07',3,NULL),(948,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-07',4,NULL),(949,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-07',5,NULL),(950,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-07',6,NULL),(951,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-07',7,NULL),(952,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-07',8,NULL),(953,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-08',1,NULL),(954,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-08',2,NULL),(955,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-08',3,NULL),(956,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-08',4,NULL),(957,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-08',5,NULL),(958,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-08',6,NULL),(959,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-08',7,NULL),(960,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-08',8,NULL),(961,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-09',1,NULL),(962,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-09',2,NULL),(963,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-09',3,NULL),(964,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-09',4,NULL),(965,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-09',5,NULL),(966,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-09',6,NULL),(967,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-09',7,NULL),(968,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-09',8,NULL),(969,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-10',1,NULL),(970,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-10',2,NULL),(971,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-10',3,NULL),(972,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-10',4,NULL),(973,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-10',5,NULL),(974,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-10',6,NULL),(975,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-10',7,NULL),(976,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-10',8,NULL),(977,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-11',1,NULL),(978,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-11',2,NULL),(979,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-11',3,NULL),(980,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-11',4,NULL),(981,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-11',5,NULL),(982,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-11',6,NULL),(983,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-11',7,NULL),(984,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-11',8,NULL),(985,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-14',1,NULL),(986,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-14',2,NULL),(987,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-14',3,NULL),(988,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-14',4,NULL),(989,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-14',5,NULL),(990,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-14',6,NULL),(991,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-14',7,NULL),(992,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-14',8,NULL),(993,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-15',1,NULL),(994,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-15',2,NULL),(995,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-15',3,NULL),(996,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-15',4,NULL),(997,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-15',5,NULL),(998,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-15',6,NULL),(999,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-15',7,NULL),(1000,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-15',8,NULL),(1001,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-16',1,NULL),(1002,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-16',2,NULL),(1003,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-16',3,NULL),(1004,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-16',4,NULL),(1005,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-16',5,NULL),(1006,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-16',6,NULL),(1007,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-16',7,NULL),(1008,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-16',8,NULL),(1009,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-17',1,NULL),(1010,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-17',2,NULL),(1011,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-17',3,NULL),(1012,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-17',4,NULL),(1013,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-17',5,NULL),(1014,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-17',6,NULL),(1015,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-17',7,NULL),(1016,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-17',8,NULL),(1017,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-18',1,NULL),(1018,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-18',2,NULL),(1019,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-18',3,NULL),(1020,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-18',4,NULL),(1021,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-18',5,NULL),(1022,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-18',6,NULL),(1023,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-18',7,NULL),(1024,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-18',8,NULL),(1025,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-21',1,NULL),(1026,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-21',2,NULL),(1027,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-21',3,NULL),(1028,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-21',4,NULL),(1029,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-21',5,NULL),(1030,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-21',6,NULL),(1031,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-21',7,NULL),(1032,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-21',8,NULL),(1033,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-22',1,NULL),(1034,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-22',2,NULL),(1035,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-22',3,NULL),(1036,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-22',4,NULL),(1037,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-22',5,NULL),(1038,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-22',6,NULL),(1039,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-22',7,NULL),(1040,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-22',8,NULL),(1041,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-23',1,NULL),(1042,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-23',2,NULL),(1043,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-23',3,NULL),(1044,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-23',4,NULL),(1045,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-23',5,NULL),(1046,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-23',6,NULL),(1047,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-23',7,NULL),(1048,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-23',8,NULL),(1049,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-24',1,NULL),(1050,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-24',2,NULL),(1051,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-24',3,NULL),(1052,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-24',4,NULL),(1053,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-24',5,NULL),(1054,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-24',6,NULL),(1055,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-24',7,NULL),(1056,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-24',8,NULL),(1057,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-25',1,NULL),(1058,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-25',2,NULL),(1059,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-25',3,NULL),(1060,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-25',4,NULL),(1061,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-25',5,NULL),(1062,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-25',6,NULL),(1063,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-25',7,NULL),(1064,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-25',8,NULL),(1065,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-28',1,NULL),(1066,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-28',2,NULL),(1067,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-28',3,NULL),(1068,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-28',4,NULL),(1069,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-28',5,NULL),(1070,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-28',6,NULL),(1071,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-28',7,NULL),(1072,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-28',8,NULL),(1073,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-29',1,NULL),(1074,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-29',2,NULL),(1075,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-29',3,NULL),(1076,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-29',4,NULL),(1077,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-29',5,NULL),(1078,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-29',6,NULL),(1079,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-29',7,NULL),(1080,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-29',8,NULL),(1081,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-30',1,NULL),(1082,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-30',2,NULL),(1083,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-30',3,NULL),(1084,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-30',4,NULL),(1085,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-30',5,NULL),(1086,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-30',6,NULL),(1087,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-30',7,NULL),(1088,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-30',8,NULL),(1089,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-31',1,NULL),(1090,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-31',2,NULL),(1091,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-31',3,NULL),(1092,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-31',4,NULL),(1093,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-31',5,NULL),(1094,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-31',6,NULL),(1095,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-31',7,NULL),(1096,'PRESENT','08:00:00.000000','17:30:29.000000',NULL,NULL,'2024-10-31',8,NULL);
 /*!40000 ALTER TABLE `attendance_details` ENABLE KEYS */;
-
 UNLOCK TABLES;
 
 --
 -- Table structure for table `attendances`
 --
+
 DROP TABLE IF EXISTS `attendances`;
-
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-
 /*!50503 SET character_set_client = utf8mb4 */;
-
-CREATE TABLE
-  `attendances` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
-    `month_of_year` varchar(255) DEFAULT NULL,
-    `total_holiday_leaves` int NOT NULL,
-    `total_maternity_leaves` int NOT NULL,
-    `total_paid_leaves` int NOT NULL,
-    `total_sick_leaves` int NOT NULL,
-    `total_unpaid_leaves` int NOT NULL,
-    `total_working_days` int NOT NULL,
-    `user_id` bigint DEFAULT NULL,
-    `standard_working_days` int NOT NULL,
-    PRIMARY KEY (`id`),
-    KEY `FK8o39cn3ghqwhccyrrqdesttr8` (`user_id`),
-    CONSTRAINT `FK8o39cn3ghqwhccyrrqdesttr8` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-  ) ENGINE = InnoDB AUTO_INCREMENT = 9 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
+CREATE TABLE `attendances` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `month_of_year` varchar(255) DEFAULT NULL,
+  `total_holiday_leaves` int NOT NULL,
+  `total_maternity_leaves` int NOT NULL,
+  `total_paid_leaves` int NOT NULL,
+  `total_sick_leaves` int NOT NULL,
+  `total_unpaid_leaves` int NOT NULL,
+  `total_working_days` int NOT NULL,
+  `user_id` bigint DEFAULT NULL,
+  `standard_working_days` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK8o39cn3ghqwhccyrrqdesttr8` (`user_id`),
+  CONSTRAINT `FK8o39cn3ghqwhccyrrqdesttr8` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `attendances`
 --
+
 LOCK TABLES `attendances` WRITE;
-
 /*!40000 ALTER TABLE `attendances` DISABLE KEYS */;
-
-INSERT INTO
-  `attendances`
-VALUES
-  (1, '2025-01', 5, 0, 1, 0, 0, 17, 3, 0),
-  (2, '2025-01', 5, 0, 5, 0, 0, 13, 4, 0),
-  (3, '2025-01', 5, 0, 0, 0, 0, 18, 5, 0),
-  (4, '2025-01', 5, 0, 1, 2, 0, 16, 6, 0),
-  (5, '2025-02', 1, 0, 0, 2, 0, 17, 3, 0),
-  (6, '2025-02', 1, 0, 0, 0, 0, 19, 4, 0),
-  (7, '2025-02', 1, 4, 0, 0, 0, 15, 5, 0),
-  (8, '2025-02', 1, 0, 0, 0, 0, 19, 6, 0);
-
+INSERT INTO `attendances` VALUES (1,'2024-10',0,0,0,0,0,23,3,23),(2,'2024-10',0,0,0,0,0,23,4,23),(3,'2024-10',0,0,0,0,0,23,5,23),(4,'2024-10',0,0,0,0,0,23,6,23),(5,'2024-10',0,0,0,0,0,23,7,23),(6,'2024-10',0,0,0,0,0,23,8,23),(7,'2024-10',0,0,0,0,0,23,9,23),(8,'2024-10',0,0,0,0,0,23,10,23),(9,'2024-11',0,0,0,0,0,21,3,21),(10,'2024-11',0,0,0,0,0,21,4,21),(11,'2024-11',0,0,0,0,0,21,5,21),(12,'2024-11',0,0,0,0,0,21,6,21),(13,'2024-11',0,0,0,0,0,21,7,21),(14,'2024-11',0,0,0,0,0,21,8,21),(15,'2024-11',0,0,0,0,0,21,9,21),(16,'2024-11',0,0,0,0,0,21,10,21),(17,'2024-12',0,0,0,0,0,22,3,22),(18,'2024-12',0,0,0,0,0,22,4,22),(19,'2024-12',0,0,0,0,0,22,5,22),(20,'2024-12',0,0,0,0,0,22,6,22),(21,'2024-12',0,0,0,0,0,22,7,22),(22,'2024-12',0,0,0,0,0,22,8,22),(23,'2024-12',0,0,0,0,0,22,9,22),(24,'2024-12',0,0,0,0,0,22,10,22),(25,'2025-01',5,0,3,0,0,14,3,18),(26,'2025-01',5,0,0,0,0,18,4,18),(27,'2025-01',5,0,0,4,0,14,5,18),(28,'2025-01',5,0,0,0,0,18,6,18),(29,'2025-01',5,0,0,0,0,18,7,18),(30,'2025-01',5,0,0,0,0,18,8,18),(31,'2025-01',5,0,0,0,0,18,9,18),(32,'2025-01',5,0,0,0,0,18,10,18),(33,'2025-02',3,0,0,0,0,19,3,19),(34,'2025-02',3,0,0,0,0,19,4,19),(35,'2025-02',3,0,0,0,0,19,5,19),(36,'2025-02',3,0,0,0,0,19,6,19),(37,'2025-02',3,0,0,0,0,19,7,19),(38,'2025-02',3,0,0,0,0,19,8,19),(39,'2025-02',3,0,0,0,0,19,9,19),(40,'2025-02',3,0,0,0,0,19,10,19),(41,'2025-03',0,0,0,0,1,20,3,21),(42,'2025-03',0,0,0,0,1,20,4,21),(43,'2025-03',0,0,0,0,1,20,5,21),(44,'2025-03',0,0,0,0,1,20,6,21),(45,'2025-03',0,0,0,0,1,20,7,21),(46,'2025-03',0,0,0,0,1,20,8,21),(47,'2025-03',0,0,0,0,2,19,9,21),(48,'2025-03',0,0,0,0,1,20,10,21);
 /*!40000 ALTER TABLE `attendances` ENABLE KEYS */;
+UNLOCK TABLES;
 
+--
+-- Table structure for table `attendances_temp`
+--
+
+DROP TABLE IF EXISTS `attendances_temp`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `attendances_temp` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `month_of_year` varchar(255) DEFAULT NULL,
+  `total_holiday_leaves` int NOT NULL,
+  `total_maternity_leaves` int NOT NULL,
+  `total_paid_leaves` int NOT NULL,
+  `total_sick_leaves` int NOT NULL,
+  `total_unpaid_leaves` int NOT NULL,
+  `total_working_days` int NOT NULL,
+  `user_id` bigint DEFAULT NULL,
+  `standard_working_days` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK8o39cn3ghqwhccyrrqdesttr8` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `attendances_temp`
+--
+
+LOCK TABLES `attendances_temp` WRITE;
+/*!40000 ALTER TABLE `attendances_temp` DISABLE KEYS */;
+INSERT INTO `attendances_temp` VALUES (1,'2024-12',0,0,0,0,0,22,3,22),(2,'2024-12',0,0,0,0,0,22,4,22),(3,'2024-12',0,0,0,0,0,22,5,22),(4,'2024-12',0,0,0,0,0,22,6,22),(5,'2024-12',0,0,0,0,0,22,7,22),(6,'2024-12',0,0,0,0,0,22,8,22),(7,'2024-12',0,0,0,0,0,22,9,22),(8,'2024-12',0,0,0,0,0,22,10,22),(9,'2025-01',5,0,3,0,0,14,3,18),(10,'2025-01',5,0,0,0,0,18,4,18),(11,'2025-01',5,0,0,4,0,14,5,18),(12,'2025-01',5,0,0,0,0,18,6,18),(13,'2025-01',5,0,0,0,0,18,7,18),(14,'2025-01',5,0,0,0,0,18,8,18),(15,'2025-01',5,0,0,0,0,18,9,18),(16,'2025-01',5,0,0,0,0,18,10,18),(17,'2025-02',3,0,0,0,0,19,3,19),(18,'2025-02',3,0,0,0,0,19,4,19),(19,'2025-02',3,0,0,0,0,19,5,19),(20,'2025-02',3,0,0,0,0,19,6,19),(21,'2025-02',3,0,0,0,0,19,7,19),(22,'2025-02',3,0,0,0,0,19,8,19),(23,'2025-02',3,0,0,0,0,19,9,19),(24,'2025-02',3,0,0,0,0,19,10,19),(25,'2025-03',0,0,0,0,1,20,3,21),(26,'2025-03',0,0,0,0,1,20,4,21),(27,'2025-03',0,0,0,0,1,20,5,21),(28,'2025-03',0,0,0,0,1,20,6,21),(29,'2025-03',0,0,0,0,1,20,7,21),(30,'2025-03',0,0,0,0,1,20,8,21),(31,'2025-03',0,0,0,0,2,19,9,21),(32,'2025-03',0,0,0,0,1,20,10,21);
+/*!40000 ALTER TABLE `attendances_temp` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
 -- Table structure for table `authors`
 --
+
 DROP TABLE IF EXISTS `authors`;
-
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-
 /*!50503 SET character_set_client = utf8mb4 */;
-
-CREATE TABLE
-  `authors` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
-    `created_at` datetime (6) DEFAULT NULL,
-    `name` varchar(255) NOT NULL,
-    `updated_at` datetime (6) DEFAULT NULL,
-    PRIMARY KEY (`id`)
-  ) ENGINE = InnoDB AUTO_INCREMENT = 12 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
+CREATE TABLE `authors` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `created_at` datetime(6) DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  `updated_at` datetime(6) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `authors`
 --
+
 LOCK TABLES `authors` WRITE;
-
 /*!40000 ALTER TABLE `authors` DISABLE KEYS */;
-
-INSERT INTO
-  `authors`
-VALUES
-  (
-    1,
-    '2025-03-28 18:18:56.000000',
-    'Nguyễn Nhật Ánh',
-    '2025-03-28 18:18:56.000000'
-  ),
-  (
-    2,
-    '2025-03-28 18:18:56.000000',
-    'Hồ Biểu Chánh',
-    '2025-03-28 18:18:56.000000'
-  ),
-  (
-    3,
-    '2025-03-28 18:18:56.000000',
-    'Nam Cao',
-    '2025-03-28 18:18:56.000000'
-  ),
-  (
-    4,
-    '2025-03-28 18:18:56.000000',
-    'Ngô Tất Tố',
-    '2025-03-28 18:18:56.000000'
-  ),
-  (
-    5,
-    '2025-03-28 18:18:56.000000',
-    'Tô Hoài',
-    '2025-03-28 18:18:56.000000'
-  ),
-  (
-    6,
-    '2025-03-28 18:18:56.000000',
-    'Vũ Trọng Phụng',
-    '2025-03-28 18:18:56.000000'
-  ),
-  (
-    7,
-    '2025-03-28 18:18:56.000000',
-    'Xuân Quỳnh',
-    '2025-03-28 18:18:56.000000'
-  ),
-  (
-    8,
-    '2025-03-28 18:18:56.000000',
-    'Nguyễn Huy Thiệp',
-    '2025-03-28 18:18:56.000000'
-  ),
-  (
-    9,
-    '2025-03-28 18:18:56.000000',
-    'Bùi Anh Tấn',
-    '2025-03-28 18:18:56.000000'
-  ),
-  (
-    10,
-    '2025-03-28 18:18:56.000000',
-    'Nguyễn Ngọc Tư',
-    '2025-03-28 18:18:56.000000'
-  ),
-  (
-    11,
-    '2025-03-29 01:19:57.144042',
-    'Test tác giả',
-    '2025-03-29 01:20:59.307519'
-  );
-
+INSERT INTO `authors` VALUES (1,'2025-03-28 18:18:56.000000','Nguyễn Nhật Ánh','2025-03-28 18:18:56.000000'),(2,'2025-03-28 18:18:56.000000','Hồ Biểu Chánh','2025-03-28 18:18:56.000000'),(3,'2025-03-28 18:18:56.000000','Nam Cao','2025-03-28 18:18:56.000000'),(4,'2025-03-28 18:18:56.000000','Ngô Tất Tố','2025-03-28 18:18:56.000000'),(5,'2025-03-28 18:18:56.000000','Tô Hoài','2025-03-28 18:18:56.000000'),(6,'2025-03-28 18:18:56.000000','Vũ Trọng Phụng','2025-03-28 18:18:56.000000'),(7,'2025-03-28 18:18:56.000000','Xuân Quỳnh','2025-03-28 18:18:56.000000'),(8,'2025-03-28 18:18:56.000000','Nguyễn Huy Thiệp','2025-03-28 18:18:56.000000'),(9,'2025-03-28 18:18:56.000000','Bùi Anh Tấn','2025-03-28 18:18:56.000000'),(10,'2025-03-28 18:18:56.000000','Nguyễn Ngọc Tư','2025-03-28 18:18:56.000000'),(11,'2025-03-29 01:19:57.144042','Test tác giả','2025-03-29 01:20:59.307519');
 /*!40000 ALTER TABLE `authors` ENABLE KEYS */;
-
 UNLOCK TABLES;
 
 --
 -- Table structure for table `bill_details`
 --
+
 DROP TABLE IF EXISTS `bill_details`;
-
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-
 /*!50503 SET character_set_client = utf8mb4 */;
-
-CREATE TABLE
-  `bill_details` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
-    `quantity` int NOT NULL,
-    `sub_price` decimal(19, 4) NOT NULL,
-    `bill_id` bigint NOT NULL,
-    `product_id` bigint NOT NULL,
-    PRIMARY KEY (`id`),
-    KEY `FKfwm4sko9p82ndh6belyxx12bj` (`bill_id`),
-    KEY `FK4iagdr0uhsq4tj0ag99nmmya1` (`product_id`),
-    CONSTRAINT `FK4iagdr0uhsq4tj0ag99nmmya1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
-    CONSTRAINT `FKfwm4sko9p82ndh6belyxx12bj` FOREIGN KEY (`bill_id`) REFERENCES `bills` (`id`)
-  ) ENGINE = InnoDB AUTO_INCREMENT = 5 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
+CREATE TABLE `bill_details` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `quantity` int NOT NULL,
+  `sub_price` decimal(19,4) NOT NULL,
+  `bill_id` bigint NOT NULL,
+  `product_id` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKfwm4sko9p82ndh6belyxx12bj` (`bill_id`),
+  KEY `FK4iagdr0uhsq4tj0ag99nmmya1` (`product_id`),
+  CONSTRAINT `FK4iagdr0uhsq4tj0ag99nmmya1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
+  CONSTRAINT `FKfwm4sko9p82ndh6belyxx12bj` FOREIGN KEY (`bill_id`) REFERENCES `bills` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `bill_details`
 --
+
 LOCK TABLES `bill_details` WRITE;
-
 /*!40000 ALTER TABLE `bill_details` DISABLE KEYS */;
-
-INSERT INTO
-  `bill_details`
-VALUES
-  (1, 1, 120000.0000, 1, 1),
-  (2, 2, 99000.0000, 1, 2),
-  (3, 1, 120000.0000, 2, 1),
-  (4, 2, 99000.0000, 2, 2);
-
+INSERT INTO `bill_details` VALUES (1,1,120000.0000,1,1),(2,2,99000.0000,1,2),(3,1,120000.0000,2,1),(4,2,99000.0000,2,2);
 /*!40000 ALTER TABLE `bill_details` ENABLE KEYS */;
-
 UNLOCK TABLES;
 
 --
 -- Table structure for table `bills`
 --
+
 DROP TABLE IF EXISTS `bills`;
-
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-
 /*!50503 SET character_set_client = utf8mb4 */;
-
-CREATE TABLE
-  `bills` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
-    `address` varchar(255) DEFAULT NULL,
-    `created_at` datetime (6) DEFAULT NULL,
-    `total_price` decimal(19, 4) NOT NULL,
-    `updated_at` datetime (6) DEFAULT NULL,
-    `customer_id` bigint NOT NULL,
-    `user_id` bigint NOT NULL,
-    PRIMARY KEY (`id`),
-    KEY `FKoy9sc2dmxj2qwjeiiilf3yuxp` (`customer_id`),
-    KEY `FKk8vs7ac9xknv5xp18pdiehpp1` (`user_id`),
-    CONSTRAINT `FKk8vs7ac9xknv5xp18pdiehpp1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-    CONSTRAINT `FKoy9sc2dmxj2qwjeiiilf3yuxp` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`)
-  ) ENGINE = InnoDB AUTO_INCREMENT = 3 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
+CREATE TABLE `bills` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `address` varchar(255) DEFAULT NULL,
+  `created_at` datetime(6) DEFAULT NULL,
+  `total_price` decimal(19,4) NOT NULL,
+  `updated_at` datetime(6) DEFAULT NULL,
+  `customer_id` bigint NOT NULL,
+  `user_id` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKoy9sc2dmxj2qwjeiiilf3yuxp` (`customer_id`),
+  KEY `FKk8vs7ac9xknv5xp18pdiehpp1` (`user_id`),
+  CONSTRAINT `FKk8vs7ac9xknv5xp18pdiehpp1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `FKoy9sc2dmxj2qwjeiiilf3yuxp` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `bills`
 --
+
 LOCK TABLES `bills` WRITE;
-
 /*!40000 ALTER TABLE `bills` DISABLE KEYS */;
-
-INSERT INTO
-  `bills`
-VALUES
-  (
-    1,
-    '234 Nguyen Trai, quan 5, TPHCM',
-    '2025-03-19 22:34:12.350620',
-    318000.0000,
-    '2025-03-19 22:34:12.452106',
-    2,
-    5
-  ),
-  (
-    2,
-    '234 Nguyen Trai, quan 5, TPHCM',
-    '2025-03-19 22:34:26.366559',
-    318000.0000,
-    '2025-03-19 22:34:26.377500',
-    2,
-    5
-  );
-
+INSERT INTO `bills` VALUES (1,'234 Nguyen Trai, quan 5, TPHCM','2025-03-19 22:34:12.350620',318000.0000,'2025-03-19 22:34:12.452106',2,5),(2,'234 Nguyen Trai, quan 5, TPHCM','2025-03-19 22:34:26.366559',318000.0000,'2025-03-19 22:34:26.377500',2,5);
 /*!40000 ALTER TABLE `bills` ENABLE KEYS */;
-
 UNLOCK TABLES;
 
 --
 -- Table structure for table `categories`
 --
+
 DROP TABLE IF EXISTS `categories`;
-
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-
 /*!50503 SET character_set_client = utf8mb4 */;
-
-CREATE TABLE
-  `categories` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
-    `created_at` datetime (6) DEFAULT NULL,
-    `name` varchar(255) NOT NULL,
-    `status` int DEFAULT '1',
-    `updated_at` datetime (6) DEFAULT NULL,
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `UKt8o6pivur7nn124jehx7cygw5` (`name`)
-  ) ENGINE = InnoDB AUTO_INCREMENT = 11 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
+CREATE TABLE `categories` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `created_at` datetime(6) DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  `status` int DEFAULT '1',
+  `updated_at` datetime(6) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UKt8o6pivur7nn124jehx7cygw5` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `categories`
 --
+
 LOCK TABLES `categories` WRITE;
-
 /*!40000 ALTER TABLE `categories` DISABLE KEYS */;
-
-INSERT INTO
-  `categories`
-VALUES
-  (
-    1,
-    '2025-03-28 18:17:43.000000',
-    'Khoa học viễn tưởng',
-    1,
-    '2025-03-28 18:17:43.000000'
-  ),
-  (
-    2,
-    '2025-03-28 18:17:43.000000',
-    'Trinh thám',
-    1,
-    '2025-03-28 18:17:43.000000'
-  ),
-  (
-    3,
-    '2025-03-28 18:17:43.000000',
-    'Kinh dị',
-    0,
-    '2025-03-28 18:17:43.000000'
-  ),
-  (
-    4,
-    '2025-03-28 18:17:43.000000',
-    'Lãng mạn',
-    1,
-    '2025-03-28 18:17:43.000000'
-  ),
-  (
-    5,
-    '2025-03-28 18:17:43.000000',
-    'Giả tưởng',
-    1,
-    '2025-03-28 18:17:43.000000'
-  ),
-  (
-    6,
-    '2025-03-28 18:17:43.000000',
-    'Lịch sử',
-    0,
-    '2025-03-28 18:17:43.000000'
-  ),
-  (
-    7,
-    '2025-03-28 18:17:43.000000',
-    'Tiểu sử - Hồi ký',
-    1,
-    '2025-03-28 18:17:43.000000'
-  ),
-  (
-    8,
-    '2025-03-28 18:17:43.000000',
-    'Hành động - Phiêu lưu',
-    1,
-    '2025-03-28 18:17:43.000000'
-  ),
-  (
-    9,
-    '2025-03-28 18:17:43.000000',
-    'Tâm lý - Kỹ năng sống',
-    1,
-    '2025-03-28 18:17:43.000000'
-  ),
-  (
-    10,
-    '2025-03-28 18:17:43.000000',
-    'Truyện tranh',
-    0,
-    '2025-03-28 18:17:43.000000'
-  );
-
+INSERT INTO `categories` VALUES (1,'2025-03-28 18:17:43.000000','Khoa học viễn tưởng',1,'2025-03-28 18:17:43.000000'),(2,'2025-03-28 18:17:43.000000','Trinh thám',1,'2025-03-28 18:17:43.000000'),(3,'2025-03-28 18:17:43.000000','Kinh dị',0,'2025-03-28 18:17:43.000000'),(4,'2025-03-28 18:17:43.000000','Lãng mạn',1,'2025-03-28 18:17:43.000000'),(5,'2025-03-28 18:17:43.000000','Giả tưởng',1,'2025-03-28 18:17:43.000000'),(6,'2025-03-28 18:17:43.000000','Lịch sử',0,'2025-03-28 18:17:43.000000'),(7,'2025-03-28 18:17:43.000000','Tiểu sử - Hồi ký',1,'2025-03-28 18:17:43.000000'),(8,'2025-03-28 18:17:43.000000','Hành động - Phiêu lưu',1,'2025-03-28 18:17:43.000000'),(9,'2025-03-28 18:17:43.000000','Tâm lý - Kỹ năng sống',1,'2025-03-28 18:17:43.000000'),(10,'2025-03-28 18:17:43.000000','Truyện tranh',0,'2025-03-28 18:17:43.000000');
 /*!40000 ALTER TABLE `categories` ENABLE KEYS */;
-
 UNLOCK TABLES;
 
 --
 -- Table structure for table `contracts`
 --
+
 DROP TABLE IF EXISTS `contracts`;
-
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-
 /*!50503 SET character_set_client = utf8mb4 */;
-
-CREATE TABLE
-  `contracts` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
-    `base_salary` decimal(19, 4) NOT NULL,
-    `end_date` date DEFAULT NULL,
-    `expiry_date` date DEFAULT NULL,
-    `start_date` date DEFAULT NULL,
-    `status` int NOT NULL,
-    `seniority_level` bigint NOT NULL,
-    `user_id` bigint NOT NULL,
-    PRIMARY KEY (`id`),
-    KEY `FKa685dj982h13eolw5pkd65wll` (`seniority_level`),
-    KEY `FKq3v8dxlubujug7dxvpauig94n` (`user_id`),
-    CONSTRAINT `FKa685dj982h13eolw5pkd65wll` FOREIGN KEY (`seniority_level`) REFERENCES `seniority_levels` (`id`),
-    CONSTRAINT `FKq3v8dxlubujug7dxvpauig94n` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-  ) ENGINE = InnoDB AUTO_INCREMENT = 10 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
+CREATE TABLE `contracts` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `base_salary` decimal(19,4) NOT NULL,
+  `end_date` date DEFAULT NULL,
+  `expiry_date` date DEFAULT NULL,
+  `start_date` date DEFAULT NULL,
+  `status` int NOT NULL,
+  `seniority_level` bigint NOT NULL,
+  `user_id` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKa685dj982h13eolw5pkd65wll` (`seniority_level`),
+  KEY `FKq3v8dxlubujug7dxvpauig94n` (`user_id`),
+  CONSTRAINT `FKa685dj982h13eolw5pkd65wll` FOREIGN KEY (`seniority_level`) REFERENCES `seniority_levels` (`id`),
+  CONSTRAINT `FKq3v8dxlubujug7dxvpauig94n` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `contracts`
 --
+
 LOCK TABLES `contracts` WRITE;
-
 /*!40000 ALTER TABLE `contracts` DISABLE KEYS */;
-
-INSERT INTO
-  `contracts`
-VALUES
-  (
-    2,
-    8000000.0000,
-    '2026-12-31',
-    '2026-12-31',
-    '2024-03-05',
-    1,
-    2,
-    3
-  ),
-  (
-    3,
-    15000000.0000,
-    '2026-12-31',
-    '2026-12-31',
-    '2024-03-05',
-    1,
-    5,
-    4
-  ),
-  (
-    4,
-    12000000.0000,
-    '2026-12-31',
-    '2026-12-31',
-    '2024-03-05',
-    1,
-    8,
-    5
-  ),
-  (
-    5,
-    18000000.0000,
-    '2026-12-31',
-    '2026-12-31',
-    '2024-03-05',
-    1,
-    11,
-    6
-  ),
-  (
-    8,
-    1111000000.0000,
-    '2025-12-31',
-    '2026-12-31',
-    '2024-03-05',
-    1,
-    3,
-    2
-  );
-
+INSERT INTO `contracts` VALUES (2,8000000.0000,'2026-12-31','2026-12-31','2024-03-05',1,2,3),(3,15000000.0000,'2026-12-31','2026-12-31','2024-03-05',1,5,4),(4,12000000.0000,'2026-12-31','2026-12-31','2024-03-05',1,8,5),(5,18000000.0000,'2026-12-31','2026-12-31','2024-03-05',1,11,6),(8,1111000000.0000,'2025-12-31','2026-12-31','2024-03-05',1,3,2),(10,8000000.0000,NULL,'2026-02-28','2024-02-04',1,2,7),(11,8000000.0000,NULL,'2026-02-28','2024-02-04',1,2,8),(12,8000000.0000,NULL,'2026-02-28','2024-02-04',1,2,9),(13,8000000.0000,NULL,'2026-02-28','2024-02-04',1,2,10);
 /*!40000 ALTER TABLE `contracts` ENABLE KEYS */;
-
 UNLOCK TABLES;
 
 --
 -- Table structure for table `customers`
 --
+
 DROP TABLE IF EXISTS `customers`;
-
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-
 /*!50503 SET character_set_client = utf8mb4 */;
-
-CREATE TABLE
-  `customers` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
-    `name` varchar(255) DEFAULT NULL,
-    `phone_number` varchar(255) DEFAULT NULL,
-    `address` varchar(255) DEFAULT NULL,
-    `created_at` datetime (6) DEFAULT NULL,
-    `email` varchar(255) DEFAULT NULL,
-    `status` int NOT NULL,
-    `updated_at` datetime (6) DEFAULT NULL,
-    PRIMARY KEY (`id`)
-  ) ENGINE = InnoDB AUTO_INCREMENT = 11 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
+CREATE TABLE `customers` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `phone_number` varchar(255) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `created_at` datetime(6) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `status` int NOT NULL,
+  `updated_at` datetime(6) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `customers`
 --
+
 LOCK TABLES `customers` WRITE;
-
 /*!40000 ALTER TABLE `customers` DISABLE KEYS */;
-
-INSERT INTO
-  `customers`
-VALUES
-  (
-    1,
-    'Nguyễn Văn A',
-    '0912345678',
-    '123 Đường Trần Hưng Đạo, Quận 1, TP.HCM',
-    '2025-03-10 14:43:52.000000',
-    'nguyenvana@example.com',
-    1,
-    '2025-03-10 14:43:52.000000'
-  ),
-  (
-    2,
-    'Trần Thị B',
-    '0987654321',
-    '456 Đường Lý Thái Tổ, Quận 3, TP.HCM',
-    '2025-03-10 14:43:52.000000',
-    'tranthib@example.com',
-    1,
-    '2025-03-10 14:43:52.000000'
-  ),
-  (
-    3,
-    'Lê Minh C',
-    '0901122334',
-    '789 Đường Nguyễn Văn Cừ, Quận 5, TP.HCM',
-    '2025-03-10 14:43:52.000000',
-    'leminhc@example.com',
-    1,
-    '2025-03-10 14:43:52.000000'
-  ),
-  (
-    4,
-    'Phạm Văn D',
-    '0923456789',
-    '321 Đường Võ Văn Kiệt, Quận 10, TP.HCM',
-    '2025-03-10 14:43:52.000000',
-    'phamvand@example.com',
-    1,
-    '2025-03-10 14:43:52.000000'
-  ),
-  (
-    5,
-    'Hoàng Thị E',
-    '0934567890',
-    '567 Đường Cộng Hòa, Quận Tân Bình, TP.HCM',
-    '2025-03-10 14:43:52.000000',
-    'hoangthie@example.com',
-    1,
-    '2025-03-10 14:43:52.000000'
-  ),
-  (
-    6,
-    'Đặng Văn F',
-    '0945678901',
-    '678 Đường Phạm Văn Đồng, TP.Thủ Đức, TP.HCM',
-    '2025-03-10 14:43:52.000000',
-    'dangvanf@example.com',
-    1,
-    '2025-03-10 14:43:52.000000'
-  ),
-  (
-    7,
-    'Bùi Thị G',
-    '0956789012',
-    '789 Đường Nguyễn Trãi, Quận 3, TP.HCM',
-    '2025-03-10 14:43:52.000000',
-    'buithig@example.com',
-    1,
-    '2025-03-10 14:43:52.000000'
-  ),
-  (
-    8,
-    'Ngô Văn H',
-    '0967890123',
-    '890 Đường Hai Bà Trưng, Quận 1, TP.HCM',
-    '2025-03-10 14:43:52.000000',
-    'ngovanh@example.com',
-    1,
-    '2025-03-10 14:43:52.000000'
-  ),
-  (
-    9,
-    'Dương Thị I',
-    '0978901234',
-    '101 Đường Lê Lợi, Quận 1, TP.HCM',
-    '2025-03-10 14:43:52.000000',
-    'duongthii@example.com',
-    1,
-    '2025-03-10 14:43:52.000000'
-  ),
-  (
-    10,
-    'Vũ Minh K',
-    '0989012345',
-    '202 Đường Điện Biên Phủ, Quận Bình Thạnh, TP.HCM',
-    '2025-03-10 14:43:52.000000',
-    'vuminhk@example.com',
-    1,
-    '2025-03-10 14:43:52.000000'
-  );
-
+INSERT INTO `customers` VALUES (1,'Nguyễn Văn A','0912345678','123 Đường Trần Hưng Đạo, Quận 1, TP.HCM','2025-03-10 14:43:52.000000','nguyenvana@example.com',1,'2025-03-10 14:43:52.000000'),(2,'Trần Thị B','0987654321','456 Đường Lý Thái Tổ, Quận 3, TP.HCM','2025-03-10 14:43:52.000000','tranthib@example.com',1,'2025-03-10 14:43:52.000000'),(3,'Lê Minh C','0901122334','789 Đường Nguyễn Văn Cừ, Quận 5, TP.HCM','2025-03-10 14:43:52.000000','leminhc@example.com',1,'2025-03-10 14:43:52.000000'),(4,'Phạm Văn D','0923456789','321 Đường Võ Văn Kiệt, Quận 10, TP.HCM','2025-03-10 14:43:52.000000','phamvand@example.com',1,'2025-03-10 14:43:52.000000'),(5,'Hoàng Thị E','0934567890','567 Đường Cộng Hòa, Quận Tân Bình, TP.HCM','2025-03-10 14:43:52.000000','hoangthie@example.com',1,'2025-03-10 14:43:52.000000'),(6,'Đặng Văn F','0945678901','678 Đường Phạm Văn Đồng, TP.Thủ Đức, TP.HCM','2025-03-10 14:43:52.000000','dangvanf@example.com',1,'2025-03-10 14:43:52.000000'),(7,'Bùi Thị G','0956789012','789 Đường Nguyễn Trãi, Quận 3, TP.HCM','2025-03-10 14:43:52.000000','buithig@example.com',1,'2025-03-10 14:43:52.000000'),(8,'Ngô Văn H','0967890123','890 Đường Hai Bà Trưng, Quận 1, TP.HCM','2025-03-10 14:43:52.000000','ngovanh@example.com',1,'2025-03-10 14:43:52.000000'),(9,'Dương Thị I','0978901234','101 Đường Lê Lợi, Quận 1, TP.HCM','2025-03-10 14:43:52.000000','duongthii@example.com',1,'2025-03-10 14:43:52.000000'),(10,'Vũ Minh K','0989012345','202 Đường Điện Biên Phủ, Quận Bình Thạnh, TP.HCM','2025-03-10 14:43:52.000000','vuminhk@example.com',1,'2025-03-10 14:43:52.000000');
 /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
-
 UNLOCK TABLES;
 
 --
 -- Table structure for table `good_receipt_details`
 --
+
 DROP TABLE IF EXISTS `good_receipt_details`;
-
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-
 /*!50503 SET character_set_client = utf8mb4 */;
-
-CREATE TABLE
-  `good_receipt_details` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
-    `input_price` decimal(19, 4) NOT NULL,
-    `quantity` int NOT NULL,
-    `good_receipt_id` bigint NOT NULL,
-    `product_id` bigint NOT NULL,
-    PRIMARY KEY (`id`),
-    KEY `FKds2up0fhjemb8ug5v28eb35r4` (`good_receipt_id`),
-    KEY `FKi25t5ni7hi6e6fvmiagxfc0jy` (`product_id`),
-    CONSTRAINT `FKds2up0fhjemb8ug5v28eb35r4` FOREIGN KEY (`good_receipt_id`) REFERENCES `good_receipts` (`id`),
-    CONSTRAINT `FKi25t5ni7hi6e6fvmiagxfc0jy` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
-  ) ENGINE = InnoDB AUTO_INCREMENT = 3 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
+CREATE TABLE `good_receipt_details` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `input_price` decimal(19,4) NOT NULL,
+  `quantity` int NOT NULL,
+  `good_receipt_id` bigint NOT NULL,
+  `product_id` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKds2up0fhjemb8ug5v28eb35r4` (`good_receipt_id`),
+  KEY `FKi25t5ni7hi6e6fvmiagxfc0jy` (`product_id`),
+  CONSTRAINT `FKds2up0fhjemb8ug5v28eb35r4` FOREIGN KEY (`good_receipt_id`) REFERENCES `good_receipts` (`id`),
+  CONSTRAINT `FKi25t5ni7hi6e6fvmiagxfc0jy` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `good_receipt_details`
 --
+
 LOCK TABLES `good_receipt_details` WRITE;
-
 /*!40000 ALTER TABLE `good_receipt_details` DISABLE KEYS */;
-
-INSERT INTO
-  `good_receipt_details`
-VALUES
-  (1, 108000.0000, 10, 1, 1),
-  (2, 84150.0000, 15, 1, 2);
-
+INSERT INTO `good_receipt_details` VALUES (1,108000.0000,10,1,1),(2,84150.0000,15,1,2);
 /*!40000 ALTER TABLE `good_receipt_details` ENABLE KEYS */;
-
 UNLOCK TABLES;
 
 --
 -- Table structure for table `good_receipts`
 --
+
 DROP TABLE IF EXISTS `good_receipts`;
-
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-
 /*!50503 SET character_set_client = utf8mb4 */;
-
-CREATE TABLE
-  `good_receipts` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
-    `created_at` datetime (6) DEFAULT NULL,
-    `total_price` decimal(19, 4) NOT NULL,
-    `updated_at` datetime (6) DEFAULT NULL,
-    `user_id` bigint DEFAULT NULL,
-    PRIMARY KEY (`id`),
-    KEY `FKf5qtokynne3a2n7mn566ohxyh` (`user_id`),
-    CONSTRAINT `FKf5qtokynne3a2n7mn566ohxyh` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-  ) ENGINE = InnoDB AUTO_INCREMENT = 2 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
+CREATE TABLE `good_receipts` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `created_at` datetime(6) DEFAULT NULL,
+  `total_price` decimal(19,4) NOT NULL,
+  `updated_at` datetime(6) DEFAULT NULL,
+  `user_id` bigint DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKf5qtokynne3a2n7mn566ohxyh` (`user_id`),
+  CONSTRAINT `FKf5qtokynne3a2n7mn566ohxyh` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `good_receipts`
 --
+
 LOCK TABLES `good_receipts` WRITE;
-
 /*!40000 ALTER TABLE `good_receipts` DISABLE KEYS */;
-
-INSERT INTO
-  `good_receipts`
-VALUES
-  (
-    1,
-    '2025-03-12 15:26:01.407869',
-    2342250.0000,
-    '2025-03-12 15:26:01.453898',
-    5
-  );
-
+INSERT INTO `good_receipts` VALUES (1,'2025-03-12 15:26:01.407869',2342250.0000,'2025-03-12 15:26:01.453898',5);
 /*!40000 ALTER TABLE `good_receipts` ENABLE KEYS */;
-
 UNLOCK TABLES;
 
 --
 -- Table structure for table `holidays`
 --
+
 DROP TABLE IF EXISTS `holidays`;
-
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-
 /*!50503 SET character_set_client = utf8mb4 */;
-
-CREATE TABLE
-  `holidays` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
-    `description` mediumtext,
-    `end_date` date DEFAULT NULL,
-    `start_date` date DEFAULT NULL,
-    `status` int NOT NULL,
-    `name` varchar(255) NOT NULL,
-    PRIMARY KEY (`id`)
-  ) ENGINE = InnoDB AUTO_INCREMENT = 7 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
+CREATE TABLE `holidays` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `description` mediumtext,
+  `end_date` date DEFAULT NULL,
+  `start_date` date DEFAULT NULL,
+  `status` int NOT NULL,
+  `name` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `holidays`
 --
+
 LOCK TABLES `holidays` WRITE;
-
 /*!40000 ALTER TABLE `holidays` DISABLE KEYS */;
-
-INSERT INTO
-  `holidays`
-VALUES
-  (
-    1,
-    'Tết Dương lịch - Ngày đầu năm mới theo lịch Gregory',
-    '2025-01-01',
-    '2025-01-01',
-    1,
-    'Tết Dương lịch'
-  ),
-  (
-    2,
-    'Tết Nguyên Đán - Kỳ nghỉ lễ quan trọng nhất trong năm, kéo dài 7 ngày',
-    '2025-02-03',
-    '2025-01-28',
-    1,
-    'Tết Nguyên Đán'
-  );
-
+INSERT INTO `holidays` VALUES (1,'Tết Dương lịch - Ngày đầu năm mới theo lịch Gregory','2025-01-01','2025-01-01',1,'Tết Dương lịch'),(2,'Tết Nguyên Đán - Kỳ nghỉ lễ quan trọng nhất trong năm, kéo dài 7 ngày','2025-02-03','2025-01-28',1,'Tết Nguyên Đán'),(3,'Giỗ tổ hùng vương','2025-04-07','2025-04-07',1,'Giỗ tổ hùng vương'),(4,'Dịp nghỉ lễ ngày Chiến thắng 30/4 và ngày Quốc tế lao động 01/5 năm 2025','2025-05-04','2025-04-30',1,'30/4-1/5'),(5,'Quốc khánh Việt Nam','2025-09-02','2025-09-02',1,'2/9');
 /*!40000 ALTER TABLE `holidays` ENABLE KEYS */;
-
 UNLOCK TABLES;
 
 --
 -- Table structure for table `leave_requests`
 --
+
 DROP TABLE IF EXISTS `leave_requests`;
-
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-
 /*!50503 SET character_set_client = utf8mb4 */;
-
-CREATE TABLE
-  `leave_requests` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
-    `description` mediumtext,
-    `end_date` date NOT NULL,
-    `leave_reason` enum (
-      'HOLIDAY',
-      'MATERNITY_LEAVE',
-      'PAID_LEAVE',
-      'SICK_LEAVE'
-    ) NOT NULL,
-    `send_date` datetime (6) DEFAULT NULL,
-    `start_date` date NOT NULL,
-    `status` int NOT NULL,
-    `title` varchar(255) NOT NULL,
-    `updated_at` datetime (6) DEFAULT NULL,
-    `user_id` bigint DEFAULT NULL,
-    `total_day_leave` bigint NOT NULL,
-    PRIMARY KEY (`id`),
-    KEY `FKh6s8bo5d59oy52b6nxfguf4yx` (`user_id`),
-    CONSTRAINT `FKh6s8bo5d59oy52b6nxfguf4yx` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-  ) ENGINE = InnoDB AUTO_INCREMENT = 6 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
+CREATE TABLE `leave_requests` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `description` mediumtext,
+  `end_date` date NOT NULL,
+  `leave_reason` enum('HOLIDAY','MATERNITY_LEAVE','PAID_LEAVE','SICK_LEAVE') NOT NULL,
+  `send_date` datetime(6) DEFAULT NULL,
+  `start_date` date NOT NULL,
+  `status` int NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `updated_at` datetime(6) DEFAULT NULL,
+  `user_id` bigint DEFAULT NULL,
+  `total_day_leave` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKh6s8bo5d59oy52b6nxfguf4yx` (`user_id`),
+  CONSTRAINT `FKh6s8bo5d59oy52b6nxfguf4yx` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `leave_requests`
 --
+
 LOCK TABLES `leave_requests` WRITE;
-
 /*!40000 ALTER TABLE `leave_requests` DISABLE KEYS */;
-
-INSERT INTO
-  `leave_requests`
-VALUES
-  (
-    1,
-    'Nghỉ để giải quyết việc gia đình',
-    '2025-01-12',
-    'PAID_LEAVE',
-    '2025-01-05 08:30:00.000000',
-    '2025-01-10',
-    1,
-    'Nghỉ phép cá nhân',
-    '2025-01-05 08:30:00.000000',
-    3,
-    0
-  ),
-  (
-    2,
-    'Ốm cần nghỉ ngơi',
-    '2025-02-16',
-    'SICK_LEAVE',
-    '2025-02-14 10:00:00.000000',
-    '2025-02-15',
-    1,
-    'Nghỉ bệnh',
-    '2025-02-14 10:00:00.000000',
-    3,
-    0
-  ),
-  (
-    3,
-    'Đi du lịch cùng gia đình',
-    '2025-01-25',
-    'PAID_LEAVE',
-    '2025-01-15 14:00:00.000000',
-    '2025-01-20',
-    1,
-    'Nghỉ phép du lịch',
-    '2025-01-15 14:00:00.000000',
-    4,
-    0
-  ),
-  (
-    4,
-    'Nghỉ sinh con',
-    '2025-02-10',
-    'MATERNITY_LEAVE',
-    '2025-01-30 09:00:00.000000',
-    '2025-02-05',
-    1,
-    'Nghỉ thai sản',
-    '2025-01-30 09:00:00.000000',
-    5,
-    0
-  ),
-  (
-    5,
-    'Về quê thăm người thân',
-    '2025-02-02',
-    'PAID_LEAVE',
-    '2025-01-22 16:30:00.000000',
-    '2025-01-28',
-    1,
-    'Nghỉ phép thăm gia đình',
-    '2025-01-22 16:30:00.000000',
-    6,
-    0
-  );
-
+INSERT INTO `leave_requests` VALUES (6,'Tôi cần nghỉ phép để xử lý việc gia đình.','2025-01-10','PAID_LEAVE','2025-04-02 14:14:27.654494','2025-01-08',1,'Nghỉ việc gia đình','2025-04-02 14:14:27.654494',3,3),(7,'Tôi cần nghỉ phép vì lý do sức khỏe.','2025-01-20','SICK_LEAVE','2025-04-02 14:15:27.020854','2025-01-15',1,'Nghỉ ốm','2025-04-02 14:15:27.020854',5,6);
 /*!40000 ALTER TABLE `leave_requests` ENABLE KEYS */;
-
 UNLOCK TABLES;
 
 --
 -- Table structure for table `payrolls`
 --
+
 DROP TABLE IF EXISTS `payrolls`;
-
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-
 /*!50503 SET character_set_client = utf8mb4 */;
-
-CREATE TABLE
-  `payrolls` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
-    `employeebhtn` decimal(19, 4) NOT NULL,
-    `employeebhxh` decimal(19, 4) NOT NULL,
-    `employeebhyt` decimal(19, 4) NOT NULL,
-    `gross_salary` decimal(19, 4) NOT NULL,
-    `maternity_benefit` decimal(19, 4) NOT NULL,
-    `net_salary` decimal(19, 4) NOT NULL,
-    `penalties` decimal(19, 4) NOT NULL,
-    `sick_benefit` decimal(19, 4) NOT NULL,
-    `standard_working_days` int NOT NULL,
-    `tax` decimal(19, 4) NOT NULL,
-    `attendance_id` bigint NOT NULL,
-    `allowance` decimal(19, 4) NOT NULL,
-    `total_income` decimal(19, 4) NOT NULL,
-    `total_company_cost` decimal(19, 4) NOT NULL,
-    `salary_coefficient` float NOT NULL,
-    `base_salary` decimal(19, 4) NOT NULL,
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `UK6rnl02upmdwog20grcubko3vk` (`attendance_id`),
-    CONSTRAINT `FKe2vymg8kl12b8svk7ec2y1dn8` FOREIGN KEY (`attendance_id`) REFERENCES `attendances` (`id`)
-  ) ENGINE = InnoDB AUTO_INCREMENT = 62 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
+CREATE TABLE `payrolls` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `allowance` decimal(19,4) NOT NULL,
+  `base_salary` decimal(19,4) NOT NULL,
+  `employeebhtn` decimal(19,4) NOT NULL,
+  `employeebhxh` decimal(19,4) NOT NULL,
+  `employeebhyt` decimal(19,4) NOT NULL,
+  `gross_salary` decimal(19,4) NOT NULL,
+  `maternity_benefit` decimal(19,4) NOT NULL,
+  `net_salary` decimal(19,4) NOT NULL,
+  `penalties` decimal(19,4) NOT NULL,
+  `salary_coefficient` float NOT NULL,
+  `sick_benefit` decimal(19,4) NOT NULL,
+  `tax` decimal(19,4) NOT NULL,
+  `total_company_cost` decimal(19,4) NOT NULL,
+  `total_income` decimal(19,4) NOT NULL,
+  `attendance_id` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UK6rnl02upmdwog20grcubko3vk` (`attendance_id`),
+  CONSTRAINT `FKe2vymg8kl12b8svk7ec2y1dn8` FOREIGN KEY (`attendance_id`) REFERENCES `attendances` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `payrolls`
 --
+
 LOCK TABLES `payrolls` WRITE;
-
 /*!40000 ALTER TABLE `payrolls` DISABLE KEYS */;
-
+INSERT INTO `payrolls` VALUES (1,300000.0000,8000000.0000,78555.5600,628444.4400,117833.3300,7855555.5556,0.0000,6864055.5590,166666.6667,1,0.0000,0.0000,9544500.0056,6864055.5600,25),(2,500000.0000,15000000.0000,155000.0000,1240000.0000,232500.0000,15500000.0000,0.0000,13520541.6667,208333.3333,1,0.0000,143625.0000,18832500.0000,13520541.6700,26),(3,500000.0000,12000000.0000,98333.3300,786666.6700,147500.0000,9833333.3332,0.0000,8634166.6665,166666.6667,1,2000000.0000,0.0000,11947499.9932,10634166.6700,27),(4,500000.0000,18000000.0000,185000.0000,1480000.0000,277500.0000,18500000.0000,0.0000,16126750.0000,125000.0000,1,0.0000,305750.0000,22477500.0000,16126750.0000,28),(5,300000.0000,8000000.0000,83000.0000,664000.0000,124500.0000,8300000.0000,0.0000,7428500.0000,0.0000,1,0.0000,0.0000,10084500.0000,7428500.0000,29),(6,300000.0000,8000000.0000,83000.0000,664000.0000,124500.0000,8300000.0000,0.0000,7428500.0000,0.0000,1,0.0000,0.0000,10084500.0000,7428500.0000,30),(7,300000.0000,8000000.0000,83000.0000,664000.0000,124500.0000,8300000.0000,0.0000,7428500.0000,0.0000,1,0.0000,0.0000,10084500.0000,7428500.0000,31),(8,300000.0000,8000000.0000,83000.0000,664000.0000,124500.0000,8300000.0000,0.0000,7428500.0000,0.0000,1,0.0000,0.0000,10084500.0000,7428500.0000,32);
 /*!40000 ALTER TABLE `payrolls` ENABLE KEYS */;
-
 UNLOCK TABLES;
 
 --
 -- Table structure for table `products`
 --
+
 DROP TABLE IF EXISTS `products`;
-
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-
 /*!50503 SET character_set_client = utf8mb4 */;
-
-CREATE TABLE
-  `products` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
-    `created_at` datetime (6) DEFAULT NULL,
-    `image` varchar(255) DEFAULT NULL,
-    `name` varchar(255) DEFAULT NULL,
-    `price` decimal(19, 4) NOT NULL,
-    `quantity` int NOT NULL,
-    `status` int NOT NULL,
-    `updated_at` datetime (6) DEFAULT NULL,
-    `supplier_id` bigint DEFAULT NULL,
-    `author_id` bigint NOT NULL,
-    `category_id` bigint NOT NULL,
-    PRIMARY KEY (`id`),
-    KEY `FK6i174ixi9087gcvvut45em7fd` (`supplier_id`),
-    KEY `FKy2kver9ldog29n3mi9b12w64` (`author_id`),
-    KEY `FKog2rp4qthbtt2lfyhfo32lsw9` (`category_id`),
-    CONSTRAINT `FK6i174ixi9087gcvvut45em7fd` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`),
-    CONSTRAINT `FKog2rp4qthbtt2lfyhfo32lsw9` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`),
-    CONSTRAINT `FKy2kver9ldog29n3mi9b12w64` FOREIGN KEY (`author_id`) REFERENCES `authors` (`id`)
-  ) ENGINE = InnoDB AUTO_INCREMENT = 21 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
+CREATE TABLE `products` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `created_at` datetime(6) DEFAULT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `price` decimal(19,4) NOT NULL,
+  `quantity` int NOT NULL,
+  `status` int NOT NULL,
+  `updated_at` datetime(6) DEFAULT NULL,
+  `supplier_id` bigint DEFAULT NULL,
+  `author_id` bigint NOT NULL,
+  `category_id` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK6i174ixi9087gcvvut45em7fd` (`supplier_id`),
+  KEY `FKy2kver9ldog29n3mi9b12w64` (`author_id`),
+  KEY `FKog2rp4qthbtt2lfyhfo32lsw9` (`category_id`),
+  CONSTRAINT `FK6i174ixi9087gcvvut45em7fd` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`),
+  CONSTRAINT `FKog2rp4qthbtt2lfyhfo32lsw9` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`),
+  CONSTRAINT `FKy2kver9ldog29n3mi9b12w64` FOREIGN KEY (`author_id`) REFERENCES `authors` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `products`
 --
+
 LOCK TABLES `products` WRITE;
-
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-
-INSERT INTO
-  `products`
-VALUES
-  (
-    1,
-    '2024-02-15 11:30:45.000000',
-    'https://picsum.photos/200?random=1',
-    'Đắc Nhân Tâm',
-    120000.0000,
-    8,
-    1,
-    '2025-03-19 22:34:26.378644',
-    1,
-    1,
-    1
-  ),
-  (
-    2,
-    '2024-02-10 09:15:20.000000',
-    'https://picsum.photos/200?random=2',
-    'Nhà Giả Kim',
-    99000.0000,
-    11,
-    1,
-    '2025-03-19 22:34:26.381644',
-    1,
-    2,
-    2
-  ),
-  (
-    3,
-    '2024-01-05 14:10:00.000000',
-    'https://picsum.photos/200?random=3',
-    'Tôi Thấy Hoa Vàng Trên Cỏ Xanh',
-    85000.0000,
-    0,
-    1,
-    '2024-02-20 10:45:12.000000',
-    2,
-    3,
-    3
-  ),
-  (
-    4,
-    '2024-03-01 10:20:30.000000',
-    'https://picsum.photos/200?random=4',
-    'Quẳng Gánh Lo Đi & Vui Sống',
-    110000.0000,
-    0,
-    1,
-    '2024-03-08 12:00:00.000000',
-    2,
-    4,
-    4
-  ),
-  (
-    5,
-    '2024-02-18 09:45:00.000000',
-    'https://picsum.photos/200?random=5',
-    'Bí Mật Của May Mắn',
-    150000.0000,
-    0,
-    1,
-    '2024-03-06 11:30:15.000000',
-    3,
-    5,
-    5
-  ),
-  (
-    6,
-    '2024-01-22 13:50:10.000000',
-    'https://picsum.photos/200?random=6',
-    'Dám Nghĩ Lớn',
-    180000.0000,
-    0,
-    1,
-    '2024-02-28 15:20:30.000000',
-    3,
-    6,
-    6
-  ),
-  (
-    7,
-    '2023-12-30 08:25:45.000000',
-    'https://picsum.photos/200?random=7',
-    'Muôn Kiếp Nhân Sinh',
-    145000.0000,
-    0,
-    1,
-    '2024-02-27 17:15:20.000000',
-    4,
-    7,
-    7
-  ),
-  (
-    8,
-    '2023-11-15 10:40:30.000000',
-    'https://picsum.photos/200?random=8',
-    'Hiểu Về Trái Tim',
-    97000.0000,
-    0,
-    1,
-    '2024-02-25 09:35:10.000000',
-    4,
-    8,
-    8
-  ),
-  (
-    9,
-    '2023-10-28 12:05:15.000000',
-    'https://picsum.photos/200?random=9',
-    'Cà Phê Cùng Tony',
-    132000.0000,
-    0,
-    1,
-    '2024-02-23 14:10:00.000000',
-    5,
-    9,
-    9
-  ),
-  (
-    10,
-    '2023-09-18 11:20:10.000000',
-    'https://picsum.photos/200?random=10',
-    'Người Giàu Có Nhất Thành Babylon',
-    119000.0000,
-    0,
-    1,
-    '2024-02-21 10:00:45.000000',
-    5,
-    10,
-    10
-  ),
-  (
-    11,
-    '2025-03-29 12:00:00.000000',
-    'https://picsum.photos/200?random=11',
-    'Sách hay 11',
-    105000.0000,
-    0,
-    1,
-    '2025-03-29 12:00:00.000000',
-    1,
-    5,
-    3
-  ),
-  (
-    12,
-    '2025-03-29 12:00:00.000000',
-    'https://picsum.photos/200?random=12',
-    'Sách hay 12',
-    95000.0000,
-    0,
-    1,
-    '2025-03-29 12:00:00.000000',
-    2,
-    7,
-    2
-  ),
-  (
-    13,
-    '2025-03-29 12:00:00.000000',
-    'https://picsum.photos/200?random=13',
-    'Sách hay 13',
-    120000.0000,
-    0,
-    1,
-    '2025-03-29 12:00:00.000000',
-    3,
-    9,
-    5
-  ),
-  (
-    14,
-    '2025-03-29 12:00:00.000000',
-    'https://picsum.photos/200?random=14',
-    'Sách hay 14',
-    87000.0000,
-    0,
-    1,
-    '2025-03-29 12:00:00.000000',
-    1,
-    11,
-    4
-  ),
-  (
-    15,
-    '2025-03-29 12:00:00.000000',
-    'https://picsum.photos/200?random=15',
-    'Sách hay 15',
-    99000.0000,
-    0,
-    1,
-    '2025-03-29 12:00:00.000000',
-    2,
-    3,
-    6
-  ),
-  (
-    16,
-    '2025-03-29 12:00:00.000000',
-    'https://picsum.photos/200?random=16',
-    'Sách hay 16',
-    102000.0000,
-    0,
-    1,
-    '2025-03-29 12:00:00.000000',
-    3,
-    2,
-    7
-  ),
-  (
-    17,
-    '2025-03-29 12:00:00.000000',
-    'https://picsum.photos/200?random=17',
-    'Sách hay 17',
-    89000.0000,
-    0,
-    1,
-    '2025-03-29 12:00:00.000000',
-    4,
-    10,
-    1
-  ),
-  (
-    18,
-    '2025-03-29 12:00:00.000000',
-    'https://picsum.photos/200?random=18',
-    'Sách hay 18',
-    113000.0000,
-    0,
-    1,
-    '2025-03-29 12:00:00.000000',
-    1,
-    8,
-    9
-  ),
-  (
-    19,
-    '2025-03-29 12:00:00.000000',
-    'https://picsum.photos/200?random=19',
-    'Sách hay 19',
-    97000.0000,
-    0,
-    1,
-    '2025-03-29 12:00:00.000000',
-    2,
-    4,
-    3
-  ),
-  (
-    20,
-    '2025-03-29 12:00:00.000000',
-    'https://picsum.photos/200?random=20',
-    'Sách hay 20',
-    125000.0000,
-    0,
-    1,
-    '2025-03-29 12:00:00.000000',
-    3,
-    6,
-    5
-  );
-
+INSERT INTO `products` VALUES (1,'2024-02-15 11:30:45.000000','https://picsum.photos/200?random=1','Đắc Nhân Tâm',120000.0000,8,1,'2025-03-19 22:34:26.378644',1,1,1),(2,'2024-02-10 09:15:20.000000','https://picsum.photos/200?random=2','Nhà Giả Kim',99000.0000,11,1,'2025-03-19 22:34:26.381644',1,2,2),(3,'2024-01-05 14:10:00.000000','https://picsum.photos/200?random=3','Tôi Thấy Hoa Vàng Trên Cỏ Xanh',85000.0000,0,1,'2024-02-20 10:45:12.000000',2,3,3),(4,'2024-03-01 10:20:30.000000','https://picsum.photos/200?random=4','Quẳng Gánh Lo Đi & Vui Sống',110000.0000,0,1,'2024-03-08 12:00:00.000000',2,4,4),(5,'2024-02-18 09:45:00.000000','https://picsum.photos/200?random=5','Bí Mật Của May Mắn',150000.0000,0,1,'2024-03-06 11:30:15.000000',3,5,5),(6,'2024-01-22 13:50:10.000000','https://picsum.photos/200?random=6','Dám Nghĩ Lớn',180000.0000,0,1,'2024-02-28 15:20:30.000000',3,6,6),(7,'2023-12-30 08:25:45.000000','https://picsum.photos/200?random=7','Muôn Kiếp Nhân Sinh',145000.0000,0,1,'2024-02-27 17:15:20.000000',4,7,7),(8,'2023-11-15 10:40:30.000000','https://picsum.photos/200?random=8','Hiểu Về Trái Tim',97000.0000,0,1,'2024-02-25 09:35:10.000000',4,8,8),(9,'2023-10-28 12:05:15.000000','https://picsum.photos/200?random=9','Cà Phê Cùng Tony',132000.0000,0,1,'2024-02-23 14:10:00.000000',5,9,9),(10,'2023-09-18 11:20:10.000000','https://picsum.photos/200?random=10','Người Giàu Có Nhất Thành Babylon',119000.0000,0,1,'2024-02-21 10:00:45.000000',5,10,10),(11,'2025-03-29 12:00:00.000000','https://picsum.photos/200?random=11','Sách hay 11',105000.0000,0,1,'2025-03-29 12:00:00.000000',1,5,3),(12,'2025-03-29 12:00:00.000000','https://picsum.photos/200?random=12','Sách hay 12',95000.0000,0,1,'2025-03-29 12:00:00.000000',2,7,2),(13,'2025-03-29 12:00:00.000000','https://picsum.photos/200?random=13','Sách hay 13',120000.0000,0,1,'2025-03-29 12:00:00.000000',3,9,5),(14,'2025-03-29 12:00:00.000000','https://picsum.photos/200?random=14','Sách hay 14',87000.0000,0,1,'2025-03-29 12:00:00.000000',1,11,4),(15,'2025-03-29 12:00:00.000000','https://picsum.photos/200?random=15','Sách hay 15',99000.0000,0,1,'2025-03-29 12:00:00.000000',2,3,6),(16,'2025-03-29 12:00:00.000000','https://picsum.photos/200?random=16','Sách hay 16',102000.0000,0,1,'2025-03-29 12:00:00.000000',3,2,7),(17,'2025-03-29 12:00:00.000000','https://picsum.photos/200?random=17','Sách hay 17',89000.0000,0,1,'2025-03-29 12:00:00.000000',4,10,1),(18,'2025-03-29 12:00:00.000000','https://picsum.photos/200?random=18','Sách hay 18',113000.0000,0,1,'2025-03-29 12:00:00.000000',1,8,9),(19,'2025-03-29 12:00:00.000000','https://picsum.photos/200?random=19','Sách hay 19',97000.0000,0,1,'2025-03-29 12:00:00.000000',2,4,3),(20,'2025-03-29 12:00:00.000000','https://picsum.photos/200?random=20','Sách hay 20',125000.0000,0,1,'2025-03-29 12:00:00.000000',3,6,5);
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
-
 UNLOCK TABLES;
 
 --
 -- Table structure for table `roles`
 --
+
 DROP TABLE IF EXISTS `roles`;
-
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-
 /*!50503 SET character_set_client = utf8mb4 */;
-
-CREATE TABLE
-  `roles` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
-    `description` varchar(255) DEFAULT NULL,
-    `name` varchar(50) NOT NULL,
-    `status` int NOT NULL,
-    `allowance_id` bigint DEFAULT NULL,
-    PRIMARY KEY (`id`),
-    KEY `FKnj5d9lwo7ruxeja5o2u6yb40e` (`allowance_id`),
-    CONSTRAINT `FKnj5d9lwo7ruxeja5o2u6yb40e` FOREIGN KEY (`allowance_id`) REFERENCES `allowances` (`id`)
-  ) ENGINE = InnoDB AUTO_INCREMENT = 9 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
+CREATE TABLE `roles` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `description` varchar(255) DEFAULT NULL,
+  `name` varchar(50) NOT NULL,
+  `status` int NOT NULL,
+  `allowance_id` bigint DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKnj5d9lwo7ruxeja5o2u6yb40e` (`allowance_id`),
+  CONSTRAINT `FKnj5d9lwo7ruxeja5o2u6yb40e` FOREIGN KEY (`allowance_id`) REFERENCES `allowances` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `roles`
 --
+
 LOCK TABLES `roles` WRITE;
-
 /*!40000 ALTER TABLE `roles` DISABLE KEYS */;
-
-INSERT INTO
-  `roles`
-VALUES
-  (
-    1,
-    'Quản trị viên hệ thống, có toàn quyền quản lý',
-    'ADMIN',
-    1,
-    NULL
-  ),
-  (
-    2,
-    'Nhân viên làm việc trong hệ thống',
-    'EMPLOYEE',
-    1,
-    2
-  ),
-  (
-    3,
-    'Quản lý nhân sự, chịu trách nhiệm về hồ sơ nhân sự',
-    'HR_MANAGER',
-    1,
-    1
-  ),
-  (
-    4,
-    'Quản lý kho, giám sát hàng tồn kho, nhập xuất hàng hóa',
-    'WAREHOUSE_MANAGER',
-    1,
-    1
-  ),
-  (
-    5,
-    'Quản lý kinh doanh, chịu trách nhiệm về chiến lược kinh doanh',
-    'BUSINESS_MANAGER',
-    1,
-    1
-  ),
-  (6, 'Test', 'Test1', 1, 1),
-  (7, 'Test', '1', 1, NULL),
-  (8, '', 'testUpsss', 0, NULL);
-
+INSERT INTO `roles` VALUES (1,'Quản trị viên hệ thống, có toàn quyền quản lý','ADMIN',1,NULL),(2,'Nhân viên làm việc trong hệ thống','EMPLOYEE',1,2),(3,'Quản lý nhân sự, chịu trách nhiệm về hồ sơ nhân sự','HR_MANAGER',1,1),(4,'Quản lý kho, giám sát hàng tồn kho, nhập xuất hàng hóa','WAREHOUSE_MANAGER',1,1),(5,'Quản lý kinh doanh, chịu trách nhiệm về chiến lược kinh doanh','BUSINESS_MANAGER',1,1);
 /*!40000 ALTER TABLE `roles` ENABLE KEYS */;
-
 UNLOCK TABLES;
 
 --
 -- Table structure for table `seniority_levels`
 --
+
 DROP TABLE IF EXISTS `seniority_levels`;
-
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-
 /*!50503 SET character_set_client = utf8mb4 */;
-
-CREATE TABLE
-  `seniority_levels` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
-    `description` mediumtext NOT NULL,
-    `level_name` varchar(100) NOT NULL,
-    `salary_coefficient` float NOT NULL,
-    `status` int NOT NULL,
-    `role_id` bigint NOT NULL,
-    PRIMARY KEY (`id`),
-    KEY `FK42hqucc3nfs0pvgu51i74oq13` (`role_id`),
-    CONSTRAINT `FK42hqucc3nfs0pvgu51i74oq13` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`),
-    CONSTRAINT `seniority_levels_chk_2` CHECK ((`salary_coefficient` <= 5))
-  ) ENGINE = InnoDB AUTO_INCREMENT = 18 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
+CREATE TABLE `seniority_levels` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `description` mediumtext NOT NULL,
+  `level_name` varchar(100) NOT NULL,
+  `salary_coefficient` float NOT NULL,
+  `status` int NOT NULL,
+  `role_id` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK42hqucc3nfs0pvgu51i74oq13` (`role_id`),
+  CONSTRAINT `FK42hqucc3nfs0pvgu51i74oq13` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`),
+  CONSTRAINT `seniority_levels_chk_2` CHECK ((`salary_coefficient` <= 5))
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `seniority_levels`
 --
+
 LOCK TABLES `seniority_levels` WRITE;
-
 /*!40000 ALTER TABLE `seniority_levels` DISABLE KEYS */;
-
-INSERT INTO
-  `seniority_levels`
-VALUES
-  (
-    1,
-    'Nhân viên mới vào làm, đang trong giai đoạn thử việc',
-    'Thử việc',
-    0.8,
-    1,
-    2
-  ),
-  (
-    2,
-    'Nhân viên đã hoàn thành thử việc và làm việc dưới 1 năm.',
-    'Nhân viên bậc 1',
-    1,
-    1,
-    2
-  ),
-  (
-    3,
-    'Nhân viên đã làm việc từ 1 đến 3 năm trong công ty',
-    'Nhân viên bậc 2',
-    1.3,
-    1,
-    2
-  ),
-  (
-    4,
-    'Nhân viên đã gắn bó với công ty từ 3 năm trở lên.',
-    'Nhân viên bậc 3',
-    1.5,
-    1,
-    2
-  ),
-  (
-    5,
-    'Quản lý nhân sự mới được bổ nhiệm.',
-    'Quản lý nhân sự bậc 1',
-    1,
-    1,
-    3
-  ),
-  (
-    6,
-    'Quản lý nhân sự đã có kinh nghiệm từ 1-3 năm.',
-    'Quản lý nhân sự bậc 2',
-    1.2,
-    1,
-    3
-  ),
-  (
-    7,
-    'Quản lý nhân sự đã làm việc trên 3 năm.',
-    'Quản lý nhân sự bậc 3',
-    1.5,
-    1,
-    3
-  ),
-  (
-    8,
-    'Quản lý kho mới được bổ nhiệm.',
-    'Quản lý kho bậc 1',
-    1,
-    1,
-    4
-  ),
-  (
-    9,
-    'Quản lý kho đã có kinh nghiệm từ 1-3 năm.',
-    'Quản lý kho bậc 2',
-    1.2,
-    1,
-    4
-  ),
-  (
-    10,
-    'Quản lý kho đã làm việc trên 3 năm.',
-    'Quản lý kho bậc 3',
-    1.5,
-    1,
-    4
-  ),
-  (
-    11,
-    'Quản lý kho mới được bổ nhiệm.',
-    'Quản lý kinh doanh bậc 1',
-    1,
-    1,
-    5
-  ),
-  (
-    12,
-    'Quản lý kho đã có kinh nghiệm từ 1-3 năm.',
-    'Quản lý kinh doanh kho bậc 2',
-    1.4,
-    1,
-    5
-  ),
-  (
-    13,
-    'Quản lý kho đã làm việc trên 3 năm.',
-    'Quản lý kinh doanh kho bậc 3',
-    1.8,
-    1,
-    5
-  );
-
+INSERT INTO `seniority_levels` VALUES (1,'Nhân viên mới vào làm, đang trong giai đoạn thử việc','Thử việc',0.8,1,2),(2,'Nhân viên đã hoàn thành thử việc và làm việc dưới 1 năm.','Nhân viên bậc 1',1,1,2),(3,'Nhân viên đã làm việc từ 1 đến 3 năm trong công ty','Nhân viên bậc 2',1.3,1,2),(4,'Nhân viên đã gắn bó với công ty từ 3 năm trở lên.','Nhân viên bậc 3',1.5,1,2),(5,'Quản lý nhân sự mới được bổ nhiệm.','Quản lý nhân sự bậc 1',1,1,3),(6,'Quản lý nhân sự đã có kinh nghiệm từ 1-3 năm.','Quản lý nhân sự bậc 2',1.2,1,3),(7,'Quản lý nhân sự đã làm việc trên 3 năm.','Quản lý nhân sự bậc 3',1.5,1,3),(8,'Quản lý kho mới được bổ nhiệm.','Quản lý kho bậc 1',1,1,4),(9,'Quản lý kho đã có kinh nghiệm từ 1-3 năm.','Quản lý kho bậc 2',1.2,1,4),(10,'Quản lý kho đã làm việc trên 3 năm.','Quản lý kho bậc 3',1.5,1,4),(11,'Quản lý kho mới được bổ nhiệm.','Quản lý kinh doanh bậc 1',1,1,5),(12,'Quản lý kho đã có kinh nghiệm từ 1-3 năm.','Quản lý kinh doanh kho bậc 2',1.4,1,5),(13,'Quản lý kho đã làm việc trên 3 năm.','Quản lý kinh doanh kho bậc 3',1.8,1,5);
 /*!40000 ALTER TABLE `seniority_levels` ENABLE KEYS */;
-
 UNLOCK TABLES;
 
 --
 -- Table structure for table `suppliers`
 --
+
 DROP TABLE IF EXISTS `suppliers`;
-
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-
 /*!50503 SET character_set_client = utf8mb4 */;
-
-CREATE TABLE
-  `suppliers` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
-    `address` varchar(255) DEFAULT NULL,
-    `created_at` datetime (6) DEFAULT NULL,
-    `name` varchar(255) DEFAULT NULL,
-    `phone_number` varchar(255) DEFAULT NULL,
-    `status` int NOT NULL,
-    `updated_at` datetime (6) DEFAULT NULL,
-    `percentage` double NOT NULL,
-    `email` varchar(255) DEFAULT NULL,
-    PRIMARY KEY (`id`)
-  ) ENGINE = InnoDB AUTO_INCREMENT = 21 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
+CREATE TABLE `suppliers` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `address` varchar(255) DEFAULT NULL,
+  `created_at` datetime(6) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `phone_number` varchar(255) DEFAULT NULL,
+  `status` int NOT NULL,
+  `updated_at` datetime(6) DEFAULT NULL,
+  `percentage` double NOT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `suppliers`
 --
+
 LOCK TABLES `suppliers` WRITE;
-
 /*!40000 ALTER TABLE `suppliers` DISABLE KEYS */;
-
-INSERT INTO
-  `suppliers`
-VALUES
-  (
-    1,
-    'Hà Nội, Việt Nam',
-    '2024-01-01 12:00:00.000000',
-    'Nhà Xuất Bản Kim Đồng',
-    '+84-24-3851-4352',
-    1,
-    '2024-03-10 14:20:30.000000',
-    10,
-    'contact@kimdong.vn'
-  ),
-  (
-    2,
-    'TP.HCM, Việt Nam',
-    '2023-11-15 09:15:00.000000',
-    'NXB Trẻ',
-    '+84-28-3930-0700',
-    1,
-    '2024-02-28 16:45:12.000000',
-    15,
-    'info@nxbtre.vn'
-  ),
-  (
-    3,
-    'Hà Nội, Việt Nam',
-    '2024-02-05 08:50:30.000000',
-    'Nhà Xuất Bản Giáo Dục',
-    '+84-24-3869-2694',
-    1,
-    '2024-03-01 10:10:00.000000',
-    20,
-    'support@giaoduc.vn'
-  ),
-  (
-    4,
-    'TP.HCM, Việt Nam',
-    '2024-02-10 07:45:20.000000',
-    'Nhà Sách Fahasa',
-    '+84-28-3829-2180',
-    1,
-    '2024-03-05 13:55:12.000000',
-    18,
-    'contact@fahasa.com'
-  ),
-  (
-    5,
-    'TP.HCM, Việt Nam',
-    '2023-12-20 15:22:10.000000',
-    'Tiki Trading',
-    '+84-28-7300-9999',
-    1,
-    '2024-02-15 09:10:30.000000',
-    12,
-    'info@tiki.vn'
-  ),
-  (
-    6,
-    'TP.HCM, Việt Nam',
-    '2023-12-01 11:30:00.000000',
-    'Vinabook',
-    '+84-28-7301-8886',
-    1,
-    '2024-02-25 14:40:20.000000',
-    25,
-    'support@vinabook.com'
-  ),
-  (
-    7,
-    'Hà Nội, Việt Nam',
-    '2023-11-25 10:00:00.000000',
-    'Nhà Xuất Bản Văn Học',
-    '+84-24-3944-3631',
-    1,
-    '2024-03-01 12:30:00.000000',
-    30,
-    'sales@vanhoc.vn'
-  ),
-  (
-    8,
-    'TP.HCM, Việt Nam',
-    '2023-10-10 15:45:12.000000',
-    'NXB Tổng Hợp TP.HCM',
-    '+84-28-3829-7140',
-    1,
-    '2024-03-02 14:55:30.000000',
-    22,
-    'info@nxbtonghop.vn'
-  ),
-  (
-    9,
-    'Hà Nội, Việt Nam',
-    '2023-09-15 14:22:40.000000',
-    'Nhà Xuất Bản Đại Học Quốc Gia',
-    '+84-24-3754-7505',
-    1,
-    '2024-03-03 11:12:50.000000',
-    28,
-    'sales@dhqg.vn'
-  ),
-  (
-    10,
-    'TP.HCM, Việt Nam',
-    '2023-08-30 09:30:00.000000',
-    'Nhà Sách Phương Nam',
-    '+84-28-7303-1666',
-    1,
-    '2024-02-28 10:45:00.000000',
-    35,
-    'info@phuongnambook.vn'
-  );
-
+INSERT INTO `suppliers` VALUES (1,'Hà Nội, Việt Nam','2024-01-01 12:00:00.000000','Nhà Xuất Bản Kim Đồng','+84-24-3851-4352',1,'2024-03-10 14:20:30.000000',10,'contact@kimdong.vn'),(2,'TP.HCM, Việt Nam','2023-11-15 09:15:00.000000','NXB Trẻ','+84-28-3930-0700',1,'2024-02-28 16:45:12.000000',15,'info@nxbtre.vn'),(3,'Hà Nội, Việt Nam','2024-02-05 08:50:30.000000','Nhà Xuất Bản Giáo Dục','+84-24-3869-2694',1,'2024-03-01 10:10:00.000000',20,'support@giaoduc.vn'),(4,'TP.HCM, Việt Nam','2024-02-10 07:45:20.000000','Nhà Sách Fahasa','+84-28-3829-2180',1,'2024-03-05 13:55:12.000000',18,'contact@fahasa.com'),(5,'TP.HCM, Việt Nam','2023-12-20 15:22:10.000000','Tiki Trading','+84-28-7300-9999',1,'2024-02-15 09:10:30.000000',12,'info@tiki.vn'),(6,'TP.HCM, Việt Nam','2023-12-01 11:30:00.000000','Vinabook','+84-28-7301-8886',1,'2024-02-25 14:40:20.000000',25,'support@vinabook.com'),(7,'Hà Nội, Việt Nam','2023-11-25 10:00:00.000000','Nhà Xuất Bản Văn Học','+84-24-3944-3631',1,'2024-03-01 12:30:00.000000',30,'sales@vanhoc.vn'),(8,'TP.HCM, Việt Nam','2023-10-10 15:45:12.000000','NXB Tổng Hợp TP.HCM','+84-28-3829-7140',1,'2024-03-02 14:55:30.000000',22,'info@nxbtonghop.vn'),(9,'Hà Nội, Việt Nam','2023-09-15 14:22:40.000000','Nhà Xuất Bản Đại Học Quốc Gia','+84-24-3754-7505',1,'2024-03-03 11:12:50.000000',28,'sales@dhqg.vn'),(10,'TP.HCM, Việt Nam','2023-08-30 09:30:00.000000','Nhà Sách Phương Nam','+84-28-7303-1666',1,'2024-02-28 10:45:00.000000',35,'info@phuongnambook.vn');
 /*!40000 ALTER TABLE `suppliers` ENABLE KEYS */;
-
 UNLOCK TABLES;
 
 --
 -- Table structure for table `tokens`
 --
+
 DROP TABLE IF EXISTS `tokens`;
-
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-
 /*!50503 SET character_set_client = utf8mb4 */;
-
-CREATE TABLE
-  `tokens` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
-    `access_token` varchar(255) DEFAULT NULL,
-    `created_at` datetime (6) DEFAULT NULL,
-    `refresh_token` varchar(255) DEFAULT NULL,
-    `updated_at` datetime (6) DEFAULT NULL,
-    `username` varchar(255) DEFAULT NULL,
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `UK7nq3j9mbmotv8kv3nv9kbcb7c` (`username`)
-  ) ENGINE = InnoDB AUTO_INCREMENT = 2 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
+CREATE TABLE `tokens` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `access_token` varchar(255) DEFAULT NULL,
+  `created_at` datetime(6) DEFAULT NULL,
+  `refresh_token` varchar(255) DEFAULT NULL,
+  `updated_at` datetime(6) DEFAULT NULL,
+  `username` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UK7nq3j9mbmotv8kv3nv9kbcb7c` (`username`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `tokens`
 --
+
 LOCK TABLES `tokens` WRITE;
-
 /*!40000 ALTER TABLE `tokens` DISABLE KEYS */;
-
-INSERT INTO
-  `tokens`
-VALUES
-  (
-    1,
-    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBRE1JTiIsImlhdCI6MTc0MTE4NDE5NCwiZXhwIjoxNzQ0Nzg0MTk0fQ.Em9Eg0yPj4F8MlT8o0bRZRxzN02LgFwBQJ5rnjy-NSk',
-    '2025-03-05 21:16:30.531138',
-    'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBRE1JTiIsImlhdCI6MTc0MTE4NDE5NCwiZXhwIjoxNzQyMzkzNzk0fQ.-r2Y0RgXlQOU1KmcLROzvrJtdjcrKY6oVsy5P5Dp34Y',
-    '2025-03-05 21:16:34.067015',
-    'ADMIN'
-  );
-
+INSERT INTO `tokens` VALUES (1,'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBRE1JTiIsImlhdCI6MTc0MTE4NDE5NCwiZXhwIjoxNzQ0Nzg0MTk0fQ.Em9Eg0yPj4F8MlT8o0bRZRxzN02LgFwBQJ5rnjy-NSk','2025-03-05 21:16:30.531138','eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBRE1JTiIsImlhdCI6MTc0MTE4NDE5NCwiZXhwIjoxNzQyMzkzNzk0fQ.-r2Y0RgXlQOU1KmcLROzvrJtdjcrKY6oVsy5P5Dp34Y','2025-03-05 21:16:34.067015','ADMIN');
 /*!40000 ALTER TABLE `tokens` ENABLE KEYS */;
-
 UNLOCK TABLES;
 
 --
 -- Table structure for table `users`
 --
+
 DROP TABLE IF EXISTS `users`;
-
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-
 /*!50503 SET character_set_client = utf8mb4 */;
-
-CREATE TABLE
-  `users` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
-    `address` varchar(255) DEFAULT NULL,
-    `created_at` datetime (6) DEFAULT NULL,
-    `date_of_birth` date DEFAULT NULL,
-    `email` varchar(255) DEFAULT NULL,
-    `full_name` varchar(255) DEFAULT NULL,
-    `gender` tinyint DEFAULT NULL,
-    `last_login` datetime (6) DEFAULT NULL,
-    `password` varchar(255) DEFAULT NULL,
-    `phone_number` varchar(255) DEFAULT NULL,
-    `status` int NOT NULL,
-    `updated_at` datetime (6) DEFAULT NULL,
-    `username` varchar(255) DEFAULT NULL,
-    PRIMARY KEY (`id`),
-    CONSTRAINT `users_chk_1` CHECK ((`gender` between 0 and 2))
-  ) ENGINE = InnoDB AUTO_INCREMENT = 7 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
+CREATE TABLE `users` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `address` varchar(255) DEFAULT NULL,
+  `created_at` datetime(6) DEFAULT NULL,
+  `date_of_birth` date DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `full_name` varchar(255) DEFAULT NULL,
+  `gender` tinyint DEFAULT NULL,
+  `last_login` datetime(6) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `phone_number` varchar(255) DEFAULT NULL,
+  `status` int NOT NULL,
+  `updated_at` datetime(6) DEFAULT NULL,
+  `username` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `users_chk_1` CHECK ((`gender` between 0 and 2))
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `users`
 --
+
 LOCK TABLES `users` WRITE;
-
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-
-INSERT INTO
-  `users`
-VALUES
-  (
-    2,
-    'Hà Nội, Việt Nam',
-    '2025-03-05 21:00:35.000173',
-    '1990-05-15',
-    'an.nguyen@example.com',
-    'Nguyễn Văn An',
-    0,
-    NULL,
-    '$2a$10$NFNUzoBf7f59miXiM2blcuTD9EuI3vL5WYrDkx6NR4hCRbjmna182',
-    '0987654321',
-    1,
-    NULL,
-    'ADMIN'
-  ),
-  (
-    3,
-    '303 Điện Biên Phủ, Quận Bình Thạnh, TP.HCM',
-    '2025-03-05 21:00:46.305184',
-    '2000-12-01',
-    'khanh.buivan@example.com',
-    'Test',
-    0,
-    NULL,
-    '$2a$10$mcCg/6lmmsbPbHiWWiwEPOM0w6MnTCEeNqSt/32M4B9pp98wl/S1C',
-    '0945678901',
-    1,
-    '2025-03-06 18:23:40.414087',
-    'EMPLOYEE'
-  ),
-  (
-    4,
-    'Đà Nẵng, Việt Nam',
-    '2025-03-05 21:01:13.014281',
-    '1988-09-10',
-    'tuan.le@example.com',
-    'Lê Minh Tuấn',
-    0,
-    NULL,
-    '$2a$10$VEsW6l63BLabq2XkGmWYxuVd7M/PVVVd44o8NcW0Y6.O213FOqBCy',
-    '0965432109',
-    1,
-    NULL,
-    'HR_MANAGER'
-  ),
-  (
-    5,
-    'Hải Phòng, Việt Nam',
-    '2025-03-05 21:01:23.772907',
-    '1992-11-25',
-    'huy.pham@example.com',
-    'Phạm Quang Huy',
-    0,
-    NULL,
-    '$2a$10$WWub6z22bRw8lYBKHMbHxujIRI.R6GLVNU8whAYNiXemPQB3.i7Gm',
-    '0954321098',
-    1,
-    NULL,
-    'WAREHOUSE_MANAGER'
-  ),
-  (
-    6,
-    'Cần Thơ, Việt Nam',
-    '2025-03-05 21:01:31.739038',
-    '1993-04-30',
-    'lan.do@example.com',
-    'Đỗ Thị Lan',
-    1,
-    NULL,
-    '$2a$10$7u0rWM7puzgWD6GQWyUzsuuJfXJYzTZsAyONEkZCe/hX8uuxPxQcK',
-    '0943210987',
-    1,
-    NULL,
-    'BUSINESS_MANAGER'
-  );
-
+INSERT INTO `users` VALUES (2,'Hà Nội, Việt Nam','2025-03-05 21:00:35.000173','1990-05-15','an.nguyen@example.com','Nguyễn Văn An',0,NULL,'$2a$10$NFNUzoBf7f59miXiM2blcuTD9EuI3vL5WYrDkx6NR4hCRbjmna182','0987654321',1,NULL,'ADMIN'),(3,'303 Điện Biên Phủ, Quận Bình Thạnh, TP.HCM','2025-03-05 21:00:46.305184','2000-12-01','khanh.buivan@example.com','Lê Minh Tuấn',0,NULL,'$2a$10$mcCg/6lmmsbPbHiWWiwEPOM0w6MnTCEeNqSt/32M4B9pp98wl/S1C','0945678901',1,'2025-03-06 18:23:40.414087','EMPLOYEE'),(4,'Đà Nẵng, Việt Nam','2025-03-05 21:01:13.014281','1988-09-10','tuan.le@example.com','Lê Minh Tuấn',0,NULL,'$2a$10$VEsW6l63BLabq2XkGmWYxuVd7M/PVVVd44o8NcW0Y6.O213FOqBCy','0965432109',1,NULL,'HR_MANAGER'),(5,'Hải Phòng, Việt Nam','2025-03-05 21:01:23.772907','1992-11-25','huy.pham@example.com','Phạm Quang Huy',0,NULL,'$2a$10$WWub6z22bRw8lYBKHMbHxujIRI.R6GLVNU8whAYNiXemPQB3.i7Gm','0954321098',1,NULL,'WAREHOUSE_MANAGER'),(6,'Cần Thơ, Việt Nam','2025-03-05 21:01:31.739038','1993-04-30','lan.do@example.com','Đỗ Thị Lan',1,NULL,'$2a$10$7u0rWM7puzgWD6GQWyUzsuuJfXJYzTZsAyONEkZCe/hX8uuxPxQcK','0943210987',1,NULL,'BUSINESS_MANAGER'),(7,'Cần Thơ, Việt Nam','2025-04-02 14:39:50.734745','2004-04-30','b.do@example.com','Trần Văn B',1,NULL,'$2a$10$6wREgitUmxIbQYIey.q.D.fraUnpdW1vZx.ulyqSSotk2vcQqsJhe','0943210987',1,NULL,'tranvanb'),(8,'Cần Thơ, Việt Nam','2025-04-02 14:43:25.682397','2004-05-30','leminh.do@example.com','Lê Minh',0,NULL,'$2a$10$2jrEIUyvEau1SDR9lEbwQu0U6kA6Gw0dWb3y29/lVFKbYjW7mbb5S','0943210987',1,NULL,'leminh'),(9,'Bình Định, Việt Nam','2025-04-02 14:45:04.511678','2004-05-30','tuminh.do@example.com','Trần Minh Tú',0,NULL,'$2a$10$boTmf7KreJtjRtnQ.sHqEuFWOdiP3mhFC5PcbwDyt6Y8VrBMi/NIe','0943210987',1,NULL,'tutran'),(10,'Bình Định, Việt Nam','2025-04-02 14:46:18.462892','2004-05-30','nguyetminh.do@example.com','Lê Thị Minh Nguyệt',1,NULL,'$2a$10$LmJK8B9VjdYoGwx2sek7Au2jSuVN980wHXUo2QvI6JAR5OcZJ0I4u','0943210987',1,NULL,'minhnguyet');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
-
 UNLOCK TABLES;
-
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-29  1:34:44
+-- Dump completed on 2025-04-02 21:55:58
