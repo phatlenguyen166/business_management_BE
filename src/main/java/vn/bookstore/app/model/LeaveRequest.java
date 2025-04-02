@@ -24,11 +24,11 @@ public class LeaveRequest {
     private String title;
 
     @NotNull(message = "Start date không được để trống")
-    @FutureOrPresent(message = "Start date phải là ngày hiện tại hoặc tương lai")
+//    @FutureOrPresent(message = "Start date phải là ngày hiện tại hoặc tương lai")
     private LocalDate startDate;
 
     @NotNull(message = "End date không được để trống")
-    @Future(message = "End date phải là ngày trong tương lai")
+//    @Future(message = "End date phải là ngày trong tương lai")
     private LocalDate endDate;
     private long totalDayLeave;
     @CreationTimestamp

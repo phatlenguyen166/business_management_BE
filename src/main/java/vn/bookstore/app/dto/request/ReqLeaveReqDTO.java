@@ -16,10 +16,10 @@ public class ReqLeaveReqDTO {
     @Size(max = 255, message = "Title không được quá 255 ký tự")
     private String title;
     @NotNull(message = "Start date không được để trống")
-    @Future(message = "Start date phải là ngày tương lai")
+//    @Future(message = "Start date phải là ngày tương lai")
     private LocalDate startDate;
     @NotNull(message = "End date không được để trống")
-    @Future(message = "End date phải là ngày trong tương lai")
+//    @Future(message = "End date phải là ngày trong tương lai")
     private LocalDate endDate;
     @Lob
     @Column(columnDefinition = "MEDIUMTEXT")
