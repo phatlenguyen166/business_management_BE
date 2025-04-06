@@ -17,9 +17,21 @@ public interface SeniorityLevelMapper {
     SeniorityLevel convertoSeniorityLevel(ReqSeniorityLevelDTO reqSeniorityLevelDTO);
 
     @Named("convertToResSeniorityDTO")
-    @Mapping(source = "role.id", target = "roleId")
+    @Mapping(source = "role.id", target = "roleId", qualifiedByName = "formatIdRole")
+    @Mapping(source = "id", target = "idString", qualifiedByName ="formatId")
     ResSeniorityDTO convertToResSeniorityDTO(SeniorityLevel seniorityLevel);
+
 
     @Mapping(target = "id", ignore = true) // Không ghi đè ID
     void updateSeniorityLevelFromDTO(ReqSeniorityLevelDTO dto, @MappingTarget SeniorityLevel entity);
+
+    @Named("formatId")
+    static String formatId(Long id) {
+        return "SEL-" + id;
+    }
+
+    @Named("formatIdRole")
+    static String formatIdRole(Long id) {
+        return "ROL-" + id;
+    }
 }

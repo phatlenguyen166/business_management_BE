@@ -2,6 +2,7 @@ package vn.bookstore.app.service.impl;
 
 import org.springframework.stereotype.Service;
 import vn.bookstore.app.dto.request.ReqSeniorityLevelDTO;
+import vn.bookstore.app.dto.response.ResSeniorityDTO;
 import vn.bookstore.app.mapper.SeniorityLevelMapper;
 import vn.bookstore.app.model.Role;
 import vn.bookstore.app.model.SeniorityLevel;
@@ -9,11 +10,11 @@ import vn.bookstore.app.repository.RoleRepository;
 import vn.bookstore.app.repository.SeniorityLevelRepository;
 import vn.bookstore.app.service.SeniorityLevelService;
 import vn.bookstore.app.util.error.ExistingIdException;
-import vn.bookstore.app.util.error.InvalidDataException;
 import vn.bookstore.app.util.error.InvalidRequestException;
+import vn.bookstore.app.util.error.NotFoundException;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class SeniorityLevelServiceImpl implements SeniorityLevelService {
@@ -30,46 +31,62 @@ public class SeniorityLevelServiceImpl implements SeniorityLevelService {
     }
 
     @Override
-    public SeniorityLevel handleCreateSeniorityLevel(ReqSeniorityLevelDTO reqSeniorityLevel) throws InvalidRequestException {
-        if (this.seniorityLevelRepository.existsByLevelNameAndStatus(reqSeniorityLevel.getLevelName(),1)) {
+    public ResSeniorityDTO handleCreateSeniorityLevel(ReqSeniorityLevelDTO reqSeniorityLevel) throws InvalidRequestException {
+        if (this.seniorityLevelRepository.existsByLevelNameAndStatusIn(reqSeniorityLevel.getLevelName(),List.of(1,2))) {
             throw new ExistingIdException("Tên cấp bậc đã tồn tại");
-        } else {
-            Role role = this.roleRepository.findByIdAndStatus(reqSeniorityLevel.getRoleId(), 1).orElseThrow(() -> new InvalidRequestException("Role không tồn tại"));
+        }
+        Role role = this.roleRepository.findByIdAndStatus(reqSeniorityLevel.getRoleId(), 1).orElseThrow(() -> new InvalidRequestException("Role không tồn tại"));
             SeniorityLevel newSeniorityLevel = this.seniorityLevelMapper.convertoSeniorityLevel(reqSeniorityLevel);
             newSeniorityLevel.setRole(role);
-            newSeniorityLevel.setStatus(1);
-            return this.seniorityLevelRepository.save(newSeniorityLevel);
-        }
-
+        newSeniorityLevel.setStatus(2);
+        SeniorityLevel newSeniority = this.seniorityLevelRepository.save(newSeniorityLevel);
+        return this.seniorityLevelMapper.convertToResSeniorityDTO(newSeniority);
     }
 
     @Override
-    public List<SeniorityLevel> handleGetAllSeniority() {
-        return this.seniorityLevelRepository.findAllByStatus(1);
+    public List<ResSeniorityDTO> handleGetAllSeniority() {
+        return this.seniorityLevelRepository.findAllByStatusIn(List.of(1,2)).stream()
+                .map(seniorityLevelMapper::convertToResSeniorityDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public SeniorityLevel handleGetSeniorityById(Long id) {
-        return seniorityLevelRepository.findByIdAndStatus(id,1).orElse(null);
+    public ResSeniorityDTO handleGetSeniorityById(Long id) {
+        SeniorityLevel seniorityLevel = seniorityLevelRepository.findSeniorityLevelByIdAndStatusIn(id,List.of(1,2)).
+                orElseThrow(() -> new NotFoundException("Cap bac khong ton tai!"));
+        return this.seniorityLevelMapper.convertToResSeniorityDTO(seniorityLevel);
     }
 
     @Override
-    public SeniorityLevel handleUpdateSeniority(ReqSeniorityLevelDTO reqSeniorityLevel, Long id) {
-        SeniorityLevel currentSeniorityLevel = handleGetSeniorityById(id);
+    public ResSeniorityDTO handleUpdateSeniority(ReqSeniorityLevelDTO reqSeniorityLevel, Long id) {
+        SeniorityLevel currentSeniorityLevel = seniorityLevelRepository.findSeniorityLevelByIdAndStatusIn(id,List.of(2)).
+                orElseThrow(() -> new NotFoundException("Cấp bậc không tồn tại hoặc đã được cấp phép"));
         seniorityLevelMapper.updateSeniorityLevelFromDTO(reqSeniorityLevel, currentSeniorityLevel);
-        return seniorityLevelRepository.save(currentSeniorityLevel);
+        SeniorityLevel updatedSeniorityLevel = seniorityLevelRepository.save(currentSeniorityLevel);
+        return this.seniorityLevelMapper.convertToResSeniorityDTO(updatedSeniorityLevel);
     }
 
     @Override
     public void handleDeleteSeniority(Long id) {
-        SeniorityLevel currentSeniorityLevel = handleGetSeniorityById(id);
+        SeniorityLevel currentSeniorityLevel = seniorityLevelRepository.findSeniorityLevelByIdAndStatusIn(id,List.of(2)).
+                orElseThrow(() -> new NotFoundException("Cấp bậc không tồn tại hoặc đã được cấp phép"));
         currentSeniorityLevel.setStatus(0);
         seniorityLevelRepository.save(currentSeniorityLevel);
     }
 
     @Override
-    public List<SeniorityLevel> handleGetAllSeniorityByRoleId(Long roleId) {
-        Role role = this.roleRepository.findByIdAndStatus(roleId,1).orElseThrow(()-> new InvalidRequestException("Role không tồn tại"));
-        return this.seniorityLevelRepository.findAllByStatusAndRole(1,role);
+    public void handleAcceptSeniority(Long id) {
+        SeniorityLevel currentSeniorityLevel = seniorityLevelRepository.findSeniorityLevelByIdAndStatusIn(id,List.of(2)).
+                orElseThrow(() -> new NotFoundException("Cấp bậc không tồn tại hoặc đã được cấp phép"));
+        currentSeniorityLevel.setStatus(1);
+        seniorityLevelRepository.save(currentSeniorityLevel);
+    }
+
+    @Override
+    public List<ResSeniorityDTO> handleGetAllSeniorityByRoleId(Long roleId) {
+        Role role = this.roleRepository.findByIdAndStatusIn(roleId,List.of(1)).orElseThrow(()-> new NotFoundException("Role không tồn tại hoặc chưa được cấp phép"));
+        return this.seniorityLevelRepository.findAllByStatusInAndRole(List.of(1,2),role).stream()
+                .map(seniorityLevelMapper::convertToResSeniorityDTO)
+                .collect(Collectors.toList());
     }
 }

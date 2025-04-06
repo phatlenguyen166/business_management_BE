@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.bookstore.app.dto.request.ReqRoleDTO;
 import vn.bookstore.app.dto.response.ResRoleDTO;
 import vn.bookstore.app.dto.response.ResponseDTO;
 import vn.bookstore.app.model.Role;
@@ -47,7 +48,7 @@ public class RoleController {
     }
 
     @PostMapping("/roles")
-    public ResponseEntity<ResponseDTO<ResRoleDTO>>  createRole(@Valid @RequestBody Role role) {
+    public ResponseEntity<ResponseDTO<ResRoleDTO>>  createRole(@Valid @RequestBody ReqRoleDTO role) {
         ResRoleDTO newRole = this.roleService.handleCreateRole(role);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 new ResponseDTO<>(
@@ -61,9 +62,9 @@ public class RoleController {
     }
 
     @PutMapping("/roles/{id}")
-    public ResponseEntity<ResponseDTO<ResRoleDTO>>  updateRole(@Valid @RequestBody Role role, @PathVariable Long id) {
+    public ResponseEntity<ResponseDTO<ResRoleDTO>>  updateRole(@Valid @RequestBody ReqRoleDTO role, @PathVariable Long id) {
         ResRoleDTO updatedRole = this.roleService.handleUpdateRole(role, id);
-        return ResponseEntity.status(HttpStatus.CREATED).body(
+        return ResponseEntity.ok().body(
                 new ResponseDTO<>(
                         200,
                         true,
@@ -83,6 +84,20 @@ public class RoleController {
                         true,
                         null,
                         "Delete role successfully",
+                        null
+                )
+        );
+    }
+
+    @PatchMapping("/roles/accept/{id}")
+    public ResponseEntity<ResponseDTO>  acceptRole(@PathVariable Long id) {
+        this.roleService.handleAcceptRole(id);
+        return ResponseEntity.ok().body(
+                new ResponseDTO<>(
+                        200,
+                        true,
+                        null,
+                        "Accept role successfully",
                         null
                 )
         );

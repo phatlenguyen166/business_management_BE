@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.bookstore.app.dto.request.ReqSeniorityLevelDTO;
+import vn.bookstore.app.dto.response.ResSeniorityDTO;
 import vn.bookstore.app.dto.response.ResponseDTO;
 import vn.bookstore.app.model.SeniorityLevel;
 import vn.bookstore.app.service.impl.SeniorityLevelServiceImpl;
@@ -25,8 +26,8 @@ public class SeniorityLevelController {
     
     
     @PostMapping("/seniorityLevels")
-    public ResponseEntity<ResponseDTO<SeniorityLevel>> createSeniorityLevel(@Valid @RequestBody ReqSeniorityLevelDTO reqSeniorityLevel) {
-        SeniorityLevel newSeniorityLevel = this.seniorityLevelService.handleCreateSeniorityLevel(reqSeniorityLevel);
+    public ResponseEntity<ResponseDTO<ResSeniorityDTO>> createSeniorityLevel(@Valid @RequestBody ReqSeniorityLevelDTO reqSeniorityLevel) {
+        ResSeniorityDTO newSeniorityLevel = this.seniorityLevelService.handleCreateSeniorityLevel(reqSeniorityLevel);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 new ResponseDTO<>(
                         201,
@@ -39,8 +40,8 @@ public class SeniorityLevelController {
     }
     
     @GetMapping("/seniorityLevels")
-    public ResponseEntity<ResponseDTO<List<SeniorityLevel>>> getAllSeniorityLevels() {
-        List<SeniorityLevel> seniorityLevels = this.seniorityLevelService.handleGetAllSeniority();
+    public ResponseEntity<ResponseDTO<List<ResSeniorityDTO>>> getAllSeniorityLevels() {
+        List<ResSeniorityDTO> seniorityLevels = this.seniorityLevelService.handleGetAllSeniority();
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseDTO<>(
                         200,
@@ -53,8 +54,8 @@ public class SeniorityLevelController {
     }
     
     @GetMapping("/seniorityLevels/role/{roleId}")
-    public ResponseEntity<ResponseDTO<List<SeniorityLevel>>> getAllSeniorityLevelsByRoleId(@PathVariable Long roleId) {
-        List<SeniorityLevel> seniorityLevels = this.seniorityLevelService.handleGetAllSeniorityByRoleId(roleId);
+    public ResponseEntity<ResponseDTO<List<ResSeniorityDTO>>> getAllSeniorityLevelsByRoleId(@PathVariable Long roleId) {
+        List<ResSeniorityDTO> seniorityLevels = this.seniorityLevelService.handleGetAllSeniorityByRoleId(roleId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseDTO<>(
                         200,
@@ -67,11 +68,8 @@ public class SeniorityLevelController {
     }
     
     @GetMapping("/seniorityLevels/{id}")
-    public ResponseEntity<ResponseDTO<SeniorityLevel>> getSeniorityLevelById(@PathVariable Long id) throws NotFoundException {
-        SeniorityLevel seniorityLevel = this.seniorityLevelService.handleGetSeniorityById(id);
-        if (seniorityLevel == null) {
-            throw new NotFoundException("Cấp bậc không tồn tại");
-        }
+    public ResponseEntity<ResponseDTO<ResSeniorityDTO>> getSeniorityLevelById(@PathVariable Long id)  {
+        ResSeniorityDTO seniorityLevel = this.seniorityLevelService.handleGetSeniorityById(id);
         return ResponseEntity.ok().body(
                 new ResponseDTO<>(
                         200,
@@ -84,11 +82,8 @@ public class SeniorityLevelController {
     }
     
     @PutMapping("/seniorityLevels/{id}")
-    public ResponseEntity<ResponseDTO<SeniorityLevel>> updateSeniorityLevel(@Valid @RequestBody ReqSeniorityLevelDTO reqSeniorityLevel, @PathVariable Long id) throws NotFoundException {
-        if (this.seniorityLevelService.handleGetSeniorityById(id) == null) {
-            throw new NotFoundException("Cấp bậc không tồn tại");
-        }
-        SeniorityLevel updatedSeniorityLevel = this.seniorityLevelService.handleUpdateSeniority(reqSeniorityLevel, id);
+    public ResponseEntity<ResponseDTO<ResSeniorityDTO>> updateSeniorityLevel(@Valid @RequestBody ReqSeniorityLevelDTO reqSeniorityLevel, @PathVariable Long id) {
+        ResSeniorityDTO updatedSeniorityLevel = this.seniorityLevelService.handleUpdateSeniority(reqSeniorityLevel, id);
         return ResponseEntity.ok().body(
                 new ResponseDTO<>(
                         200,
@@ -101,10 +96,7 @@ public class SeniorityLevelController {
     }
     
     @PatchMapping("/seniorityLevels/{id}")
-    public ResponseEntity<ResponseDTO> deleteSeniorityLevel(@PathVariable Long id) throws NotFoundException {
-        if (this.seniorityLevelService.handleGetSeniorityById(id) == null) {
-            throw new NotFoundException("Cấp bậc không tồn tại");
-        }
+    public ResponseEntity<ResponseDTO> deleteSeniorityLevel(@PathVariable Long id) {
         this.seniorityLevelService.handleDeleteSeniority(id);
         return ResponseEntity.ok().body(
                 new ResponseDTO<>(
@@ -112,6 +104,20 @@ public class SeniorityLevelController {
                         true,
                         null,
                         "Delete seniorityLevel successfully",
+                        null
+                )
+        );
+    }
+
+    @PatchMapping("/seniorityLevels/accept/{id}")
+    public ResponseEntity<ResponseDTO> acceptSeniorityLevel(@PathVariable Long id)  {
+        this.seniorityLevelService.handleAcceptSeniority(id);
+        return ResponseEntity.ok().body(
+                new ResponseDTO<>(
+                        200,
+                        true,
+                        null,
+                        "Accept seniorityLevel successfully",
                         null
                 )
         );
