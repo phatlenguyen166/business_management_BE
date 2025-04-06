@@ -38,7 +38,7 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public ResContractDTO handleCreateContract(ReqContractDTO newContract) {
         User user = userRepository.findUserByIdAndStatus(newContract.getUserId(), 1).orElseThrow(() -> new RuntimeException("User không tồn tại!"));
-        SeniorityLevel seniorityLevel = seniorityLevelRepository.findByIdAndStatus(newContract.getSeniorityId(),1)
+        SeniorityLevel seniorityLevel = seniorityLevelRepository.findSeniorityLevelByIdAndStatusIn(newContract.getSeniorityId(),List.of(1))
                 .orElseThrow(() -> new RuntimeException("Cấp bậc không tồn tại!"));
         Contract contract = saveContract(user, newContract, seniorityLevel);
         return contractMapper.convertToResContractDTO(contract);
@@ -49,7 +49,7 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public Contract handleCreateContractWithUser(ReqUserWithContractDTO reqUserWithContractDTO, Long userId) {
         User user = userRepository.findByIdAndStatus(userId,1).orElseThrow(() -> new InvalidRequestException("User không tồn tại!"));
-        SeniorityLevel seniorityLevel = seniorityLevelRepository.findByIdAndStatus(reqUserWithContractDTO.getReqContract().getSeniorityId(),1).orElseThrow(() -> new InvalidRequestException("Cấp bậc không tồn tại !")) ;
+        SeniorityLevel seniorityLevel = seniorityLevelRepository.findSeniorityLevelByIdAndStatusIn(reqUserWithContractDTO.getReqContract().getSeniorityId(),List.of(1)).orElseThrow(() -> new InvalidRequestException("Cấp bậc không tồn tại !")) ;
         ReqContractDTO reqContractDTO = contractMapper.convertToReqContractDTO(reqUserWithContractDTO.getReqContract(), userId);
         return saveContract(user,reqContractDTO,seniorityLevel);
     }

@@ -9,8 +9,10 @@ import java.util.List;
 @Setter
 public class ResRoleDTO {
     private Long id;
+    private String idString;
     private String name;
     private String description;
     private int status;
     private List<ResSeniorityDTO>  resSeniority;
+    private String allowanceId;
 }

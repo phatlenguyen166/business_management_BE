@@ -10,9 +10,10 @@ import lombok.Setter;
 public class ResSeniorityDTO {
 
     private Long id;
+    private String idString;
     private String levelName;
     private String description;
     private float salaryCoefficient;
     private int status;
-    private Long roleId;
+    private String roleId;
 }

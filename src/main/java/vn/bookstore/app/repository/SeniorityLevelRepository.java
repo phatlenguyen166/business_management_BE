@@ -2,23 +2,19 @@ package vn.bookstore.app.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import vn.bookstore.app.model.Contract;
 import vn.bookstore.app.model.Role;
 import vn.bookstore.app.model.SeniorityLevel;
-import vn.bookstore.app.model.User;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface SeniorityLevelRepository extends JpaRepository<SeniorityLevel, Long>, JpaSpecificationExecutor<SeniorityLevel> {
-    List<SeniorityLevel> findAllByStatus(int status);
-    Optional<SeniorityLevel> findByIdAndStatus(Long id, int status);
-    List<SeniorityLevel> findAllByStatusAndRole(int status, Role role);
-    boolean existsByLevelNameAndStatus(String levelName, int status);
+    List<SeniorityLevel> findAllByStatusIn(List<Integer> status);
+    Optional<SeniorityLevel> findSeniorityLevelByIdAndStatusIn(Long id, List<Integer> status);
+    List<SeniorityLevel> findAllByStatusInAndRole(List<Integer> status, Role role);
+    boolean existsByLevelNameAndStatusIn(String levelName, List<Integer> status);
 
 }
 
