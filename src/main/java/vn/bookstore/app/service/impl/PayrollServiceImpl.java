@@ -19,7 +19,7 @@ import vn.bookstore.app.repository.*;
 import vn.bookstore.app.service.PayrollService;
 import vn.bookstore.app.util.constant.LateTypeEnum;
 import vn.bookstore.app.util.error.InvalidRequestException;
-import vn.bookstore.app.util.error.NotFoundException;
+import vn.bookstore.app.util.error.NotFoundValidException;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -215,7 +215,7 @@ public class PayrollServiceImpl implements PayrollService {
         List<Attendance> attendances = this.attendanceRepository.findAllByMonthOfYear(yearMonth.toString());
         for (Attendance attendance : attendances) {
             Contract contract = this.contractRepository.findContractByUserAndStatus(attendance.getUser(), 1)
-                    .orElseThrow(() -> new NotFoundException("Not found contract"));
+                    .orElseThrow(() -> new NotFoundValidException("Not found contract"));
             Payroll payroll = new Payroll();
             payroll.setAttendance(attendance);
             BigDecimal baseSalary = contract.getBaseSalary();
@@ -282,7 +282,7 @@ public class PayrollServiceImpl implements PayrollService {
 
     @Override
     public List<ResPayrollDTO> getAllPayRollByUser(Long userId) {
-        User user = this.userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Người dùng không tồn tại"));
+        User user = this.userRepository.findById(userId).orElseThrow(() -> new NotFoundValidException("Người dùng không tồn tại"));
         return this.payrollRepository.findAllPayrollByUserOrderByMonthOfYear(user).stream()
                 .map(payrollMapper::convertToResPayrollDTO)
                 .collect(Collectors.toList());
@@ -290,7 +290,7 @@ public class PayrollServiceImpl implements PayrollService {
 
     @Override
     public List<ResPayrollDTO> getAllPayRollByUserByYear(Long userId, Year year) {
-        User user = this.userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Người dùng không tồn tại"));
+        User user = this.userRepository.findById(userId).orElseThrow(() -> new NotFoundValidException("Người dùng không tồn tại"));
         return this.payrollRepository.findAllPayrollByUserByYear(year.toString(),user).stream()
                 .map(payrollMapper::convertToResPayrollDTO)
                 .collect(Collectors.toList());
@@ -312,7 +312,7 @@ public class PayrollServiceImpl implements PayrollService {
 
     @Override
     public ResPayrollDTO getPayrollById(Long id) {
-        Payroll payroll = this.payrollRepository.findPayrollById(id).orElseThrow(() -> new NotFoundException("Bảng lương không tồn tại"));
+        Payroll payroll = this.payrollRepository.findPayrollById(id).orElseThrow(() -> new NotFoundValidException("Bảng lương không tồn tại"));
         return this.payrollMapper.convertToResPayrollDTO(payroll);
     }
 

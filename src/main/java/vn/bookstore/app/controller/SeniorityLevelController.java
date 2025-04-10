@@ -8,9 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import vn.bookstore.app.dto.request.ReqSeniorityLevelDTO;
 import vn.bookstore.app.dto.response.ResSeniorityDTO;
 import vn.bookstore.app.dto.response.ResponseDTO;
-import vn.bookstore.app.model.SeniorityLevel;
 import vn.bookstore.app.service.impl.SeniorityLevelServiceImpl;
-import vn.bookstore.app.util.error.NotFoundException;
 
 import java.util.List;
 

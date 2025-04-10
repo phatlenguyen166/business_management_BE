@@ -17,7 +17,7 @@ public class ReqSeniorityLevelDTO {
     @NotBlank(message = "Mô tả không được để trống")
     @Size(max = 500, message = "Mô tả không được quá 500 ký tự")
     private String description;
-
+    private int status;
     @Positive(message = "Hệ số lương phải lớn hơn 0")
     @Max(value = 5, message = "Hệ số lương không được vượt quá 5")
     private float salaryCoefficient;

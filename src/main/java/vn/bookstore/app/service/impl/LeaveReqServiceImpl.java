@@ -12,10 +12,9 @@ import vn.bookstore.app.repository.UserRepository;
 import vn.bookstore.app.service.LeaveReqService;
 import vn.bookstore.app.util.constant.LeaveTypeEnum;
 import vn.bookstore.app.util.error.InvalidRequestException;
-import vn.bookstore.app.util.error.NotFoundException;
+import vn.bookstore.app.util.error.NotFoundValidException;
 
 import java.time.LocalDate;
-import java.time.Year;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -178,7 +177,7 @@ public class LeaveReqServiceImpl implements LeaveReqService {
     public List<ResLeaveReqDTO> handleCreateLeaveReq(ReqLeaveReqDTO leaveReqDTO) {
         List<ResLeaveReqDTO> resLeaveReqDTOS = new ArrayList<>();
         User user = this.userRepository.findUserByIdAndStatus(leaveReqDTO.getUserId(), 1)
-                .orElseThrow(() -> new NotFoundException("User Không tồn tại"));
+                .orElseThrow(() -> new NotFoundValidException("User Không tồn tại"));
         if (leaveReqDTO.getStartDate().getYear() != leaveReqDTO.getEndDate().getYear()) {
             LocalDate startDate1 = leaveReqDTO.getStartDate();
             LocalDate endDate1 = LocalDate.of(leaveReqDTO.getStartDate().getYear(), 12, 31);
@@ -283,7 +282,7 @@ public class LeaveReqServiceImpl implements LeaveReqService {
 
     @Override
     public LeaveRequest getLeaveReqById(Long id) {
-        return this.leaveReqRepository.findByIdAndStatusIn(id, List.of(1, 2, 3)).orElseThrow(() -> new NotFoundException("Đơn xin nghỉ phép không tồn tại"));
+        return this.leaveReqRepository.findByIdAndStatusIn(id, List.of(1, 2, 3)).orElseThrow(() -> new NotFoundValidException("Đơn xin nghỉ phép không tồn tại"));
     }
 
     @Override
@@ -368,21 +367,21 @@ public class LeaveReqServiceImpl implements LeaveReqService {
 
     @Override
     public void handleDeleteLeaveReq(Long id) {
-        LeaveRequest currentLeaveReq = this.leaveReqRepository.findByIdAndStatus(id, 2).orElseThrow(() -> new NotFoundException("Đơn xin nghỉ phép không tồn tại hoặc đã được xử lý"));
+        LeaveRequest currentLeaveReq = this.leaveReqRepository.findByIdAndStatus(id, 2).orElseThrow(() -> new NotFoundValidException("Đơn xin nghỉ phép không tồn tại hoặc đã được xử lý"));
         currentLeaveReq.setStatus(0);
         this.leaveReqRepository.save(currentLeaveReq);
     }
 
     @Override
     public void handleRejectLeaveReq(Long id) {
-        LeaveRequest currentLeaveReq = this.leaveReqRepository.findByIdAndStatus(id, 2).orElseThrow(() -> new NotFoundException("Đơn xin nghỉ phép không tồn tại hoặc đã được xử lý"));
+        LeaveRequest currentLeaveReq = this.leaveReqRepository.findByIdAndStatus(id, 2).orElseThrow(() -> new NotFoundValidException("Đơn xin nghỉ phép không tồn tại hoặc đã được xử lý"));
         currentLeaveReq.setStatus(3);
         this.leaveReqRepository.save(currentLeaveReq);
     }
 
     @Override
     public List<ResLeaveReqDTO> handleGetAllLeaveReqByUserId(Long userId) {
-        User user = this.userRepository.findUserByIdAndStatus(userId, 1).orElseThrow(() -> new NotFoundException("User Không tồn tại"));
+        User user = this.userRepository.findUserByIdAndStatus(userId, 1).orElseThrow(() -> new NotFoundValidException("User Không tồn tại"));
         List<ResLeaveReqDTO> resLeaveReqDTOList = this.leaveReqRepository.findByUserOrderBySendDateDesc(user).stream().map(leaveReqMapper::convertToResLeaveReqDTO).collect(Collectors.toList());
         return resLeaveReqDTOList;
     }

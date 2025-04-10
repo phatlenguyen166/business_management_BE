@@ -23,8 +23,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestControllerAdvice
 public class GlobalException {
     
-    @ExceptionHandler(value = {NotFoundException.class})
-    public ResponseEntity<ResponseDTO<Object>> handleIdException(NotFoundException exception) {
+    @ExceptionHandler(value = {NotFoundValidException.class})
+    public ResponseEntity<ResponseDTO<Object>> handleIdException(NotFoundValidException exception) {
         ResponseDTO<Object> res = new ResponseDTO<>();
         res.setStatusCode(HttpStatus.NOT_FOUND.value());
         res.setSuccess(false);
@@ -121,14 +121,12 @@ public class GlobalException {
         ex.getBindingResult().getFieldErrors().forEach(error -> {
             errors.put(error.getField(), error.getDefaultMessage());
         });
-
         ResponseDTO<Object> res = new ResponseDTO<>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
         res.setSuccess(false);
         res.setError("Dữ liệu đầu vào không hợp lệ");
         res.setMessage(errors.toString());
         res.setData(null);
-
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
 

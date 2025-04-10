@@ -8,10 +8,9 @@ import vn.bookstore.app.model.Holiday;
 import vn.bookstore.app.repository.HolidayRepository;
 import vn.bookstore.app.service.HolidayService;
 import vn.bookstore.app.util.error.InvalidRequestException;
-import vn.bookstore.app.util.error.NotFoundException;
+import vn.bookstore.app.util.error.NotFoundValidException;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,7 +37,7 @@ public class HolidayServiceImpl implements HolidayService {
     }
 
     public Holiday getHolidayById(Long id) {
-        return this.holidayRepository.findByIdAndStatus(id, 1).orElseThrow(() -> new NotFoundException("Ngãy lễ không tồn tại"));
+        return this.holidayRepository.findByIdAndStatus(id, 1).orElseThrow(() -> new NotFoundValidException("Ngãy lễ không tồn tại"));
     }
 
     @Override

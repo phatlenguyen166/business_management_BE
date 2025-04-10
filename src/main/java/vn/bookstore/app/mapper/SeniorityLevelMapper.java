@@ -23,6 +23,7 @@ public interface SeniorityLevelMapper {
 
 
     @Mapping(target = "id", ignore = true) // Không ghi đè ID
+    @Mapping(target = "status", ignore = true)
     void updateSeniorityLevelFromDTO(ReqSeniorityLevelDTO dto, @MappingTarget SeniorityLevel entity);
 
     @Named("formatId")

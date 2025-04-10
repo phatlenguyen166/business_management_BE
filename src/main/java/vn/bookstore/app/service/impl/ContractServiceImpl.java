@@ -15,7 +15,6 @@ import vn.bookstore.app.repository.SeniorityLevelRepository;
 import vn.bookstore.app.repository.UserRepository;
 import vn.bookstore.app.service.ContractService;
 import vn.bookstore.app.util.error.InvalidRequestException;
-import vn.bookstore.app.util.error.NotFoundException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

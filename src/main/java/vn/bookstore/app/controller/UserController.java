@@ -10,7 +10,7 @@ import vn.bookstore.app.dto.response.ResUserDTO;
 import vn.bookstore.app.dto.response.ResponseDTO;
 import vn.bookstore.app.service.impl.UserServiceImpl;
 import vn.bookstore.app.util.error.ExistingIdException;
-import vn.bookstore.app.util.error.NotFoundException;
+import vn.bookstore.app.util.error.NotFoundValidException;
 import java.util.List;
 
 @RestController
@@ -55,10 +55,10 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<ResponseDTO<ResUserDTO>> fetchUserById(@PathVariable Long id) throws NotFoundException {
+    public ResponseEntity<ResponseDTO<ResUserDTO>> fetchUserById(@PathVariable Long id) throws NotFoundValidException {
         ResUserDTO user = this.userService.handleFetchUserById(id);
         if (user == null || !this.userService.isActive(id)) {
-            throw new NotFoundException("Người dùng không tồn tại");
+            throw new NotFoundValidException("Người dùng không tồn tại");
         }
         return ResponseEntity.ok().body(
                 new ResponseDTO<>(
@@ -72,9 +72,9 @@ public class UserController {
     }
 
     @PutMapping("/users/{id}")
-    public ResponseEntity<ResponseDTO<ResUserDTO>> updateUser(@Valid @RequestBody ReqUserDTO updateUser, @PathVariable Long id) throws NotFoundException {
+    public ResponseEntity<ResponseDTO<ResUserDTO>> updateUser(@Valid @RequestBody ReqUserDTO updateUser, @PathVariable Long id) throws NotFoundValidException {
         if (this.userService.handleFetchUserById(id) == null || !this.userService.isActive(id)) {
-            throw new NotFoundException("Người dùng không tồn tại trong hệ thống");
+            throw new NotFoundValidException("Người dùng không tồn tại trong hệ thống");
         }
         ResUserDTO updatedUser = this.userService.handleUpdateUser(updateUser,id);
         return ResponseEntity.ok().body(
@@ -89,9 +89,9 @@ public class UserController {
     }
 
     @PatchMapping("/users/{id}")
-    public ResponseEntity<ResponseDTO> deleteUserById(@PathVariable Long id) throws NotFoundException {
+    public ResponseEntity<ResponseDTO> deleteUserById(@PathVariable Long id) throws NotFoundValidException {
         if (this.userService.handleFetchUserById(id) == null || !this.userService.isActive(id)) {
-            throw new NotFoundException("Người dùng không tồn tại trong hệ thống");
+            throw new NotFoundValidException("Người dùng không tồn tại trong hệ thống");
         }
         this.userService.handleDeleteUser(id);
         return ResponseEntity.ok().body(

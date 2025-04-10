@@ -11,7 +11,7 @@ import vn.bookstore.app.repository.AllowanceRepository;
 import vn.bookstore.app.repository.RoleRepository;
 import vn.bookstore.app.service.RoleService;
 import vn.bookstore.app.util.error.ExistingIdException;
-import vn.bookstore.app.util.error.NotFoundException;
+import vn.bookstore.app.util.error.NotFoundValidException;
 import vn.bookstore.app.util.error.ResourceNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,7 +33,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public ResRoleDTO handleRoleById(Long id) {
-        return this.roleMapper.convertToResRoleDTO(this.roleRepository.findByIdAndStatus(id, 1).orElseThrow(() -> new NotFoundException("Role không tồn tại")));
+        return this.roleMapper.convertToResRoleDTO(this.roleRepository.findByIdAndStatus(id, 1).orElseThrow(() -> new NotFoundValidException("Role không tồn tại")));
     }
 
     @Override
@@ -42,7 +42,7 @@ public class RoleServiceImpl implements RoleService {
             throw new ExistingIdException("Role đã tồn tại trong hệ thống");
         }
         Allowance allowance = this.allowanceRepository.findAllowanceById(role.getAllowanceId()).
-                orElseThrow(() -> new NotFoundException("Phụ cấp không tồn tại"));
+                orElseThrow(() -> new NotFoundValidException("Phụ cấp không tồn tại"));
         Role newRole = this.roleMapper.convertoRole(role);
         newRole.setAllowance(allowance);
         newRole.setStatus(2);
@@ -52,7 +52,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public ResRoleDTO handleUpdateRole(ReqRoleDTO role, Long id) {
-        Role currentRole = this.roleRepository.findByIdAndStatus(id, 2).orElseThrow(() -> new NotFoundException("Role không tồn tại hoặc đã được cấp phép"));
+        Role currentRole = this.roleRepository.findByIdAndStatus(id, 2).orElseThrow(() -> new NotFoundValidException("Role không tồn tại hoặc đã được cấp phép"));
         Role updateRole = this.roleMapper.convertoRole(role);
         this.roleMapper.updateRole(updateRole, currentRole);
         this.roleRepository.save(currentRole);
@@ -61,14 +61,14 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public void handleDeleteRole(Long id) {
-        Role currentRole = this.roleRepository.findByIdAndStatus(id, 2).orElseThrow(() -> new NotFoundException("Role không tồn tại hoặc đã được cấp phép"));
+        Role currentRole = this.roleRepository.findByIdAndStatus(id, 2).orElseThrow(() -> new NotFoundValidException("Role không tồn tại hoặc đã được cấp phép"));
         currentRole.setStatus(0);
         this.roleRepository.save(currentRole);
     }
 
     @Override
     public void handleAcceptRole(Long id) {
-        Role currentRole = this.roleRepository.findByIdAndStatus(id, 2).orElseThrow(() -> new NotFoundException("Role không tồn tại hoặc đã được cấp phép"));
+        Role currentRole = this.roleRepository.findByIdAndStatus(id, 2).orElseThrow(() -> new NotFoundValidException("Role không tồn tại hoặc đã được cấp phép"));
         currentRole.setStatus(1);
         this.roleRepository.save(currentRole);
     }

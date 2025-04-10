@@ -14,7 +14,7 @@ import vn.bookstore.app.repository.CategoryRepository;
 import vn.bookstore.app.service.CategoryService;
 import vn.bookstore.app.util.error.InvalidDataException;
 import vn.bookstore.app.util.error.InvalidRequestException;
-import vn.bookstore.app.util.error.NotFoundException;
+import vn.bookstore.app.util.error.NotFoundValidException;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +39,7 @@ public class CategoryServiceImpl implements CategoryService {
     public ResCategoryDTO updateCategory(Long id, ReqCategoryDTO reqCategoryDTO) {
         // Kiểm tra danh mục tồn tại, không lọc theo status
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Không tìm thấy danh mục với ID: " + id));
+                .orElseThrow(() -> new NotFoundValidException("Không tìm thấy danh mục với ID: " + id));
 
         // Kiểm tra tên mới có trùng với danh mục khác không
         if (categoryRepository.existsByNameAndIdNot(reqCategoryDTO.getName(), id)) {
@@ -54,7 +54,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void disableCategory(Long id) {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Không tìm thấy danh mục với ID: " + id));
+                .orElseThrow(() -> new NotFoundValidException("Không tìm thấy danh mục với ID: " + id));
 
         if (category.getProducts() != null && !category.getProducts().isEmpty()) {
             throw new InvalidRequestException("Không thể vô hiệu hóa danh mục này vì có sản phẩm đang sử dụng");
@@ -68,7 +68,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public ResCategoryDTO getCategoryById(Long id) {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Không tìm thấy danh mục với ID: " + id));
+                .orElseThrow(() -> new NotFoundValidException("Không tìm thấy danh mục với ID: " + id));
         return categoryMapper.convertToResCategoryDTO(category);
     }
 

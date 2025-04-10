@@ -14,7 +14,6 @@ import vn.bookstore.app.mapper.UserConverter;
 import vn.bookstore.app.model.*;
 import vn.bookstore.app.repository.*;
 import vn.bookstore.app.service.UserService;
-import vn.bookstore.app.util.error.NotFoundException;
 import vn.bookstore.app.util.error.ResourceNotFoundException;
 
 import java.util.ArrayList;
