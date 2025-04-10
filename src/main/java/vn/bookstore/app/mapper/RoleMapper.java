@@ -21,7 +21,7 @@ public interface RoleMapper {
 
     @Mapping(source = "seniorityLevels", target = "resSeniority", qualifiedByName ="convertToResSeniorityDTO")
     @Mapping(source = "id", target = "idString", qualifiedByName ="formatIdString")
-    @Mapping(source = "allowance.id", target = "allowanceId", qualifiedByName ="formatIdAllowance")
+    @Mapping(source = "allowance.id", target = "allowanceId")
     ResRoleDTO convertToResRoleDTO(Role role);
 
     @Mapping(target = "id", ignore = true) // Không ghi đè ID

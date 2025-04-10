@@ -1,6 +1,5 @@
 package vn.bookstore.app.service.impl;
 
-import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vn.bookstore.app.dto.request.ReqAttendanceDetailDTO;
@@ -13,7 +12,7 @@ import vn.bookstore.app.util.constant.AttendanceStatusEnum;
 import vn.bookstore.app.util.constant.LateTypeEnum;
 import vn.bookstore.app.util.constant.LeaveTypeEnum;
 import vn.bookstore.app.util.error.InvalidRequestException;
-import vn.bookstore.app.util.error.NotFoundException;
+import vn.bookstore.app.util.error.NotFoundValidException;
 
 import java.time.*;
 import java.util.ArrayList;
@@ -74,7 +73,7 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
 
     @Override
     public ResAttendanceDetailDTO handleCreateAttendanceDetail(ReqAttendanceDetailDTO attendanceDetail) {
-        User user = this.userRepository.findUserByIdAndStatus(attendanceDetail.getUserId(), 1).orElseThrow(() -> new NotFoundException("User Không tồn tại"));
+        User user = this.userRepository.findUserByIdAndStatus(attendanceDetail.getUserId(), 1).orElseThrow(() -> new NotFoundValidException("User Không tồn tại"));
         YearMonth yearMonth = YearMonth.from(attendanceDetail.getCheckIn());
         LocalDate date = LocalDate.from(attendanceDetail.getCheckIn());
         Attendance attendance = this.attendanceRepository.findByUserAndMonthOfYear(user, yearMonth.toString());
@@ -106,7 +105,7 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
 
     @Override
     public ResAttendanceDetailDTO handleCheckOut(ReqAttendanceDetailDTO attendanceDetailDTO) {
-        User user = this.userRepository.findUserByIdAndStatus(attendanceDetailDTO.getUserId(), 1).orElseThrow(() -> new NotFoundException("User Không tồn tại"));
+        User user = this.userRepository.findUserByIdAndStatus(attendanceDetailDTO.getUserId(), 1).orElseThrow(() -> new NotFoundValidException("User Không tồn tại"));
         YearMonth yearMonth = YearMonth.from(attendanceDetailDTO.getCheckOut());
         LocalDate date = LocalDate.from(attendanceDetailDTO.getCheckOut());
         Attendance attendance = this.attendanceRepository.findByUserAndMonthOfYear(user, yearMonth.toString());
@@ -118,7 +117,7 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
 
     @Override
     public ResAttendanceDetailDTO handleUpdate(ReqAttendanceDetailDTO attendanceDetailDTO) {
-        User user = this.userRepository.findUserByIdAndStatus(attendanceDetailDTO.getUserId(), 1).orElseThrow(() -> new NotFoundException("User Không tồn tại"));
+        User user = this.userRepository.findUserByIdAndStatus(attendanceDetailDTO.getUserId(), 1).orElseThrow(() -> new NotFoundValidException("User Không tồn tại"));
         YearMonth yearMonth = null;
         LocalDate date = null;
 
@@ -309,7 +308,7 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
 
     @Override
     public List<ResAttendanceDetailDTO> handleGetAllByAttendance(Long id) {
-        Attendance attendance = this.attendanceRepository.findById(id).orElseThrow(() -> new NotFoundException("Attendance not found"));
+        Attendance attendance = this.attendanceRepository.findById(id).orElseThrow(() -> new NotFoundValidException("Attendance not found"));
         List<ResAttendanceDetailDTO> attendanceDetailDTOS = this.attendanceDetailRepository.findAllByAttendance(attendance).stream()
                 .map(attendanceDetailMapper::convertToResAttendanceDetailDTO)
                 .collect(Collectors.toList());
@@ -318,7 +317,7 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
 
     @Override
     public List<ResAttendanceDetailDTO> handleGetAllByUser(Long id) {
-        User user = this.userRepository.findUserByIdAndStatus(id, 1).orElseThrow(() -> new NotFoundException("User not found"));
+        User user = this.userRepository.findUserByIdAndStatus(id, 1).orElseThrow(() -> new NotFoundValidException("User not found"));
         List<Attendance> attendances = this.attendanceRepository.findAllByUserOrderByMonthOfYearDesc(user);
         List<AttendanceDetail> attendanceDetails = new ArrayList<>();
         for (Attendance attendance : attendances) {
@@ -350,7 +349,7 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
 
     @Override
     public String checkExistAttendanceDetail(LocalDate date, Long userId) {
-        User user = this.userRepository.findUserByIdAndStatus(userId, 1).orElseThrow(() -> new NotFoundException("User not found"));
+        User user = this.userRepository.findUserByIdAndStatus(userId, 1).orElseThrow(() -> new NotFoundValidException("User not found"));
         if (attendanceDetailRepository.existsByWorkingDayAndUser(date, user)) {
             return "AttendanceDetail already exist";
         } else {

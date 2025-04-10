@@ -14,5 +14,5 @@ public class ResRoleDTO {
     private String description;
     private int status;
     private List<ResSeniorityDTO>  resSeniority;
-    private String allowanceId;
+    private Long allowanceId;
 }
