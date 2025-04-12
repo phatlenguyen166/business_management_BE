@@ -16,7 +16,7 @@ import vn.bookstore.app.model.SeniorityLevel;
 public interface RoleMapper {
     RoleMapper INSTANCE = Mappers.getMapper(RoleMapper.class);
 
-
+    @Mapping(source = "allowanceId", target = "allowance.id")
     Role convertoRole(ReqRoleDTO reqRoleDTO);
 
     @Mapping(source = "seniorityLevels", target = "resSeniority", qualifiedByName ="convertToResSeniorityDTO")
@@ -24,7 +24,8 @@ public interface RoleMapper {
     @Mapping(source = "allowance.id", target = "allowanceId")
     ResRoleDTO convertToResRoleDTO(Role role);
 
-    @Mapping(target = "id", ignore = true) // Không ghi đè ID
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "status", ignore = true)
     void updateRole(Role updateRole, @MappingTarget Role current);
 
     @Named("formatIdString")
