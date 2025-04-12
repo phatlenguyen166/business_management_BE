@@ -17,5 +17,6 @@ public class ReqRoleDTO {
     private String description;
     @NotNull(message = "Phụ cấp không được để trống")
     private Long allowanceId;
+    private int status;
 
 }

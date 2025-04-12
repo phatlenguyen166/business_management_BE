@@ -55,6 +55,10 @@ public class RoleServiceImpl implements RoleService {
         Role currentRole = this.roleRepository.findByIdAndStatus(id, 2).orElseThrow(() -> new NotFoundValidException("Role không tồn tại hoặc đã được cấp phép"));
         Role updateRole = this.roleMapper.convertoRole(role);
         this.roleMapper.updateRole(updateRole, currentRole);
+        if(currentRole.getStatus() == 2) {
+            currentRole.setStatus(role.getStatus());
+            this.roleRepository.save(currentRole);
+        }
         this.roleRepository.save(currentRole);
         return this.roleMapper.convertToResRoleDTO(currentRole);
     }
