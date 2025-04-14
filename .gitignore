@@ -67,6 +67,7 @@ build/
 # 💡 Ignore environment & configuration files (🔴 Bảo vệ thông tin nhạy cảm)
 .env
 *.properties
+!src/main/resources/application-example.properties
 *.yml
 *.yaml
 src/main/resources/application.properties
