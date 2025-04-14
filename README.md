@@ -28,16 +28,46 @@ This is the backend source code for a full-featured business management system d
 
 ## 🏗️ Project Structure
 
-```
-src/
-├── config/             # Security configuration
-├── controller/         # REST Controllers
-├── dto/                # Request/Response objects
-├── entity/             # JPA Entities
-├── repository/         # Spring Data JPA Repositories
-├── service/            # Business Logic
-└── util/               # Utility classes
-```
+src/main/java/vn/bookstore/app/
+├── config/ # Configuration classes
+├── controller/ # REST Controllers
+├── dto/ # Request/Response objects
+├── mapper/ # Object mappers
+├── model/ # JPA Entities
+├── repository/ # Spring Data JPA Repositories
+├── service/ # Business Logic
+└── util/ # Utility classes
+
+## 🔌 API Endpoints
+
+### Authentication
+
+- `POST /api/auth/login` - Login and get JWT token
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/forgot-password` - Request password reset
+
+### Employees
+
+- `GET /api/employees` - Get all employees
+- `GET /api/employees/{id}` - Get employee by ID
+- `POST /api/employees` - Create new employee
+- `PUT /api/employees/{id}` - Update employee
+- `DELETE /api/employees/{id}` - Delete employee
+
+### Contracts
+
+- `GET /api/contracts` - Get all contracts
+- `GET /api/contracts/{id}` - Get contract by ID
+- `POST /api/contracts` - Create new contract
+- `PUT /api/contracts/{id}` - Update contract
+- `DELETE /api/contracts/{id}` - Delete contract
+
+### Payroll
+
+- `GET /api/payrolls` - Get all payroll entries
+- `GET /api/payrolls/{id}` - Get payroll by ID
+- `POST /api/payrolls` - Create payroll entry
+- `GET /api/payrolls/export/{id}` - Export payroll as PDF
 
 ## ▶️ Getting Started
 
@@ -58,7 +88,7 @@ git clone https://github.com/phatlenguyen166/business_management_BE.git
 cd business_management_BE
 ```
 
-2. Configure `application.properties`:
+2.Configure `application.properties`:
 
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/your_db
@@ -73,11 +103,27 @@ cloudinary.api-secret=your_api_secret
 spring.sendgrid.apiKey=your_sendgrid_api_key
 ```
 
-3. Run the project:
+3.Run the project:
 
 ```bash
 ./mvnw spring-boot:run
 ```
+
+## 🧪 Testing
+
+Run the tests:
+
+```bash
+./mvnw test
+```
+
+## 🤝 How to Contribute
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## 👨‍💻 Frontend
 
