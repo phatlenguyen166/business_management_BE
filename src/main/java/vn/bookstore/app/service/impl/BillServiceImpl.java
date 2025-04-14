@@ -1,20 +1,5 @@
 package vn.bookstore.app.service.impl;
 
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import vn.bookstore.app.dto.request.ReqBillDTO;
-import vn.bookstore.app.dto.request.ReqBillDetailDTO;
-import vn.bookstore.app.dto.response.ResBillDTO;
-import vn.bookstore.app.mapper.BillMapper;
-import vn.bookstore.app.model.*;
-import vn.bookstore.app.repository.*;
-import vn.bookstore.app.service.BillService;
-import vn.bookstore.app.service.CustomerService;
-import vn.bookstore.app.service.ProductService;
-import vn.bookstore.app.service.UserService;
-import vn.bookstore.app.util.error.ResourceNotFoundException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +7,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import vn.bookstore.app.dto.request.ReqBillDTO;
+import vn.bookstore.app.dto.request.ReqBillDetailDTO;
+import vn.bookstore.app.dto.response.CustomerInfoDTO;
+import vn.bookstore.app.dto.response.ResBillDTO;
+import vn.bookstore.app.mapper.BillMapper;
+import vn.bookstore.app.model.Bill;
+import vn.bookstore.app.model.BillDetail;
+import vn.bookstore.app.model.Customer;
+import vn.bookstore.app.model.Product;
+import vn.bookstore.app.model.User;
+import vn.bookstore.app.repository.BillDetailRepository;
+import vn.bookstore.app.repository.BillRepository;
+import vn.bookstore.app.service.BillService;
+import vn.bookstore.app.service.CustomerService;
+import vn.bookstore.app.service.ProductService;
+import vn.bookstore.app.service.UserService;
+import vn.bookstore.app.util.error.ResourceNotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -111,12 +119,25 @@ public class BillServiceImpl implements BillService {
         savedBill.setBillDetails(billDetails);
         billRepository.save(savedBill);
 
+        Customer customerData = savedBill.getCustomer();
+        CustomerInfoDTO customerInfo = CustomerInfoDTO.builder()
+                .id(customerData.getId())
+                .customerName(customerData.getName())
+                .customerPhone(customerData.getPhoneNumber())
+                .customerAddress(customerData.getAddress())
+                .build();
+
+        Integer totalQuantity = billDetails.stream()
+                .mapToInt(detail -> detail.getQuantity())
+                .sum();
+
         return ResBillDTO.builder()
                 .id(savedBill.getId())
+                .idString("ORD" + savedBill.getId()) // Thêm dòng này
                 .userId(savedBill.getUser().getId())
                 .totalPrice(savedBill.getTotalPrice())
-                .customerId(savedBill.getCustomer().getId())
-                .address(savedBill.getAddress())
+                .totalAmount(totalQuantity) // Gán tổng số lượng sản phẩm
+                .customerInfo(customerInfo)
                 .billDetails(billDetails.stream()
                         .map(billMapper::toResBillDetail)
                         .collect(Collectors.toList())
@@ -136,6 +157,5 @@ public class BillServiceImpl implements BillService {
         return billRepository.findById(id).map(billMapper::toResBill)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy phiếu nhập với ID: " + id));
     }
-
 
 }
