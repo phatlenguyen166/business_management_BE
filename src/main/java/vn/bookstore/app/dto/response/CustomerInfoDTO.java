@@ -1,7 +1,5 @@
 package vn.bookstore.app.dto.response;
 
-import java.math.BigDecimal;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,10 +11,10 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResBillDetailDTO {
+public class CustomerInfoDTO {
 
-    private Long productId;
-    private String productName;
-    private int quantity;
-    private BigDecimal subPrice;
+    private Long id;
+    private String customerName;
+    private String customerPhone;
+    private String customerAddress;
 }
