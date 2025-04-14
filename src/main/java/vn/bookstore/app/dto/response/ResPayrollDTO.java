@@ -1,15 +1,12 @@
 package vn.bookstore.app.dto.response;
 
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import vn.bookstore.app.model.Attendance;
-
-import java.math.BigDecimal;
 
 @Getter
 @Setter
 public class ResPayrollDTO {
+
     private Long id;
     private String idString;
     private int standardWorkingDays;

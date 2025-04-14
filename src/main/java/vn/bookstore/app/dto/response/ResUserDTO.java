@@ -1,17 +1,16 @@
 package vn.bookstore.app.dto.response;
 
-import lombok.Getter;
-import lombok.Setter;
-import vn.bookstore.app.model.SeniorityLevel;
-import vn.bookstore.app.util.constant.GenderEnum;
-
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import lombok.Getter;
+import lombok.Setter;
+import vn.bookstore.app.util.constant.GenderEnum;
 
 @Getter
 @Setter
 public class ResUserDTO {
+
     private Long id;
     private String idString;
     private String fullName;

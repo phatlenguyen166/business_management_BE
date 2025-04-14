@@ -1,12 +1,33 @@
 package vn.bookstore.app.service.impl;
 
-import lombok.RequiredArgsConstructor;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
 import vn.bookstore.app.dto.request.ReqAttendanceDetailDTO;
 import vn.bookstore.app.dto.response.ResAttendanceDetailDTO;
 import vn.bookstore.app.mapper.AttendanceDetailMapper;
-import vn.bookstore.app.model.*;
-import vn.bookstore.app.repository.*;
+import vn.bookstore.app.model.Attendance;
+import vn.bookstore.app.model.AttendanceDetail;
+import vn.bookstore.app.model.Contract;
+import vn.bookstore.app.model.Holiday;
+import vn.bookstore.app.model.LeaveRequest;
+import vn.bookstore.app.model.User;
+import vn.bookstore.app.repository.AttendanceDetailRepository;
+import vn.bookstore.app.repository.AttendanceRepository;
+import vn.bookstore.app.repository.ContractRepository;
+import vn.bookstore.app.repository.HolidayRepository;
+import vn.bookstore.app.repository.LeaveReqRepository;
+import vn.bookstore.app.repository.UserRepository;
 import vn.bookstore.app.service.AttendanceDetailService;
 import vn.bookstore.app.util.constant.AttendanceStatusEnum;
 import vn.bookstore.app.util.constant.LateTypeEnum;
@@ -14,15 +35,10 @@ import vn.bookstore.app.util.constant.LeaveTypeEnum;
 import vn.bookstore.app.util.error.InvalidRequestException;
 import vn.bookstore.app.util.error.NotFoundValidException;
 
-import java.time.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 @RequiredArgsConstructor
 @Service
 public class AttendanceDetailServiceImpl implements AttendanceDetailService {
+
     private final UserRepository userRepository;
     private final AttendanceRepository attendanceRepository;
     private final AttendanceDetailRepository attendanceDetailRepository;
@@ -30,7 +46,6 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
     private final HolidayRepository holidayRepository;
     private final LeaveReqRepository leaveReqRepository;
     private final ContractRepository contractRepository;
-
 
     public boolean isHoliday(LocalDate date, List<Holiday> holidays) {
         for (Holiday holiday : holidays) {
@@ -131,6 +146,7 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
         if (date == null) {
             throw new InvalidRequestException("CheckIn và CheckOut đều null, không thể xác định ngày làm việc.");
         }
+        @SuppressWarnings("null")
         Attendance attendance = this.attendanceRepository.findByUserAndMonthOfYear(user, yearMonth.toString());
         AttendanceDetail currAttendanceDetail = this.attendanceDetailRepository.findByAttendanceAndCheckInDate(attendance, date);
         if (attendanceDetailDTO.getCheckIn() != null && attendanceDetailDTO.getCheckOut() != null) {
@@ -166,28 +182,39 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
 
     public void updateStatus(Attendance attendance, AttendanceDetail currAttendanceDetail, LeaveTypeEnum oldLeaveType, AttendanceStatusEnum oldStatus) {
         if (oldStatus != currAttendanceDetail.getAttendanceStatus() || oldLeaveType != currAttendanceDetail.getLeaveTypeEnum()) {
-            if (oldStatus == AttendanceStatusEnum.ABSENT) {
-                attendance.setTotalUnpaidLeaves(attendance.getTotalUnpaidLeaves() - 1);
-                this.attendanceRepository.save(attendance);
-            } else if (oldStatus == AttendanceStatusEnum.PRESENT) {
-                attendance.setTotalPaidLeaves(attendance.getTotalPaidLeaves() - 1);
-                this.attendanceRepository.save(attendance);
-            } else if (oldStatus == AttendanceStatusEnum.ON_LEAVE) {
-                if (oldLeaveType == LeaveTypeEnum.HOLIDAY) {
-                    attendance.setTotalHolidayLeaves(attendance.getTotalHolidayLeaves() - 1);
-                } else if (oldLeaveType == LeaveTypeEnum.SICK_LEAVE) {
-                    attendance.setTotalSickLeaves(attendance.getTotalSickLeaves() - 1);
-                } else if (oldLeaveType == LeaveTypeEnum.MATERNITY_LEAVE) {
-                    attendance.setTotalMaternityLeaves(attendance.getTotalMaternityLeaves() - 1);
-                } else if (oldLeaveType == LeaveTypeEnum.PAID_LEAVE) {
-                    attendance.setTotalPaidLeaves(attendance.getTotalPaidLeaves() - 1);
+            if (null != oldStatus) {
+                switch (oldStatus) {
+                    case ABSENT -> {
+                        attendance.setTotalUnpaidLeaves(attendance.getTotalUnpaidLeaves() - 1);
+                        this.attendanceRepository.save(attendance);
+                    }
+                    case PRESENT -> {
+                        attendance.setTotalPaidLeaves(attendance.getTotalPaidLeaves() - 1);
+                        this.attendanceRepository.save(attendance);
+                    }
+                    case ON_LEAVE -> {
+                        if (null != oldLeaveType) {
+                            switch (oldLeaveType) {
+                                case HOLIDAY ->
+                                    attendance.setTotalHolidayLeaves(attendance.getTotalHolidayLeaves() - 1);
+                                case SICK_LEAVE ->
+                                    attendance.setTotalSickLeaves(attendance.getTotalSickLeaves() - 1);
+                                case MATERNITY_LEAVE ->
+                                    attendance.setTotalMaternityLeaves(attendance.getTotalMaternityLeaves() - 1);
+                                case PAID_LEAVE ->
+                                    attendance.setTotalPaidLeaves(attendance.getTotalPaidLeaves() - 1);
+                                default -> {
+                                }
+                            }
+                        }
+                    }
+                    default -> {
+                    }
                 }
             }
             updateTotalWorking(currAttendanceDetail, attendance);
         }
     }
-
-
 
     public void handleCheckOutInValid(AttendanceDetail attendanceDetail) {
         if (attendanceDetail.getCheckOut() != null) {
@@ -200,25 +227,44 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
     }
 
     public void updateTotalWorking(AttendanceDetail attendanceDetail, Attendance attendance) {
-        if (attendanceDetail.getAttendanceStatus() == AttendanceStatusEnum.PRESENT) {
-            attendance.setTotalWorkingDays(attendance.getTotalWorkingDays() + 1);
-            this.attendanceRepository.save(attendance);
-        } else if (attendanceDetail.getAttendanceStatus() == AttendanceStatusEnum.ABSENT) {
-            attendance.setTotalUnpaidLeaves(attendance.getTotalUnpaidLeaves() + 1);
-            this.attendanceRepository.save(attendance);
-        } else if (attendanceDetail.getAttendanceStatus() == AttendanceStatusEnum.ON_LEAVE) {
-            if (attendanceDetail.getLeaveTypeEnum() == LeaveTypeEnum.MATERNITY_LEAVE) {
-                attendance.setTotalMaternityLeaves(attendance.getTotalMaternityLeaves() + 1);
-                this.attendanceRepository.save(attendance);
-            } else if (attendanceDetail.getLeaveTypeEnum() == LeaveTypeEnum.PAID_LEAVE) {
-                attendance.setTotalPaidLeaves(attendance.getTotalPaidLeaves() + 1);
-                this.attendanceRepository.save(attendance);
-            } else if (attendanceDetail.getLeaveTypeEnum() == LeaveTypeEnum.SICK_LEAVE) {
-                attendance.setTotalSickLeaves(attendance.getTotalSickLeaves() + 1);
-                this.attendanceRepository.save(attendance);
-            } else {
-                attendance.setTotalHolidayLeaves(attendance.getTotalHolidayLeaves() + 1);
-                this.attendanceRepository.save(attendance);
+        if (null != attendanceDetail.getAttendanceStatus()) {
+            switch (attendanceDetail.getAttendanceStatus()) {
+                case PRESENT -> {
+                    attendance.setTotalWorkingDays(attendance.getTotalWorkingDays() + 1);
+                    this.attendanceRepository.save(attendance);
+                }
+                case ABSENT -> {
+                    attendance.setTotalUnpaidLeaves(attendance.getTotalUnpaidLeaves() + 1);
+                    this.attendanceRepository.save(attendance);
+                }
+                case ON_LEAVE -> {
+                    if (null == attendanceDetail.getLeaveTypeEnum()) {
+                        attendance.setTotalHolidayLeaves(attendance.getTotalHolidayLeaves() + 1);
+                        this.attendanceRepository.save(attendance);
+                    } else {
+                        switch (attendanceDetail.getLeaveTypeEnum()) {
+                            case MATERNITY_LEAVE -> {
+                                attendance.setTotalMaternityLeaves(attendance.getTotalMaternityLeaves() + 1);
+                                this.attendanceRepository.save(attendance);
+                            }
+                            case PAID_LEAVE -> {
+                                attendance.setTotalPaidLeaves(attendance.getTotalPaidLeaves() + 1);
+                                this.attendanceRepository.save(attendance);
+                            }
+                            case SICK_LEAVE -> {
+                                attendance.setTotalSickLeaves(attendance.getTotalSickLeaves() + 1);
+                                this.attendanceRepository.save(attendance);
+                            }
+                            default -> {
+                                attendance.setTotalHolidayLeaves(attendance.getTotalHolidayLeaves() + 1);
+                                this.attendanceRepository.save(attendance);
+                            }
+                        }
+                    }
+                }
+
+                default -> {
+                }
             }
         }
     }
@@ -227,7 +273,7 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
         List<User> usersActive = new ArrayList<>();
         List<Contract> contracts = this.contractRepository.getAllByStatus(1);
         for (Contract contract : contracts) {
-            if (this.userRepository.findUserByIdAndStatusAndUsernameNot(contract.getUser().getId(), 1,"ADMIN").isPresent()) {
+            if (this.userRepository.findUserByIdAndStatusAndUsernameNot(contract.getUser().getId(), 1, "ADMIN").isPresent()) {
                 usersActive.add(contract.getUser());
             }
         }
@@ -295,7 +341,6 @@ public class AttendanceDetailServiceImpl implements AttendanceDetailService {
             }
         }
     }
-
 
     @Override
     public List<ResAttendanceDetailDTO> handleGetAll() {

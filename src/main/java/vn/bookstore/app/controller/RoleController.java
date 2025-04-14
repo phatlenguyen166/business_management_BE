@@ -1,26 +1,34 @@
 package vn.bookstore.app.controller;
 
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import vn.bookstore.app.dto.request.ReqRoleDTO;
 import vn.bookstore.app.dto.response.ResRoleDTO;
 import vn.bookstore.app.dto.response.ResponseDTO;
-import vn.bookstore.app.model.Role;
 import vn.bookstore.app.service.impl.RoleServiceImpl;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class RoleController {
+
     private final RoleServiceImpl roleService;
 
     @GetMapping("/roles")
-    public ResponseEntity<ResponseDTO<List<ResRoleDTO>>>  getAllRole() {
+    public ResponseEntity<ResponseDTO<List<ResRoleDTO>>> getAllRole() {
         List<ResRoleDTO> roleList = this.roleService.getAllRole();
         return ResponseEntity.ok(
                 new ResponseDTO<>(
@@ -34,7 +42,7 @@ public class RoleController {
     }
 
     @GetMapping("/roles/{id}")
-    public ResponseEntity<ResponseDTO<ResRoleDTO>>  getRoleById(@PathVariable Long id) {
+    public ResponseEntity<ResponseDTO<ResRoleDTO>> getRoleById(@PathVariable Long id) {
         ResRoleDTO role = this.roleService.handleRoleById(id);
         return ResponseEntity.ok(
                 new ResponseDTO<>(
@@ -48,7 +56,7 @@ public class RoleController {
     }
 
     @PostMapping("/roles")
-    public ResponseEntity<ResponseDTO<ResRoleDTO>>  createRole(@Valid @RequestBody ReqRoleDTO role) {
+    public ResponseEntity<ResponseDTO<ResRoleDTO>> createRole(@Valid @RequestBody ReqRoleDTO role) {
         ResRoleDTO newRole = this.roleService.handleCreateRole(role);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 new ResponseDTO<>(
@@ -62,7 +70,7 @@ public class RoleController {
     }
 
     @PutMapping("/roles/{id}")
-    public ResponseEntity<ResponseDTO<ResRoleDTO>>  updateRole(@Valid @RequestBody ReqRoleDTO role, @PathVariable Long id) {
+    public ResponseEntity<ResponseDTO<ResRoleDTO>> updateRole(@Valid @RequestBody ReqRoleDTO role, @PathVariable Long id) {
         ResRoleDTO updatedRole = this.roleService.handleUpdateRole(role, id);
         return ResponseEntity.ok().body(
                 new ResponseDTO<>(
@@ -76,7 +84,7 @@ public class RoleController {
     }
 
     @PatchMapping("/roles/{id}")
-    public ResponseEntity<ResponseDTO>  deleteRole(@PathVariable Long id) {
+    public ResponseEntity<ResponseDTO> deleteRole(@PathVariable Long id) {
         this.roleService.handleDeleteRole(id);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 new ResponseDTO<>(
@@ -90,7 +98,7 @@ public class RoleController {
     }
 
     @PatchMapping("/roles/accept/{id}")
-    public ResponseEntity<ResponseDTO>  acceptRole(@PathVariable Long id) {
+    public ResponseEntity<ResponseDTO> acceptRole(@PathVariable Long id) {
         this.roleService.handleAcceptRole(id);
         return ResponseEntity.ok().body(
                 new ResponseDTO<>(

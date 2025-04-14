@@ -1,22 +1,25 @@
 package vn.bookstore.app.controller;
 
+import java.util.Map;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
 import vn.bookstore.app.dto.request.ReqChangePasswordDTO;
 import vn.bookstore.app.dto.request.ReqSignInDTO;
 import vn.bookstore.app.dto.response.ResTokenDTO;
 import vn.bookstore.app.dto.response.ResponseDTO;
 import vn.bookstore.app.service.AuthenticationService;
-import vn.bookstore.app.service.UserService;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("api/v1/auth")
@@ -26,7 +29,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthenticationController {
 
-    private final UserService userService;
     private final AuthenticationService authenticationService;
 
     @PostMapping("/access")

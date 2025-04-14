@@ -1,54 +1,60 @@
 package vn.bookstore.app.service.impl;
 
-import com.lowagie.text.*;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Font;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.pdf.BaseFont;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfWriter;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import vn.bookstore.app.dto.response.ResPayrollDTO;
-import vn.bookstore.app.mapper.PayrollMapper;
-import vn.bookstore.app.model.*;
-import vn.bookstore.app.repository.*;
-import vn.bookstore.app.service.PayrollService;
-import vn.bookstore.app.util.constant.LateTypeEnum;
-import vn.bookstore.app.util.error.InvalidRequestException;
-import vn.bookstore.app.util.error.NotFoundValidException;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.time.*;
+import java.time.Year;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Service;
+
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.Font;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.BaseFont;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
+
+import lombok.RequiredArgsConstructor;
+import vn.bookstore.app.dto.response.ResPayrollDTO;
+import vn.bookstore.app.mapper.PayrollMapper;
+import vn.bookstore.app.model.Attendance;
+import vn.bookstore.app.model.AttendanceDetail;
+import vn.bookstore.app.model.Contract;
+import vn.bookstore.app.model.Payroll;
+import vn.bookstore.app.model.User;
+import vn.bookstore.app.repository.AttendanceDetailRepository;
+import vn.bookstore.app.repository.AttendanceRepository;
+import vn.bookstore.app.repository.ContractRepository;
+import vn.bookstore.app.repository.PayrollRepository;
+import vn.bookstore.app.repository.UserRepository;
+import vn.bookstore.app.service.PayrollService;
+import vn.bookstore.app.util.constant.LateTypeEnum;
+import vn.bookstore.app.util.error.InvalidRequestException;
+import vn.bookstore.app.util.error.NotFoundValidException;
+
 @Service
 @RequiredArgsConstructor
 public class PayrollServiceImpl implements PayrollService {
 
     private final UserRepository userRepository;
-    private final SeniorityLevelRepository seniorityLevelRepository;
     private final ContractRepository contractRepository;
     private final AttendanceRepository attendanceRepository;
     private final AttendanceDetailRepository attendanceDetailRepository;
     private final PayrollRepository payrollRepository;
     private final PayrollMapper payrollMapper;
-
-
-
-
 
     public BigDecimal calPenalties(BigDecimal baseSalary, int standardWorkingDays, float salaryConfident, Attendance attendance) {
         BigDecimal dailySalary = baseSalary.multiply(BigDecimal.valueOf(salaryConfident))
@@ -76,18 +82,14 @@ public class PayrollServiceImpl implements PayrollService {
         return penalty;
     }
 
-
     public BigDecimal calculateGrossSalary(BigDecimal baseSalary, float salaryCoefficient, int standardWorkingDays,
-                                           int totalWorkingDays,int totalPaidLeaves, BigDecimal otherAllowances ) {
+            int totalWorkingDays, int totalPaidLeaves, BigDecimal otherAllowances) {
         BigDecimal totalBaseSalary = baseSalary.multiply(BigDecimal.valueOf(salaryCoefficient));
         BigDecimal dailySalary = totalBaseSalary.divide(BigDecimal.valueOf(standardWorkingDays), 4, RoundingMode.HALF_UP);
         int totalLeaveDays = standardWorkingDays - (totalWorkingDays + totalPaidLeaves);
-        BigDecimal actualBasicSalary =  totalBaseSalary.subtract(dailySalary.multiply(BigDecimal.valueOf(totalLeaveDays)));
+        BigDecimal actualBasicSalary = totalBaseSalary.subtract(dailySalary.multiply(BigDecimal.valueOf(totalLeaveDays)));
         return actualBasicSalary.add(otherAllowances);
     }
-
-
-
 
     public BigDecimal calculateCompanyBHXH(BigDecimal grossSalary) {
         return grossSalary.multiply(BigDecimal.valueOf(0.175)).setScale(2, RoundingMode.HALF_UP);
@@ -171,7 +173,6 @@ public class PayrollServiceImpl implements PayrollService {
         return netSalary.add(sickLeaveBenefit).add(maternityBenefit).setScale(2, RoundingMode.HALF_UP);
     }
 
-
     // taxableIncome : Thu nhập chịu thuế =  Thu nhập trước thuế - (Giảm trừ gia cảnh bản thân	+  Giảm trừ gia cảnh người phụ thuộc)
     public BigDecimal calTax(BigDecimal taxableIncome) {
         if (taxableIncome.compareTo(BigDecimal.ZERO) <= 0) {
@@ -209,7 +210,7 @@ public class PayrollServiceImpl implements PayrollService {
     @Override
     public List<ResPayrollDTO> createPayroll(YearMonth yearMonth) {
         if (!this.payrollRepository.findAllByYearMonth(yearMonth.toString()).isEmpty()) {
-            throw  new InvalidRequestException("Bảng lương tháng này đã được tạo");
+            throw new InvalidRequestException("Bảng lương tháng này đã được tạo");
         }
         List<Payroll> payrolls = new ArrayList<>();
         List<Attendance> attendances = this.attendanceRepository.findAllByMonthOfYear(yearMonth.toString());
@@ -228,7 +229,7 @@ public class PayrollServiceImpl implements PayrollService {
             payroll.setAllowance(otherAllowances);
             BigDecimal penalties = calPenalties(baseSalary, standardWorkingDays, salaryCoefficient, attendance);
             payroll.setPenalties(penalties);
-            BigDecimal grossSalary = calculateGrossSalary(baseSalary, salaryCoefficient, standardWorkingDays, totalWorkingDays, attendance.getTotalPaidLeaves(),otherAllowances);
+            BigDecimal grossSalary = calculateGrossSalary(baseSalary, salaryCoefficient, standardWorkingDays, totalWorkingDays, attendance.getTotalPaidLeaves(), otherAllowances);
             payroll.setGrossSalary(grossSalary);
             BigDecimal employeeBHXH = calculateEmployeeBHXH(grossSalary);
             payroll.setEmployeeBHXH(employeeBHXH);
@@ -259,7 +260,8 @@ public class PayrollServiceImpl implements PayrollService {
     public BigDecimal calculateDeductions(BigDecimal employeeBHXH, BigDecimal employeeBHTN, BigDecimal employeeBHYT, BigDecimal penalties, BigDecimal tax) {
         return employeeBHTN.add(employeeBHXH).add(employeeBHYT).add(penalties).add(tax);
     }
-    public BigDecimal calculateBenefit(BigDecimal maternityBenefit, BigDecimal sickLeaveBenefit ) {
+
+    public BigDecimal calculateBenefit(BigDecimal maternityBenefit, BigDecimal sickLeaveBenefit) {
         return maternityBenefit.add(sickLeaveBenefit);
     }
 
@@ -291,7 +293,7 @@ public class PayrollServiceImpl implements PayrollService {
     @Override
     public List<ResPayrollDTO> getAllPayRollByUserByYear(Long userId, Year year) {
         User user = this.userRepository.findById(userId).orElseThrow(() -> new NotFoundValidException("Người dùng không tồn tại"));
-        return this.payrollRepository.findAllPayrollByUserByYear(year.toString(),user).stream()
+        return this.payrollRepository.findAllPayrollByUserByYear(year.toString(), user).stream()
                 .map(payrollMapper::convertToResPayrollDTO)
                 .collect(Collectors.toList());
     }
@@ -316,7 +318,7 @@ public class PayrollServiceImpl implements PayrollService {
         return this.payrollMapper.convertToResPayrollDTO(payroll);
     }
 
-    public void headerPdf(Document document, Font boldFont, Font font ){
+    public void headerPdf(Document document, Font boldFont, Font font) {
         Paragraph company = new Paragraph("Công ty: Inverse Enterprise", boldFont);
         company.setAlignment(Element.ALIGN_CENTER);
         document.add(company);
@@ -332,7 +334,7 @@ public class PayrollServiceImpl implements PayrollService {
         document.add(title);
     }
 
-    public void contentPdf(Document document, ResPayrollDTO payroll, Font boldFont, Font font ) {
+    public void contentPdf(Document document, ResPayrollDTO payroll, Font boldFont, Font font) {
         Paragraph date = new Paragraph("Kỳ lương: " + payroll.getMonthOfYear(), font);
         date.setAlignment(Element.ALIGN_CENTER);
         date.setSpacingAfter(10);
@@ -405,19 +407,18 @@ public class PayrollServiceImpl implements PayrollService {
         addTableHeader(deductionsTable, "STT", "Các Khoản Trừ Vào Lương", boldFont);
 
         // Nội dung bảng khấu trừ
-        addTableRow(deductionsTable,"1", "Bảo Hiểm Bắt Buộc", font);
+        addTableRow(deductionsTable, "1", "Bảo Hiểm Bắt Buộc", font);
         addSubTableRow(deductionsTable, "1.1", "Bảo hiểm xã hội (8%): " + payroll.getEmployeeBHXH(), font);
         addSubTableRow(deductionsTable, "1.2", "Bảo hiểm y tế (1.5%): " + payroll.getEmployeeBHYT(), font);
         addSubTableRow(deductionsTable, "1.3", "Bảo hiểm thất nghiệp (1%): " + payroll.getEmployeeBHTN(), font);
-        addTableRow(deductionsTable,"2", "Thuế TNCN: " + payroll.getTax(), font);
-        addTableRow(deductionsTable,"3", "Phạt: " + payroll.getPenalties(), font);
-        addTableRow(deductionsTable,"4", "Khác: ", font);
+        addTableRow(deductionsTable, "2", "Thuế TNCN: " + payroll.getTax(), font);
+        addTableRow(deductionsTable, "3", "Phạt: " + payroll.getPenalties(), font);
+        addTableRow(deductionsTable, "4", "Khác: ", font);
 
         // Tổng cộng bảng khấu trừ
-        addTotalRow(deductionsTable, "Tổng Cộng: " + payroll.getDeductions() , font);
+        addTotalRow(deductionsTable, "Tổng Cộng: " + payroll.getDeductions(), font);
         deductionsTable.setSpacingAfter(15);
         document.add(deductionsTable);
-
 
         PdfPTable allowanceTable = new PdfPTable(2);
         allowanceTable.setWidthPercentage(100);
@@ -425,8 +426,8 @@ public class PayrollServiceImpl implements PayrollService {
 
         addTableHeader(allowanceTable, "STT", "Các Khoản Phụ Cấp BHXH", boldFont);
         // Nội dung bảng khấu trừ
-        addTableRow(allowanceTable,"1", "Phụ cấp thai sản: " + payroll.getMaternityBenefit(), font);
-        addTableRow(allowanceTable,"2", "Phụ cấp nghỉ ốm: " + payroll.getSickBenefit(), font);
+        addTableRow(allowanceTable, "1", "Phụ cấp thai sản: " + payroll.getMaternityBenefit(), font);
+        addTableRow(allowanceTable, "2", "Phụ cấp nghỉ ốm: " + payroll.getSickBenefit(), font);
         // Tổng cộng bảng khấu trừ
         addTotalRow(allowanceTable, "Tổng Cộng: " + payroll.getTotalBenefit(), font);
         document.add(allowanceTable);
@@ -437,7 +438,7 @@ public class PayrollServiceImpl implements PayrollService {
         document.add(netSalary);
     }
 
-    public void footerPdf(Document document, Font boldFont, Font font){
+    public void footerPdf(Document document, Font boldFont, Font font) {
         PdfPTable signatureTable = new PdfPTable(2);
         signatureTable.setWidthPercentage(100);
         signatureTable.setSpacingBefore(20);
@@ -449,6 +450,7 @@ public class PayrollServiceImpl implements PayrollService {
     }
 
     @Override
+    @SuppressWarnings("ConvertToTryWithResources")
     public String generatePayrollPdf(String filePath, ResPayrollDTO payroll) throws DocumentException, IOException {
         String folderPath = "payroll";
         File folder = new File(folderPath);
@@ -461,16 +463,16 @@ public class PayrollServiceImpl implements PayrollService {
         PdfWriter.getInstance(document, new FileOutputStream(fullFilePath));
         document.open();
         BaseFont bf = BaseFont.createFont(
-                "fonts/times.ttf",      // Đường dẫn tương đối từ thư mục resources
-                BaseFont.IDENTITY_H,    // Hỗ trợ Unicode
-                BaseFont.EMBEDDED       // Nhúng font vào PDF
+                "fonts/times.ttf", // Đường dẫn tương đối từ thư mục resources
+                BaseFont.IDENTITY_H, // Hỗ trợ Unicode
+                BaseFont.EMBEDDED // Nhúng font vào PDF
         );
         Font font = new Font(bf, 11);
         Font boldFont = new Font(bf, 12, Font.BOLD);
 
-        headerPdf(document,boldFont,font);
-        contentPdf(document,payroll,boldFont,font);
-        footerPdf(document,boldFont,font);
+        headerPdf(document, boldFont, font);
+        contentPdf(document, payroll, boldFont, font);
+        footerPdf(document, boldFont, font);
         document.close();
         return fullFilePath;
     }
@@ -485,27 +487,27 @@ public class PayrollServiceImpl implements PayrollService {
         }
         // Đường dẫn đầy đủ của file
         String fullFilePath = folderPath + "/" + filePath;
-        Document document = new Document();
-        PdfWriter.getInstance(document, new FileOutputStream(fullFilePath));
-        document.open();
-        BaseFont bf = BaseFont.createFont(
-                "fonts/times.ttf",      // Đường dẫn tương đối từ thư mục resources
-                BaseFont.IDENTITY_H,    // Hỗ trợ Unicode
-                BaseFont.EMBEDDED       // Nhúng font vào PDF
-        );
-        Font font = new Font(bf, 11);
-        Font boldFont = new Font(bf, 12, Font.BOLD);
+        try (Document document = new Document()) {
+            PdfWriter.getInstance(document, new FileOutputStream(fullFilePath));
+            document.open();
+            BaseFont bf = BaseFont.createFont(
+                    "fonts/times.ttf", // Đường dẫn tương đối từ thư mục resources
+                    BaseFont.IDENTITY_H, // Hỗ trợ Unicode
+                    BaseFont.EMBEDDED // Nhúng font vào PDF
+            );
+            Font font = new Font(bf, 11);
+            Font boldFont = new Font(bf, 12, Font.BOLD);
 
-        headerPdf(document,boldFont,font);
+            headerPdf(document, boldFont, font);
 
-        for (ResPayrollDTO payroll : Payrolls) {
-            contentPdf(document,payroll,boldFont,font);
-            Paragraph spacing = new Paragraph(" ");
-            spacing.setSpacingAfter(50f); // Điều chỉnh số theo nhu cầu
-            document.add(spacing);
+            for (ResPayrollDTO payroll : Payrolls) {
+                contentPdf(document, payroll, boldFont, font);
+                Paragraph spacing = new Paragraph(" ");
+                spacing.setSpacingAfter(50f); // Điều chỉnh số theo nhu cầu
+                document.add(spacing);
+            }
+            footerPdf(document, boldFont, font);
         }
-        footerPdf(document,boldFont,font);
-        document.close();
         return fullFilePath;
     }
 

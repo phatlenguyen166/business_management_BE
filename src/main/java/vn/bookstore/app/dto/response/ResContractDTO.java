@@ -1,15 +1,15 @@
 package vn.bookstore.app.dto.response;
 
-import lombok.Getter;
-import lombok.Setter;
-import vn.bookstore.app.model.SeniorityLevel;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
 public class ResContractDTO {
+
     private Long id;
     private String idString;
     private Long userId;

@@ -1,32 +1,40 @@
 package vn.bookstore.app.controller;
 
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import vn.bookstore.app.dto.request.ReqAttendanceDetailDTO;
-import vn.bookstore.app.dto.response.ResAttendanceDetailDTO;
-import vn.bookstore.app.dto.response.ResponseDTO;
-import vn.bookstore.app.service.impl.AttendanceDetailServiceImpl;
-import vn.bookstore.app.util.error.InvalidRequestException;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import vn.bookstore.app.dto.request.ReqAttendanceDetailDTO;
+import vn.bookstore.app.dto.response.ResAttendanceDetailDTO;
+import vn.bookstore.app.dto.response.ResponseDTO;
+import vn.bookstore.app.service.impl.AttendanceDetailServiceImpl;
+import vn.bookstore.app.util.error.InvalidRequestException;
+
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class AttendanceDetailController {
-    private final AttendanceDetailServiceImpl attendanceDetailService;
 
+    private final AttendanceDetailServiceImpl attendanceDetailService;
 
     @PostMapping("/checkIn")
     public ResponseEntity<ResponseDTO<ResAttendanceDetailDTO>> checkIn(@Valid @RequestBody ReqAttendanceDetailDTO attendanceDetail) {
-      ResAttendanceDetailDTO attendanceDetailDTO = this.attendanceDetailService.handleCreateAttendanceDetail(attendanceDetail);
+        ResAttendanceDetailDTO attendanceDetailDTO = this.attendanceDetailService.handleCreateAttendanceDetail(attendanceDetail);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 new ResponseDTO<>(
                         201,
@@ -37,6 +45,7 @@ public class AttendanceDetailController {
                 )
         );
     }
+
     @PutMapping("/checkOut")
     public ResponseEntity<ResponseDTO<ResAttendanceDetailDTO>> checkOut(@Valid @RequestBody ReqAttendanceDetailDTO attendanceDetail) {
         ResAttendanceDetailDTO attendanceDetailDTO = this.attendanceDetailService.handleCheckOut(attendanceDetail);
@@ -57,7 +66,7 @@ public class AttendanceDetailController {
         int status;
         if (attendanceDetail.getCheckIn() != null && attendanceDetail.getCheckOut() != null && attendanceDetailDTO != null) {
             status = 400;
-        }else {
+        } else {
             status = 200;
         }
         return ResponseEntity.ok(
@@ -73,7 +82,7 @@ public class AttendanceDetailController {
 
     @PutMapping("/scan")
     public ResponseEntity<ResponseDTO> scanEndOfDay(@RequestParam("dateScan") LocalDateTime dateScan) {
-         this.attendanceDetailService.processDailyAttendance(dateScan);
+        this.attendanceDetailService.processDailyAttendance(dateScan);
         return ResponseEntity.ok(
                 new ResponseDTO<>(
                         200,
@@ -131,7 +140,7 @@ public class AttendanceDetailController {
     public ResponseEntity<ResponseDTO<List<ResAttendanceDetailDTO>>> getAllAttendanceDetailByDate(@RequestParam("date") String dateString) {
         LocalDate date;
         try {
-             date = LocalDate.parse(dateString);
+            date = LocalDate.parse(dateString);
         } catch (DateTimeParseException e) {
             throw new InvalidRequestException("Invalid yearMonth format. Expected format: yyyy-MM-dd");
         }
