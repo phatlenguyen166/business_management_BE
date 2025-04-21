@@ -94,7 +94,7 @@ public class SeniorityLevelController {
     }
     
     @PatchMapping("/seniorityLevels/{id}")
-    public ResponseEntity<ResponseDTO> deleteSeniorityLevel(@PathVariable Long id) {
+    public ResponseEntity<ResponseDTO<Void>> deleteSeniorityLevel(@PathVariable Long id) {
         this.seniorityLevelService.handleDeleteSeniority(id);
         return ResponseEntity.ok().body(
                 new ResponseDTO<>(
@@ -108,7 +108,7 @@ public class SeniorityLevelController {
     }
 
     @PatchMapping("/seniorityLevels/accept/{id}")
-    public ResponseEntity<ResponseDTO> acceptSeniorityLevel(@PathVariable Long id)  {
+    public ResponseEntity<ResponseDTO<Void>> acceptSeniorityLevel(@PathVariable Long id)  {
         this.seniorityLevelService.handleAcceptSeniority(id);
         return ResponseEntity.ok().body(
                 new ResponseDTO<>(

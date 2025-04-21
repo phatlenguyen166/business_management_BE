@@ -89,7 +89,7 @@ public class UserController {
     }
 
     @PatchMapping("/users/{id}")
-    public ResponseEntity<ResponseDTO> deleteUserById(@PathVariable Long id) throws NotFoundValidException {
+    public ResponseEntity<ResponseDTO<Void>> deleteUserById(@PathVariable Long id) throws NotFoundValidException {
         if (this.userService.handleFetchUserById(id) == null || !this.userService.isActive(id)) {
             throw new NotFoundValidException("Người dùng không tồn tại trong hệ thống");
         }

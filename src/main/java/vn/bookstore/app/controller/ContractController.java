@@ -99,7 +99,7 @@ public class ContractController {
     }
 
     @PatchMapping("/contracts/{id}")
-    public ResponseEntity<ResponseDTO> deleteContractById(@PathVariable Long id) throws NotFoundValidException {
+    public ResponseEntity<ResponseDTO<Void>> deleteContractById(@PathVariable Long id) throws NotFoundValidException {
         if(this.contractService.getContractById(id) == null) {
             throw new NotFoundValidException("Hợp đồng không tồn tại");
         }

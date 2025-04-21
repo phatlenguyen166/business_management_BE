@@ -75,7 +75,8 @@ public class HolidayController {
     }
 
     @PatchMapping("/holidays/{id}")
-    public ResponseEntity<ResponseDTO> deleteHoliday( @PathVariable Long id) {
+    
+    public ResponseEntity<ResponseDTO<Void>> deleteHoliday( @PathVariable Long id) {
          this.holidayService.handleDeleteHoliday(id);
         return ResponseEntity.ok(
                 new ResponseDTO<>(

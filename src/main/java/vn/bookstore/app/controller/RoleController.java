@@ -84,7 +84,7 @@ public class RoleController {
     }
 
     @PatchMapping("/roles/{id}")
-    public ResponseEntity<ResponseDTO> deleteRole(@PathVariable Long id) {
+    public ResponseEntity<ResponseDTO<Void>> deleteRole(@PathVariable Long id) {
         this.roleService.handleDeleteRole(id);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 new ResponseDTO<>(
@@ -98,7 +98,7 @@ public class RoleController {
     }
 
     @PatchMapping("/roles/accept/{id}")
-    public ResponseEntity<ResponseDTO> acceptRole(@PathVariable Long id) {
+    public ResponseEntity<ResponseDTO<Void>> acceptRole(@PathVariable Long id) {
         this.roleService.handleAcceptRole(id);
         return ResponseEntity.ok().body(
                 new ResponseDTO<>(

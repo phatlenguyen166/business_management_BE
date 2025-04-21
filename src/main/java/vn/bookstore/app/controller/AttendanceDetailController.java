@@ -81,7 +81,7 @@ public class AttendanceDetailController {
     }
 
     @PutMapping("/scan")
-    public ResponseEntity<ResponseDTO> scanEndOfDay(@RequestParam("dateScan") LocalDateTime dateScan) {
+    public ResponseEntity<ResponseDTO<Void>> scanEndOfDay(@RequestParam("dateScan") LocalDateTime dateScan) {
         this.attendanceDetailService.processDailyAttendance(dateScan);
         return ResponseEntity.ok(
                 new ResponseDTO<>(

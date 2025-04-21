@@ -98,7 +98,7 @@ public class LeaveRequestController {
     }
 
     @PatchMapping("/leaveReqs/approve/{id}")
-    public ResponseEntity<ResponseDTO> approveLeaveReq(@PathVariable Long id) {
+    public ResponseEntity<ResponseDTO<Void>> approveLeaveReq(@PathVariable Long id) {
         this.leaveReqService.handleApproveLeaveReq(id);
         return ResponseEntity.ok(
                 new ResponseDTO<>(
@@ -112,7 +112,7 @@ public class LeaveRequestController {
     }
 
     @PatchMapping("/leaveReqs/reject/{id}")
-    public ResponseEntity<ResponseDTO> rejectLeaveReq(@PathVariable Long id) {
+    public ResponseEntity<ResponseDTO<Void>> rejectLeaveReq(@PathVariable Long id) {
         this.leaveReqService.handleRejectLeaveReq(id);
         return ResponseEntity.ok(
                 new ResponseDTO<>(
@@ -126,7 +126,7 @@ public class LeaveRequestController {
     }
 
     @PatchMapping("/leaveReqs/{id}")
-    public ResponseEntity<ResponseDTO> deleteLeaveReq(@PathVariable Long id) {
+    public ResponseEntity<ResponseDTO<Void>> deleteLeaveReq(@PathVariable Long id) {
         this.leaveReqService.handleDeleteLeaveReq(id);
         return ResponseEntity.ok(
                 new ResponseDTO<>(
