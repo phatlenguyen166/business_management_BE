@@ -37,4 +37,6 @@ public interface UserService {
     User findUserById(Long id);
 
     User findById(@NotNull(message = "Người dùng không được để trống") Long userId);
+
+    ResUserDTO handleFetchUserByUsername(String username);
 }

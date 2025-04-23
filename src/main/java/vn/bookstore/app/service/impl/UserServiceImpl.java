@@ -21,12 +21,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-//@RequiredArgsConstructor
+// @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-//    private final UserRepository userRepository;
-//    private final UserConverter userConverter;
-//    private final PasswordEncoder passwordEncoder;
-//    private final ContractServiceImpl contractService;
+    // private final UserRepository userRepository;
+    // private final UserConverter userConverter;
+    // private final PasswordEncoder passwordEncoder;
+    // private final ContractServiceImpl contractService;
 
     private UserRepository userRepository;
     private UserConverter userConverter;
@@ -39,17 +39,14 @@ public class UserServiceImpl implements UserService {
     private AttendanceDetailRepository attendanceDetailRepository;
 
     public UserServiceImpl(UserRepository userRepository,
-                           UserConverter userConverter,
-                           @Lazy
-                           PasswordEncoder passwordEncoder,
-                           @Lazy
-                           ContractServiceImpl contractService,
-                           ContractMapper contractMapper,
-                           LeaveReqRepository leaveReqRepository,
-                           ContractRepository contractRepository,
-                           AttendanceRepository attendanceRepository,
-                           AttendanceDetailRepository attendanceDetailRepository
-    ) {
+            UserConverter userConverter,
+            @Lazy PasswordEncoder passwordEncoder,
+            @Lazy ContractServiceImpl contractService,
+            ContractMapper contractMapper,
+            LeaveReqRepository leaveReqRepository,
+            ContractRepository contractRepository,
+            AttendanceRepository attendanceRepository,
+            AttendanceDetailRepository attendanceDetailRepository) {
         this.contractService = contractService;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -62,22 +59,32 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public ResUserDTO handleFetchUserByUsername(String username) {
+        User user = userRepository.findByUsernameAndStatus(username, 1)
+                .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại hoặc không hoạt động"));
+        ResContractDTO contractDTO = contractMapper
+                .convertToResContractDTO(contractService.getActiveContract(user.getContracts()));
+        return userConverter.convertToResUserDTO(user, contractDTO);
+    }
+
+    @Override
     public UserDetailsService userDetailsService() {
-        return username -> userRepository.findByUsernameAndStatus(username, 1).orElseThrow(() -> new UsernameNotFoundException(
-                "Username not found or user is not active"));
+        return username -> userRepository.findByUsernameAndStatus(username, 1)
+                .orElseThrow(() -> new UsernameNotFoundException(
+                        "Username not found or user is not active"));
     }
 
     public List<ResUserDTO> handleFetchAllUser() {
         List<ResUserDTO> resUserDTOS = new ArrayList<>();
         for (User user : userRepository.findAllByStatus(1)) {
-            ResContractDTO resContractDTO = contractMapper.convertToResContractDTO(contractService.getActiveContract(user.getContracts()));
+            ResContractDTO resContractDTO = contractMapper
+                    .convertToResContractDTO(contractService.getActiveContract(user.getContracts()));
             ResUserDTO resUserDTO = this.userConverter.convertToResUserDTO(user, resContractDTO);
             resUserDTOS.add(resUserDTO);
         }
         return resUserDTOS;
 
     }
-
 
     public ResUserDTO handleCreateUser(ReqUserWithContractDTO reqUser) {
         String hashPassWord = this.passwordEncoder.encode(reqUser.getPassword());
@@ -99,7 +106,8 @@ public class UserServiceImpl implements UserService {
     public ResUserDTO handleFetchUserById(Long id) {
         Optional<User> user = userRepository.findByIdAndStatus(id, 1);
         if (user.isPresent()) {
-            ResContractDTO contractDTO = contractMapper.convertToResContractDTO(contractService.getActiveContract(user.get().getContracts()));
+            ResContractDTO contractDTO = contractMapper
+                    .convertToResContractDTO(contractService.getActiveContract(user.get().getContracts()));
             return this.userConverter.convertToResUserDTO(user.get(), contractDTO);
         }
         return null;
@@ -123,7 +131,8 @@ public class UserServiceImpl implements UserService {
             currentUser.get().setPhoneNumber(updateUser.getPhoneNumber());
             currentUser.get().setPassword(hashPassWord);
             this.userRepository.save(currentUser.get());
-            ResContractDTO contractDTO = contractMapper.convertToResContractDTO(contractService.getActiveContract(currentUser.get().getContracts()));
+            ResContractDTO contractDTO = contractMapper
+                    .convertToResContractDTO(contractService.getActiveContract(currentUser.get().getContracts()));
             return this.userConverter.convertToResUserDTO(currentUser.get(), contractDTO);
         }
         return null;
@@ -145,7 +154,8 @@ public class UserServiceImpl implements UserService {
             User user1 = currentUser.get();
             List<Attendance> attendances = this.attendanceRepository.findAllByUserOrderByMonthOfYearDesc(user1);
             for (Attendance attendance : attendances) {
-                List<AttendanceDetail> attendanceDetails = this.attendanceDetailRepository.findAllByAttendance(attendance);
+                List<AttendanceDetail> attendanceDetails = this.attendanceDetailRepository
+                        .findAllByAttendance(attendance);
                 this.attendanceDetailRepository.deleteAll(attendanceDetails);
             }
             this.attendanceRepository.deleteAll(attendances);
