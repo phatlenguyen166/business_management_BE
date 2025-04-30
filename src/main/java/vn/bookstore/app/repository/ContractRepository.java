@@ -15,7 +15,7 @@ import java.util.Optional;
 @Repository
 public interface ContractRepository extends JpaRepository<Contract, Long>, JpaSpecificationExecutor<Contract> {
     List<Contract> getAllByStatus(int status);
-    boolean existsContractByUser(User user);
+    boolean existsContractByUserAndStatus(User user, int status);
     Optional<Contract> findContractByIdAndStatusIn(Long id, List<Integer> statusList);
     List<Contract> findAllContractByStatusInOrderByStartDateDesc(List<Integer> statusList);
     Optional<Contract> findContractByIdAndStatus(Long id, int status);
@@ -24,5 +24,14 @@ public interface ContractRepository extends JpaRepository<Contract, Long>, JpaSp
 //    @Query(value = "select * from contracts where user_id = 2 order by start_date DESC", nativeQuery = true)
     @Query("select c from Contract c where c.user.id = :userId and c.status in (1,2) order by c.startDate desc")
     List<Contract> getAllByUserId(@Param("userId") Long userId);
-    Contract findByExpiryDateBeforeAndStatus(LocalDate expiryDate, int status);
+    Contract findByEndDateBeforeAndStatus(LocalDate expiryDate, int status);
+
+    @Query("SELECT c FROM Contract c WHERE c.status = :status " +
+            "AND YEAR(c.startDate) = :year " +
+            "AND MONTH(c.startDate) = :month")
+    List<Contract> findAllByStatusAndStartDate(
+            @Param("status") int status,
+            @Param("year") int year,
+            @Param("month") int month
+    );
 }
