@@ -5,8 +5,11 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import vn.bookstore.app.model.Contract;
 import vn.bookstore.app.model.User;
 
 @Repository
@@ -31,4 +34,13 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     User findByEmail(String email);
 
     User findByUsername(String userName);
+
+    @Query("SELECT u FROM User u WHERE u.status = :status " +
+            "AND YEAR(u.createdAt) = :year " +
+            "AND MONTH(u.createdAt) = :month")
+    List<User> findAllByStatusAndCreatedDate(
+            @Param("status") int status,
+            @Param("year") int year,
+            @Param("month") int month
+    );
 }

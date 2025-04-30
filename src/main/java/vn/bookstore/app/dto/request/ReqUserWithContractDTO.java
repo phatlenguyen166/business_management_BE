@@ -1,5 +1,6 @@
 package vn.bookstore.app.dto.request;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -47,5 +48,7 @@ public class ReqUserWithContractDTO {
     @NotBlank(message = "Mật khẩu không được để trống")
     @Size(min = 8, message = "Mật khẩu phải có ít nhất 8 ký tự")
     private String password;
+
+    @Valid
     private ReqContractUserDTO reqContract;
 }

@@ -56,6 +56,7 @@ public class ContractServiceImpl implements ContractService {
             contract.setUser(user);
             contract.setSeniorityLevel(seniorityLevel);
             contract.setStatus(1);
+            contract.setEndDate(newContract.getExpiryDate());
             contractRepository.save(contract);
             return contract;
         } else {
@@ -82,7 +83,7 @@ public class ContractServiceImpl implements ContractService {
 
     public void updateExpiredContracts() {
         LocalDate today = LocalDate.now();
-        Contract expiredContracts = contractRepository.findByExpiryDateBeforeAndStatus(today, 1);
+        Contract expiredContracts = contractRepository.findByEndDateBeforeAndStatus(today, 1);
         if (expiredContracts != null) {
             expiredContracts.setStatus(2);
             contractRepository.save(expiredContracts);

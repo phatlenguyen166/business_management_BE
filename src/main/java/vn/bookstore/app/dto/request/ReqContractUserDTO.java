@@ -15,14 +15,14 @@ public class ReqContractUserDTO{
     @Digits(integer = 15, fraction = 4, message = "Lương cơ bản tối đa 15 số nguyên và 4 số thập phân")
     private BigDecimal baseSalary;
 
-
+    @FutureOrPresent(message = "Ngày bắt đầu phải từ hôm nay trở đi")
     @NotNull(message = "Ngày bắt đầu không được để trống")
     private LocalDate startDate;
 
-    @NotNull(message = "Ngày kết thúc không được để trống")
+
     private LocalDate endDate;
 
-    @FutureOrPresent(message = "Ngày hết hạn phải từ hôm nay trở đi")
+    @Future(message = "Ngày hết hạn trong tuong lai ")
     private LocalDate expiryDate;
 
     @NotNull(message = "User ID không được để trống")
