@@ -83,7 +83,7 @@ public class ContractServiceImpl implements ContractService {
 
     public void updateExpiredContracts() {
         LocalDate today = LocalDate.now();
-        Contract expiredContracts = contractRepository.findByEndDateBeforeAndStatus(today, 1);
+            Contract expiredContracts = contractRepository.findByEndDateBeforeAndStatus(today, 1);
         if (expiredContracts != null) {
             expiredContracts.setStatus(2);
             contractRepository.save(expiredContracts);

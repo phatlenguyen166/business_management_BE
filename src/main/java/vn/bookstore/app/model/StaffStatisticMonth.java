@@ -8,7 +8,7 @@ import lombok.Setter;
 @Table(name = "staff_statistic_of_month")
 @Getter
 @Setter
-public class StaffStatisticOfMonth {
+public class StaffStatisticMonth {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,23 +17,18 @@ public class StaffStatisticOfMonth {
     private int activeEmployees;
     // Số nhân viên mới gia nhập trong kỳ
     private int newEmployees;
-    // Số nhân viên nghỉ việc trong kỳ
-    private int resignedEmployees;
-    // Số nhân viên hết hạn hợp đồng chưa gia hạn
+    // Số nhân viên hết hạn hợp đồng chưa gia hạn, hoặc nghi viec trong ki
     private int contractExpired;
     // Tuổi trung bình của nhân viên
     private float avgAge;
     // Tỷ lệ giới tính (ví dụ: tỷ lệ nam/nữ, tính bằng phần trăm nam)
-    private float genderRatio;
+    private String genderRatio;
     // Số nhân viên theo loại hợp đồng (chính thức, thử việc, ngắn hạn)
     private int permanentEmployees; // Nhân viên chính thức
     private int probationEmployees; // Nhân viên thử việc
     // Thâm niên làm việc trung bình (tính bằng năm)
     private float avgTenure;
-    // Tỷ lệ nghỉ việc trong kỳ (phần trăm)
-    private float turnoverRate;
-    // Số nhân viên được thăng chức trong kỳ
-    private int promotedEmployees;
+
 
 
 }
