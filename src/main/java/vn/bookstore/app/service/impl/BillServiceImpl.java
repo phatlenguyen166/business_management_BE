@@ -85,10 +85,17 @@ public class BillServiceImpl implements BillService {
                 throw new IllegalArgumentException("Sản phẩm " + product.getId() + " không đủ số lượng trong kho");
             }
 
-            BigDecimal price = product.getPrice();
+            // Sử dụng giá từ request nếu có, ngược lại tính giá mặc định từ sản phẩm
+            BigDecimal price = details.getPrice();
             if (price == null || price.compareTo(BigDecimal.ZERO) <= 0) {
-                throw new IllegalArgumentException("Giá sản phẩm không hợp lệ");
+                // Fallback: Nếu không có giá trong request, sử dụng giá từ sản phẩm
+                // (trường hợp bạn muốn giữ khả năng tương thích ngược với code cũ)
+                price = product.getPrice();
+                if (price == null || price.compareTo(BigDecimal.ZERO) <= 0) {
+                    throw new IllegalArgumentException("Giá sản phẩm không hợp lệ");
+                }
             }
+
             if (details.getQuantity() <= 0) {
                 throw new IllegalArgumentException("Số lượng sản phẩm phải lớn hơn 0");
             }
@@ -102,7 +109,7 @@ public class BillServiceImpl implements BillService {
                     .bill(savedBill)
                     .product(product)
                     .quantity(details.getQuantity())
-                    .subPrice(price)
+                    .subPrice(price) // Lưu giá đã tính từ request
                     .build();
 
             billDetails.add(billDetail);
@@ -133,15 +140,14 @@ public class BillServiceImpl implements BillService {
 
         return ResBillDTO.builder()
                 .id(savedBill.getId())
-                .idString("ORD" + savedBill.getId()) // Thêm dòng này
+                .idString("ORD" + savedBill.getId())
                 .userId(savedBill.getUser().getId())
                 .totalPrice(savedBill.getTotalPrice())
-                .totalAmount(totalQuantity) // Gán tổng số lượng sản phẩm
+                .totalAmount(totalQuantity)
                 .customerInfo(customerInfo)
                 .billDetails(billDetails.stream()
                         .map(billMapper::toResBillDetail)
-                        .collect(Collectors.toList())
-                )
+                        .collect(Collectors.toList()))
                 .createdAt(savedBill.getCreatedAt())
                 .updatedAt(savedBill.getUpdatedAt())
                 .build();

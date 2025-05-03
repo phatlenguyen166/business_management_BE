@@ -95,7 +95,7 @@ public class ProductStatisticServiceImpl implements ProductStatisticService {
 
         // Tính tổng chi phí (giá nhập x số lượng)
         BigDecimal totalCost = calculateTotalCost(billDetails);
-
+        
         // Tính lợi nhuận
         BigDecimal totalProfit = totalRevenue.subtract(totalCost);
 
@@ -593,223 +593,220 @@ public class ProductStatisticServiceImpl implements ProductStatisticService {
         String folderPath = "reports/statistics/products";
         File folder = new File(folderPath);
         if (!folder.exists()) {
-            String fileName = "product_statistics_" + year.getValue() + ".pdf";
-            String filePath = folderPath + "/" + fileName;
-            Document document = new Document(PageSize.A4.rotate());
-            try {
-                PdfWriter.getInstance(document, new FileOutputStream(filePath));
-                document.open();
-                PdfWriter.getInstance(document, new FileOutputStream(filePath));
-                document.open();
-                PdfWriter.getInstance(document, new FileOutputStream(filePath));
-                document.open();
+            folder.mkdirs(); // Tạo thư mục nếu chưa tồn tại
+        }
 
-                // Thiết lập font chữ Unicode để hỗ trợ tiếng Việt
-                BaseFont baseFont = BaseFont.createFont("fonts/times.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-                Font titleFont = new Font(baseFont, 18, Font.BOLD);
-                Font headingFont = new Font(baseFont, 14, Font.BOLD);
-                Font normalFont = new Font(baseFont, 12);
-                Font boldFont = new Font(baseFont, 12, Font.BOLD);
+        String fileName = "product_statistics_" + year.getValue() + ".pdf";
+        String filePath = folderPath + "/" + fileName;
+        Document document = new Document(PageSize.A4.rotate());
+        try {
+            PdfWriter.getInstance(document, new FileOutputStream(filePath));
+            document.open();
 
-                // Tiêu đề báo cáo
-                Paragraph title = new Paragraph("BÁO CÁO THỐNG KÊ SẢN PHẨM NĂM " + year.getValue(), titleFont);
-                title.setAlignment(Element.ALIGN_CENTER);
-                document.add(title);
-                document.add(Chunk.NEWLINE);
+            // Thiết lập font chữ Unicode để hỗ trợ tiếng Việt
+            BaseFont baseFont = BaseFont.createFont("fonts/times.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            Font titleFont = new Font(baseFont, 18, Font.BOLD);
+            Font headingFont = new Font(baseFont, 14, Font.BOLD);
+            Font normalFont = new Font(baseFont, 12);
+            Font boldFont = new Font(baseFont, 12, Font.BOLD);
 
-                // Thông tin tổng quan
-                document.add(new Paragraph("THÔNG TIN TỔNG QUAN", headingFont));
-                document.add(Chunk.NEWLINE);
+            // Tiêu đề báo cáo
+            Paragraph title = new Paragraph("BÁO CÁO THỐNG KÊ SẢN PHẨM NĂM " + year.getValue(), titleFont);
+            title.setAlignment(Element.ALIGN_CENTER);
+            document.add(title);
+            document.add(Chunk.NEWLINE);
 
-                PdfPTable summaryTable = new PdfPTable(2);
-                summaryTable.setWidthPercentage(100);
+            // Thông tin tổng quan
+            document.add(new Paragraph("THÔNG TIN TỔNG QUAN", headingFont));
+            document.add(Chunk.NEWLINE);
 
-                addTableRow(summaryTable, "Tổng số sản phẩm đã bán:", String.valueOf(statistics.getTotalProductsSold()),
-                        normalFont, boldFont);
-                addTableRow(summaryTable, "Tổng doanh thu:", formatCurrency(statistics.getTotalRevenue()), normalFont,
-                        boldFont);
-                addTableRow(summaryTable, "Tổng chi phí:", formatCurrency(statistics.getTotalCost()), normalFont,
-                        boldFont);
-                addTableRow(summaryTable, "Tổng lợi nhuận:", formatCurrency(statistics.getTotalProfit()), normalFont,
-                        boldFont);
+            PdfPTable summaryTable = new PdfPTable(2);
+            summaryTable.setWidthPercentage(100);
 
-                document.add(summaryTable);
-                document.add(Chunk.NEWLINE);
+            addTableRow(summaryTable, "Tổng số sản phẩm đã bán:", String.valueOf(statistics.getTotalProductsSold()),
+                    normalFont, boldFont);
+            addTableRow(summaryTable, "Tổng doanh thu:", formatCurrency(statistics.getTotalRevenue()), normalFont,
+                    boldFont);
+            addTableRow(summaryTable, "Tổng chi phí:", formatCurrency(statistics.getTotalCost()), normalFont,
+                    boldFont);
+            addTableRow(summaryTable, "Tổng lợi nhuận:", formatCurrency(statistics.getTotalProfit()), normalFont,
+                    boldFont);
 
-                // Thống kê theo tháng
-                document.add(new Paragraph("THỐNG KÊ THEO THÁNG", headingFont));
-                document.add(Chunk.NEWLINE);
+            document.add(summaryTable);
+            document.add(Chunk.NEWLINE);
 
-                if (statistics.getMonthlySales().isEmpty()) {
-                    document.add(new Paragraph("Không có dữ liệu", normalFont));
-                } else {
-                    PdfPTable monthlyTable = new PdfPTable(13);
-                    monthlyTable.setWidthPercentage(100);
+            // Thống kê theo tháng
+            document.add(new Paragraph("THỐNG KÊ THEO THÁNG", headingFont));
+            document.add(Chunk.NEWLINE);
 
-                    // Header
-                    PdfPCell headerCell = new PdfPCell(new Phrase("Chỉ tiêu", boldFont));
+            if (statistics.getMonthlySales().isEmpty()) {
+                document.add(new Paragraph("Không có dữ liệu", normalFont));
+            } else {
+                PdfPTable monthlyTable = new PdfPTable(13);
+                monthlyTable.setWidthPercentage(100);
+
+                // Header
+                PdfPCell headerCell = new PdfPCell(new Phrase("Chỉ tiêu", boldFont));
+                monthlyTable.addCell(headerCell);
+
+                for (int i = 1; i <= 12; i++) {
+                    headerCell = new PdfPCell(new Phrase("Tháng " + i, boldFont));
                     monthlyTable.addCell(headerCell);
+                }
 
-                    for (int i = 1; i <= 12; i++) {
-                        headerCell = new PdfPCell(new Phrase("Tháng " + i, boldFont));
-                        monthlyTable.addCell(headerCell);
-                    }
+                // Data row
+                PdfPCell dataCell = new PdfPCell(new Phrase("Số lượng bán", normalFont));
+                monthlyTable.addCell(dataCell);
 
-                    // Data row
-                    PdfPCell dataCell = new PdfPCell(new Phrase("Số lượng bán", normalFont));
+                for (int i = 1; i <= 12; i++) {
+                    String monthKey = year.getValue() + "-" + (i < 10 ? "0" + i : i);
+                    Integer sales = statistics.getMonthlySales().getOrDefault(monthKey, 0);
+                    dataCell = new PdfPCell(new Phrase(String.valueOf(sales), normalFont));
                     monthlyTable.addCell(dataCell);
-
-                    for (int i = 1; i <= 12; i++) {
-                        String monthKey = year.getValue() + "-" + (i < 10 ? "0" + i : i);
-                        Integer sales = statistics.getMonthlySales().getOrDefault(monthKey, 0);
-                        dataCell = new PdfPCell(new Phrase(String.valueOf(sales), normalFont));
-                        monthlyTable.addCell(dataCell);
-                    }
-
-                    document.add(monthlyTable);
                 }
 
-                document.add(Chunk.NEWLINE);
+                document.add(monthlyTable);
+            }
 
-                // Thống kê theo quý
-                document.add(new Paragraph("THỐNG KÊ THEO QUÝ", headingFont));
-                document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
 
-                if (statistics.getQuarterlySales().isEmpty()) {
-                    document.add(new Paragraph("Không có dữ liệu", normalFont));
-                } else {
-                    PdfPTable quarterlyTable = new PdfPTable(5);
-                    quarterlyTable.setWidthPercentage(100);
+            // Thống kê theo quý
+            document.add(new Paragraph("THỐNG KÊ THEO QUÝ", headingFont));
+            document.add(Chunk.NEWLINE);
 
-                    // Header
-                    PdfPCell headerCell = new PdfPCell(new Phrase("Chỉ tiêu", boldFont));
+            if (statistics.getQuarterlySales().isEmpty()) {
+                document.add(new Paragraph("Không có dữ liệu", normalFont));
+            } else {
+                PdfPTable quarterlyTable = new PdfPTable(5);
+                quarterlyTable.setWidthPercentage(100);
+
+                // Header
+                PdfPCell headerCell = new PdfPCell(new Phrase("Chỉ tiêu", boldFont));
+                quarterlyTable.addCell(headerCell);
+
+                for (int i = 1; i <= 4; i++) {
+                    headerCell = new PdfPCell(new Phrase("Quý " + i, boldFont));
                     quarterlyTable.addCell(headerCell);
+                }
 
-                    for (int i = 1; i <= 4; i++) {
-                        headerCell = new PdfPCell(new Phrase("Quý " + i, boldFont));
-                        quarterlyTable.addCell(headerCell);
-                    }
+                // Data row
+                PdfPCell dataCell = new PdfPCell(new Phrase("Số lượng bán", normalFont));
+                quarterlyTable.addCell(dataCell);
 
-                    // Data row
-                    PdfPCell dataCell = new PdfPCell(new Phrase("Số lượng bán", normalFont));
+                for (int i = 1; i <= 4; i++) {
+                    Integer sales = statistics.getQuarterlySales().getOrDefault(i, 0);
+                    dataCell = new PdfPCell(new Phrase(String.valueOf(sales), normalFont));
                     quarterlyTable.addCell(dataCell);
-
-                    for (int i = 1; i <= 4; i++) {
-                        Integer sales = statistics.getQuarterlySales().getOrDefault(i, 0);
-                        dataCell = new PdfPCell(new Phrase(String.valueOf(sales), normalFont));
-                        quarterlyTable.addCell(dataCell);
-                    }
-
-                    document.add(quarterlyTable);
                 }
 
-                document.add(Chunk.NEWLINE);
+                document.add(quarterlyTable);
+            }
 
-                // Top sản phẩm bán chạy
-                document.add(new Paragraph("TOP 10 SẢN PHẨM BÁN CHẠY", headingFont));
-                document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
 
-                if (statistics.getTopSellingProducts().isEmpty()) {
-                    document.add(new Paragraph("Không có dữ liệu", normalFont));
-                } else {
-                    PdfPTable productsTable = new PdfPTable(5);
-                    productsTable.setWidthPercentage(100);
+            // Top sản phẩm bán chạy
+            document.add(new Paragraph("TOP 10 SẢN PHẨM BÁN CHẠY", headingFont));
+            document.add(Chunk.NEWLINE);
 
-                    // Header
-                    PdfPCell headerCell1 = new PdfPCell(new Phrase("STT", boldFont));
-                    PdfPCell headerCell2 = new PdfPCell(new Phrase("Tên sản phẩm", boldFont));
-                    PdfPCell headerCell3 = new PdfPCell(new Phrase("Số lượng", boldFont));
-                    PdfPCell headerCell4 = new PdfPCell(new Phrase("Doanh thu", boldFont));
-                    PdfPCell headerCell5 = new PdfPCell(new Phrase("Lợi nhuận", boldFont));
+            if (statistics.getTopSellingProducts().isEmpty()) {
+                document.add(new Paragraph("Không có dữ liệu", normalFont));
+            } else {
+                PdfPTable productsTable = new PdfPTable(5);
+                productsTable.setWidthPercentage(100);
 
-                    productsTable.addCell(headerCell1);
-                    productsTable.addCell(headerCell2);
-                    productsTable.addCell(headerCell3);
-                    productsTable.addCell(headerCell4);
-                    productsTable.addCell(headerCell5);
+                // Header
+                PdfPCell headerCell1 = new PdfPCell(new Phrase("STT", boldFont));
+                PdfPCell headerCell2 = new PdfPCell(new Phrase("Tên sản phẩm", boldFont));
+                PdfPCell headerCell3 = new PdfPCell(new Phrase("Số lượng", boldFont));
+                PdfPCell headerCell4 = new PdfPCell(new Phrase("Doanh thu", boldFont));
+                PdfPCell headerCell5 = new PdfPCell(new Phrase("Lợi nhuận", boldFont));
 
-                    // Data
-                    int index = 1;
-                    for (ProductSalesDTO product : statistics.getTopSellingProducts()) {
-                        productsTable.addCell(new PdfPCell(new Phrase(String.valueOf(index++), normalFont)));
-                        productsTable.addCell(new PdfPCell(new Phrase(product.getName(), normalFont)));
-                        productsTable
-                                .addCell(new PdfPCell(
-                                        new Phrase(String.valueOf(product.getQuantitySold()), normalFont)));
-                        productsTable
-                                .addCell(new PdfPCell(new Phrase(formatCurrency(product.getRevenue()), normalFont)));
-                        productsTable
-                                .addCell(new PdfPCell(new Phrase(formatCurrency(product.getProfit()), normalFont)));
-                    }
+                productsTable.addCell(headerCell1);
+                productsTable.addCell(headerCell2);
+                productsTable.addCell(headerCell3);
+                productsTable.addCell(headerCell4);
+                productsTable.addCell(headerCell5);
 
-                    document.add(productsTable);
+                // Data
+                int index = 1;
+                for (ProductSalesDTO product : statistics.getTopSellingProducts()) {
+                    productsTable.addCell(new PdfPCell(new Phrase(String.valueOf(index++), normalFont)));
+                    productsTable.addCell(new PdfPCell(new Phrase(product.getName(), normalFont)));
+                    productsTable
+                            .addCell(new PdfPCell(
+                                    new Phrase(String.valueOf(product.getQuantitySold()), normalFont)));
+                    productsTable
+                            .addCell(new PdfPCell(new Phrase(formatCurrency(product.getRevenue()), normalFont)));
+                    productsTable
+                            .addCell(new PdfPCell(new Phrase(formatCurrency(product.getProfit()), normalFont)));
                 }
 
-                document.add(Chunk.NEWLINE);
+                document.add(productsTable);
+            }
 
-                // Thống kê theo danh mục
-                document.add(new Paragraph("THỐNG KÊ THEO DANH MỤC", headingFont));
-                document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
 
-                if (statistics.getCategorySales().isEmpty()) {
-                    document.add(new Paragraph("Không có dữ liệu", normalFont));
-                } else {
-                    PdfPTable categoriesTable = new PdfPTable(6);
-                    categoriesTable.setWidthPercentage(100);
+            // Thống kê theo danh mục
+            document.add(new Paragraph("THỐNG KÊ THEO DANH MỤC", headingFont));
+            document.add(Chunk.NEWLINE);
 
-                    // Header
-                    PdfPCell headerCell1 = new PdfPCell(new Phrase("STT", boldFont));
-                    PdfPCell headerCell2 = new PdfPCell(new Phrase("Danh mục", boldFont));
-                    PdfPCell headerCell3 = new PdfPCell(new Phrase("Số lượng", boldFont));
-                    PdfPCell headerCell4 = new PdfPCell(new Phrase("Doanh thu", boldFont));
-                    PdfPCell headerCell5 = new PdfPCell(new Phrase("Lợi nhuận", boldFont));
-                    PdfPCell headerCell6 = new PdfPCell(new Phrase("Tỷ lệ (%)", boldFont));
+            if (statistics.getCategorySales().isEmpty()) {
+                document.add(new Paragraph("Không có dữ liệu", normalFont));
+            } else {
+                PdfPTable categoriesTable = new PdfPTable(6);
+                categoriesTable.setWidthPercentage(100);
 
-                    categoriesTable.addCell(headerCell1);
-                    categoriesTable.addCell(headerCell2);
-                    categoriesTable.addCell(headerCell3);
-                    categoriesTable.addCell(headerCell4);
-                    categoriesTable.addCell(headerCell5);
-                    categoriesTable.addCell(headerCell6);
+                // Header
+                PdfPCell headerCell1 = new PdfPCell(new Phrase("STT", boldFont));
+                PdfPCell headerCell2 = new PdfPCell(new Phrase("Danh mục", boldFont));
+                PdfPCell headerCell3 = new PdfPCell(new Phrase("Số lượng", boldFont));
+                PdfPCell headerCell4 = new PdfPCell(new Phrase("Doanh thu", boldFont));
+                PdfPCell headerCell5 = new PdfPCell(new Phrase("Lợi nhuận", boldFont));
+                PdfPCell headerCell6 = new PdfPCell(new Phrase("Tỷ lệ (%)", boldFont));
 
-                    // Data
-                    int index = 1;
-                    for (CategorySalesDTO category : statistics.getCategorySales()) {
-                        categoriesTable.addCell(new PdfPCell(new Phrase(String.valueOf(index++), normalFont)));
-                        categoriesTable.addCell(new PdfPCell(new Phrase(category.getName(), normalFont)));
-                        categoriesTable
-                                .addCell(new PdfPCell(
-                                        new Phrase(String.valueOf(category.getQuantitySold()), normalFont)));
-                        categoriesTable
-                                .addCell(new PdfPCell(new Phrase(formatCurrency(category.getRevenue()), normalFont)));
-                        categoriesTable
-                                .addCell(new PdfPCell(new Phrase(formatCurrency(category.getProfit()), normalFont)));
-                        categoriesTable.addCell(new PdfPCell(
-                                new Phrase(String.format("%.2f", category.getPercentageOfTotal()), normalFont)));
-                    }
+                categoriesTable.addCell(headerCell1);
+                categoriesTable.addCell(headerCell2);
+                categoriesTable.addCell(headerCell3);
+                categoriesTable.addCell(headerCell4);
+                categoriesTable.addCell(headerCell5);
+                categoriesTable.addCell(headerCell6);
 
-                    document.add(categoriesTable);
+                // Data
+                int index = 1;
+                for (CategorySalesDTO category : statistics.getCategorySales()) {
+                    categoriesTable.addCell(new PdfPCell(new Phrase(String.valueOf(index++), normalFont)));
+                    categoriesTable.addCell(new PdfPCell(new Phrase(category.getName(), normalFont)));
+                    categoriesTable
+                            .addCell(new PdfPCell(
+                                    new Phrase(String.valueOf(category.getQuantitySold()), normalFont)));
+                    categoriesTable
+                            .addCell(new PdfPCell(new Phrase(formatCurrency(category.getRevenue()), normalFont)));
+                    categoriesTable
+                            .addCell(new PdfPCell(new Phrase(formatCurrency(category.getProfit()), normalFont)));
+                    categoriesTable.addCell(new PdfPCell(
+                            new Phrase(String.format("%.2f", category.getPercentageOfTotal()), normalFont)));
                 }
 
-                // Thêm ngày tạo báo cáo
-                document.add(Chunk.NEWLINE);
-                document.add(Chunk.NEWLINE);
-                Paragraph dateCreated = new Paragraph("Báo cáo được tạo ngày: " +
-                        LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), normalFont);
-                dateCreated.setAlignment(Element.ALIGN_RIGHT);
-                document.add(dateCreated);
+                document.add(categoriesTable);
+            }
 
-                return filePath;
-            } catch (DocumentException | IOException e) {
-                log.error("Lỗi khi tạo báo cáo PDF", e);
-                throw new RuntimeException("Không thể tạo báo cáo PDF: " + e.getMessage());
-            } finally {
-                if (document != null && document.isOpen()) {
-                    document.close();
-                }
+            // Thêm ngày tạo báo cáo
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            Paragraph dateCreated = new Paragraph("Báo cáo được tạo ngày: " +
+                    LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), normalFont);
+            dateCreated.setAlignment(Element.ALIGN_RIGHT);
+            document.add(dateCreated);
+
+            return filePath;
+        } catch (DocumentException | IOException e) {
+            log.error("Lỗi khi tạo báo cáo PDF", e);
+            throw new RuntimeException("Không thể tạo báo cáo PDF: " + e.getMessage());
+        } finally {
+            if (document != null && document.isOpen()) {
+                document.close();
             }
         }
-        return folderPath;
     }
 
     // Phương thức hỗ trợ

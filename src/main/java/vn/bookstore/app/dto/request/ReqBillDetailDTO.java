@@ -1,5 +1,7 @@
 package vn.bookstore.app.dto.request;
 
+import java.math.BigDecimal;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -15,4 +17,6 @@ public class ReqBillDetailDTO {
 
     @Min(value = 1, message = "Số lượng sản phẩm phải lớn hơn 0")
     private int quantity;
+
+    private BigDecimal price;
 }

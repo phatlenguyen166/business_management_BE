@@ -1,11 +1,13 @@
 package vn.bookstore.app.service.impl;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import vn.bookstore.app.dto.request.ReqBillDetailDTO;
 import vn.bookstore.app.dto.request.ReqSupplierDTO;
 import vn.bookstore.app.dto.response.ResSupplierDTO;
 import vn.bookstore.app.mapper.SupplierMapper;
@@ -63,7 +65,8 @@ public class SupplierServiceImpl implements SupplierService {
         Supplier supplier = supplierRepository.findById(supplierId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy nhà cung cấp ID: " + supplierId));
 
-        if (!supplier.getName().equals(reqSupplierDTO.getName()) && supplierRepository.existsByName(reqSupplierDTO.getName())) {
+        if (!supplier.getName().equals(reqSupplierDTO.getName())
+                && supplierRepository.existsByName(reqSupplierDTO.getName())) {
             throw new InvalidRequestException("Tên nhà cung cấp đã tồn tại!");
         }
 
@@ -75,5 +78,11 @@ public class SupplierServiceImpl implements SupplierService {
         supplierMapper.updateSupplierFromDto(reqSupplierDTO, supplier);
         Supplier newSupplier = supplierRepository.save(supplier);
         return supplierMapper.toResSupplierDTO(newSupplier);
+    }
+
+    @Override
+    public Collection<ReqBillDetailDTO> findAllById(List<Long> supplierIds) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findAllById'");
     }
 }
