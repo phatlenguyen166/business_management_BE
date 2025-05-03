@@ -30,4 +30,7 @@ public interface PayrollRepository extends JpaRepository<Payroll, Long> {
     List<Payroll> findAllPayrollByYear(@Param("year") String year);
 
     Optional<Payroll> findPayrollById(Long id);
+
+    List<Payroll> findAllByAttendance_MonthOfYear(String yearMonth);
+
 }

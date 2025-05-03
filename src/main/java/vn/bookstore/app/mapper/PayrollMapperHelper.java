@@ -48,4 +48,5 @@ public class PayrollMapperHelper {
     public String formatBigDecimal(BigDecimal bigDecimal) {
         return this.payrollService.getFormatBigDecimal(bigDecimal);
     }
+
 }

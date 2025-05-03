@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import vn.bookstore.app.model.Contract;
+import vn.bookstore.app.model.SeniorityLevel;
 import vn.bookstore.app.model.User;
 
 import java.time.LocalDate;
@@ -16,6 +17,7 @@ import java.util.Optional;
 public interface ContractRepository extends JpaRepository<Contract, Long>, JpaSpecificationExecutor<Contract> {
     List<Contract> getAllByStatus(int status);
     boolean existsContractByUserAndStatus(User user, int status);
+    boolean existsContractByUserAndStatusAndSeniorityLevel(User user, int status, SeniorityLevel seniorityLevel);
     Optional<Contract> findContractByIdAndStatusIn(Long id, List<Integer> statusList);
     List<Contract> findAllContractByStatusInOrderByStartDateDesc(List<Integer> statusList);
     Optional<Contract> findContractByIdAndStatus(Long id, int status);
@@ -34,4 +36,23 @@ public interface ContractRepository extends JpaRepository<Contract, Long>, JpaSp
             @Param("year") int year,
             @Param("month") int month
     );
+
+    @Query("SELECT COUNT(c) > 0 FROM Contract c WHERE c.user = :user and c.status = :status " +
+            "AND YEAR(c.expiryDate) = :year " +
+            "AND MONTH(c.expiryDate) = :month")
+    boolean existsByUserAndStatusAndExpiryYearAndMonth(
+            @Param("user") User user,
+            @Param("status") int status,
+            @Param("year") int year,
+            @Param("month") int month
+    );
+
+    @Query("SELECT COUNT(c) > 0 FROM Contract c WHERE c.user = :user and c.status = :status " +
+            "AND YEAR(c.expiryDate) = :year ")
+    boolean existsByUserAndStatusAndExpiryYear(
+            @Param("user") User user,
+            @Param("status") int status,
+            @Param("year") int year
+    );
+
 }
