@@ -27,7 +27,7 @@ This is the backend source code for a full-featured business management system d
 - **Others:** Maven, Git
 
 ## 🏗️ Project Structure
-
+```
 src/main/java/vn/bookstore/app/
 ├── config/ # Configuration classes
 ├── controller/ # REST Controllers
@@ -37,7 +37,7 @@ src/main/java/vn/bookstore/app/
 ├── repository/ # Spring Data JPA Repositories
 ├── service/ # Business Logic
 └── util/ # Utility classes
-
+```
 ## 🔌 API Endpoints
 
 ### Authentication
