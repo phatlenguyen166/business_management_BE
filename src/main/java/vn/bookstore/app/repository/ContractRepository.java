@@ -19,7 +19,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long>, JpaSp
     boolean existsContractByUserAndStatus(User user, int status);
     boolean existsContractByUserAndStatusAndSeniorityLevel(User user, int status, SeniorityLevel seniorityLevel);
     Optional<Contract> findContractByIdAndStatusIn(Long id, List<Integer> statusList);
-    List<Contract> findAllContractByStatusInOrderByStartDateDesc(List<Integer> statusList);
+    List<Contract> findAllByStatusInAndIdNotOrderByStartDateDesc(List<Integer> statusList, Long id);
     Optional<Contract> findContractByIdAndStatus(Long id, int status);
     Optional<Contract> findContractByUserAndStatus(User user, int status);
 
