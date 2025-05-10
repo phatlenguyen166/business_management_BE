@@ -23,6 +23,8 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
 
     boolean existsByUsername(String username);
 
+    @Query("SELECT u FROM User u WHERE u.status = :status " +
+            " AND u.username != 'ADMIN' " )
     List<User> findAllByStatus(int status);
 
     Optional<User> findUserByIdAndStatus(Long id, int status);

@@ -125,7 +125,7 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public List<ResContractDTO> handleGetAllContracts() {
         updateExpiredContracts();
-        List<Contract> contracts = contractRepository.findAllContractByStatusInOrderByStartDateDesc(List.of(1, 2));
+        List<Contract> contracts = contractRepository.findAllByStatusInAndIdNotOrderByStartDateDesc(List.of(1, 2),1L);
         List<ResContractDTO> resContractDTOS = new ArrayList<>();
         for (Contract contract : contracts) {
             ResContractDTO resContractDTO = contractMapper.convertToResContractDTO(contract);
