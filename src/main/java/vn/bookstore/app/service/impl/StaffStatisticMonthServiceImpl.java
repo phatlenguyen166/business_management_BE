@@ -14,6 +14,7 @@ import vn.bookstore.app.util.error.NotFoundValidException;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.Year;
 import java.time.YearMonth;
 import java.util.List;
 
@@ -152,5 +153,10 @@ public class StaffStatisticMonthServiceImpl implements StaffStatisticMonthServic
         }
         return this.staffStatisticMonthRepository.findStaffStatisticOfMonthByMonthOfYear(yearMonth.toString())
                 .orElseThrow(() -> new NotFoundValidException("Thang thong ke khong ton tai"));
+    }
+
+    @Override
+    public List<StaffStatisticMonth> getAllStaffStatisticMonth(Year year) {
+        return this.staffStatisticMonthRepository.findAllByYear(year.toString());
     }
 }

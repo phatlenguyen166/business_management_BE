@@ -17,6 +17,7 @@ import java.time.Year;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +42,17 @@ public class PayrollStatisticsServiceImpl implements PayrollStatisticsService {
                 .findAllPayrollByYear(year.toString()); // ví dụ "2025-%"
         return this.salaryStatisticMapper.convertToPayrollStatisticsViewDTO(assembleStatistics(null, year, payrolls)) ;
     }
+
+    @Override
+    public List<PayrollStatisticsViewDTO> getMonthlyStatisticsByYear(Year year) {
+        // Lặp qua từng tháng trong năm và lấy thống kê
+        return IntStream.rangeClosed(1, 12) // 12 tháng trong năm
+                .mapToObj(month -> YearMonth.of(year.getValue(), month)) // Tạo các đối tượng YearMonth
+                .map(this::getMonthlyStatistics) // Gọi hàm getMonthlyStatistics
+                .collect(Collectors.toList()); // Thu thập kết quả vào List
+    }
+
+
 
     private PayrollStatisticsDTO assembleStatistics(YearMonth month, Year year, List<Payroll> payrolls) {
         PayrollStatisticsDTO dto = new PayrollStatisticsDTO();
