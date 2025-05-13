@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import vn.bookstore.app.dto.response.PayrollStatisticsDTO;
 import vn.bookstore.app.dto.response.PayrollStatisticsViewDTO;
 import vn.bookstore.app.model.StaffStatisticMonth;
 import vn.bookstore.app.dto.response.ResponseDTO;
@@ -19,6 +18,7 @@ import vn.bookstore.app.util.error.InvalidRequestException;
 import java.time.Year;
 import java.time.YearMonth;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -69,14 +69,64 @@ public class StatisticController {
     }
 
     @GetMapping("/salaryStatistics/month")
-    public ResponseEntity<PayrollStatisticsViewDTO> month(@RequestParam String month) {
+    public ResponseEntity<ResponseDTO<PayrollStatisticsViewDTO>> salaryStatisticsMonth(@RequestParam String month) {
         YearMonth ym = YearMonth.parse(month);     // "2025-03"
-        return ResponseEntity.ok(statsService.getMonthlyStatistics(ym));
+        PayrollStatisticsViewDTO payrollStatisticsViewDTO = statsService.getMonthlyStatistics(ym);
+        return ResponseEntity.ok(
+                new ResponseDTO<>(
+                        200,
+                        true,
+                        null,
+                        "Get all holidays successfully",
+                        payrollStatisticsViewDTO
+                )
+        );
     }
 
     @GetMapping("/salaryStatistics/year")
-    public ResponseEntity<PayrollStatisticsViewDTO> year(@RequestParam String year) {
+    public ResponseEntity<ResponseDTO<PayrollStatisticsViewDTO>> salaryStatisticsYear(@RequestParam String year) {
         Year y = Year.parse(year);                // "2025"
-        return ResponseEntity.ok(statsService.getYearlyStatistics(y));
+        PayrollStatisticsViewDTO payrollStatisticsViewDTO = statsService.getYearlyStatistics(y);
+        return ResponseEntity.ok(
+                new ResponseDTO<>(
+                        200,
+                        true,
+                        null,
+                        "Get all holidays successfully",
+                        payrollStatisticsViewDTO
+                )
+        );
+    }
+
+    @GetMapping("salaryStatistics/year/month")
+    public ResponseEntity<ResponseDTO<List<PayrollStatisticsViewDTO>>> salaryStatisticsMonthOfYear(@RequestParam String year) {
+        Year y = Year.parse(year);                // "2025"
+       List<PayrollStatisticsViewDTO> list = this.statsService.getMonthlyStatisticsByYear(y);
+        return ResponseEntity.ok(
+                new ResponseDTO<>(
+                        200,
+                        true,
+                        null,
+                        "Get all holidays successfully",
+                        list
+                )
+        );
+
+    }
+
+    @GetMapping("staffStatistics/year/month")
+    public ResponseEntity<ResponseDTO<List<StaffStatisticMonth>>> staffStatisticsMonthOfYear(@RequestParam String year) {
+        Year y = Year.parse(year);                // "2025"
+        List<StaffStatisticMonth> list = this.statisticMonthService.getAllStaffStatisticMonth(y);
+        return ResponseEntity.ok(
+                new ResponseDTO<>(
+                        200,
+                        true,
+                        null,
+                        "Get all holidays successfully",
+                        list
+                )
+        );
+
     }
 }
