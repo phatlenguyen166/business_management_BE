@@ -59,7 +59,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         // Tìm hợp đồng của người dùng
         Contract contract = contractService.findByUsername(reqSignInDTO.getUsername(), 1);
-        log.error("-----------------------------------------------------------0---------------------------------------Hợp đồng của người dùng: " + contract.getStartDate());
+        log.error(
+                "-----------------------------------------------------------0---------------------------------------Hợp đồng của người dùng: "
+                        + contract.getStartDate());
         // Kiểm tra nếu người dùng là nhân viên (không phải ADMIN) và có hợp đồng
         if (contract != null && !user.getUsername().equals("ADMIN")) {
             // Lấy ngày hiện tại
@@ -69,7 +71,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             if (contract.getStartDate().isAfter(today)) {
                 throw new InvalidDataException("Tài khoản chưa được kích hoạt. Hợp đồng của bạn sẽ bắt đầu từ ngày "
                         + contract.getStartDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-            
+
             }
         }
 
@@ -90,7 +92,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public ResTokenDTO refresh(HttpServletRequest request) {
-        String refreshToken = request.getHeader(AUTHORIZATION);
+        String refreshToken = request.getHeader(AUTHORIZATION).split(" ")[1];
         if (StringUtils.isBlank(refreshToken)) {
             throw new InvalidDataException("Token must be not blank");
         }
@@ -112,7 +114,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public String logout(HttpServletRequest request) {
         log.info("---------- logout ----------");
 
-        final String token = request.getHeader(AUTHORIZATION);
+        final String token = request.getHeader(AUTHORIZATION).split(" ")[1];
         if (StringUtils.isBlank(token)) {
             throw new InvalidDataException("Token must be not blank");
         }
