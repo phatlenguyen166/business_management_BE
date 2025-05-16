@@ -4,7 +4,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import vn.bookstore.app.dto.common.OnCreate;
+import vn.bookstore.app.dto.common.OnUpdate;
 import vn.bookstore.app.dto.request.ReqContractDTO;
 import vn.bookstore.app.dto.response.ResContractDTO;
 import vn.bookstore.app.dto.response.ResponseDTO;
@@ -22,7 +25,7 @@ public class ContractController {
 
 
     @PostMapping("/contracts")
-    public ResponseEntity<ResponseDTO<ResContractDTO>> createContract(@Valid @RequestBody ReqContractDTO contract) {
+    public ResponseEntity<ResponseDTO<ResContractDTO>> createContract(@Validated(OnCreate.class) @RequestBody ReqContractDTO contract) {
         ResContractDTO newContract = this.contractService.handleCreateContract(contract);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 new ResponseDTO<>(
@@ -82,7 +85,7 @@ public class ContractController {
     }
 
     @PutMapping("/contracts/{id}")
-    public ResponseEntity<ResponseDTO<ResContractDTO>> updateContract(@Valid @RequestBody ReqContractDTO contract, @PathVariable Long id) throws NotFoundValidException {
+    public ResponseEntity<ResponseDTO<ResContractDTO>> updateContract(@Validated(OnUpdate.class) @RequestBody ReqContractDTO contract, @PathVariable Long id) throws NotFoundValidException {
         if(this.contractService.getContractById(id) == null) {
             throw new NotFoundValidException("Hợp đồng không tồn tại");
         }
