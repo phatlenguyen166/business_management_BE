@@ -178,6 +178,10 @@ public class LeaveReqServiceImpl implements LeaveReqService {
         List<ResLeaveReqDTO> resLeaveReqDTOS = new ArrayList<>();
         User user = this.userRepository.findUserByIdAndStatus(leaveReqDTO.getUserId(), 1)
                 .orElseThrow(() -> new NotFoundValidException("User Không tồn tại"));
+        List<LeaveRequest> leaveRequests = this.leaveReqRepository.findByUserAndStatus(user,2);
+        if (!leaveRequests.isEmpty()) {
+            throw new InvalidRequestException("Đã có đơn đang chờ duyệt không tạo được thêm");
+        }
         if (leaveReqDTO.getStartDate().getYear() != leaveReqDTO.getEndDate().getYear()) {
             LocalDate startDate1 = leaveReqDTO.getStartDate();
             LocalDate endDate1 = LocalDate.of(leaveReqDTO.getStartDate().getYear(), 12, 31);
