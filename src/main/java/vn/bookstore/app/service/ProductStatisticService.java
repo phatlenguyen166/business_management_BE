@@ -3,6 +3,8 @@ package vn.bookstore.app.service;
 import vn.bookstore.app.dto.response.ProductStatisticMonthDTO;
 import vn.bookstore.app.dto.response.ProductStatisticQuarterDTO;
 import vn.bookstore.app.dto.response.ProductStatisticYearDTO;
+import vn.bookstore.app.dto.response.ProductImportStatisticMonthDTO;
+import vn.bookstore.app.dto.response.ProductImportStatisticYearDTO;
 
 import java.time.Year;
 import java.time.YearMonth;
@@ -37,4 +39,14 @@ public interface ProductStatisticService {
      * Tạo báo cáo PDF thống kê sản phẩm theo năm
      */
     String generateProductStatisticYearPdf(Year year);
+
+    /**
+     * Lấy thống kê sản phẩm đã nhập theo tháng
+     */
+    ProductImportStatisticMonthDTO getProductImportStatisticsByMonth(YearMonth yearMonth);
+
+    /**
+     * Lấy thống kê sản phẩm đã nhập theo năm
+     */
+    ProductImportStatisticYearDTO getProductImportStatisticsByYear(Year year);
 }

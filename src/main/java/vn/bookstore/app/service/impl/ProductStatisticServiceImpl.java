@@ -18,17 +18,25 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import vn.bookstore.app.dto.response.CategorySalesDTO;
+import vn.bookstore.app.dto.response.ProductImportDTO;
+import vn.bookstore.app.dto.response.ProductImportStatisticMonthDTO;
+import vn.bookstore.app.dto.response.ProductImportStatisticYearDTO;
 import vn.bookstore.app.dto.response.ProductSalesDTO;
 import vn.bookstore.app.dto.response.ProductStatisticMonthDTO;
 import vn.bookstore.app.dto.response.ProductStatisticQuarterDTO;
 import vn.bookstore.app.dto.response.ProductStatisticYearDTO;
+import vn.bookstore.app.dto.response.SupplierImportDTO;
 import vn.bookstore.app.model.Bill;
 import vn.bookstore.app.model.BillDetail;
 import vn.bookstore.app.model.Category;
+import vn.bookstore.app.model.GoodReceipt;
+import vn.bookstore.app.model.GoodReceiptDetail;
 import vn.bookstore.app.model.Product;
+import vn.bookstore.app.model.Supplier;
 import vn.bookstore.app.repository.BillDetailRepository;
 import vn.bookstore.app.repository.BillRepository;
 import vn.bookstore.app.repository.CategoryRepository;
+import vn.bookstore.app.repository.GoodReceiptRepository;
 import vn.bookstore.app.repository.ProductRepository;
 import vn.bookstore.app.service.ProductStatisticService;
 
@@ -52,9 +60,7 @@ import java.util.stream.Collectors;
 public class ProductStatisticServiceImpl implements ProductStatisticService {
 
     private final BillRepository billRepository;
-    private final BillDetailRepository billDetailRepository;
-    private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
+    private final GoodReceiptRepository goodReceiptRepository;
 
     @Override
     public ProductStatisticMonthDTO getProductStatisticsByMonth(YearMonth yearMonth) {
@@ -95,7 +101,7 @@ public class ProductStatisticServiceImpl implements ProductStatisticService {
 
         // Tính tổng chi phí (giá nhập x số lượng)
         BigDecimal totalCost = calculateTotalCost(billDetails);
-        
+
         // Tính lợi nhuận
         BigDecimal totalProfit = totalRevenue.subtract(totalCost);
 
@@ -809,6 +815,123 @@ public class ProductStatisticServiceImpl implements ProductStatisticService {
         }
     }
 
+    @Override
+    public ProductImportStatisticMonthDTO getProductImportStatisticsByMonth(YearMonth yearMonth) {
+        // Lấy các phiếu nhập trong tháng
+        LocalDate startDate = yearMonth.atDay(1);
+        LocalDate endDate = yearMonth.atEndOfMonth();
+
+        List<GoodReceipt> goodReceipts = goodReceiptRepository.findByCreatedAtBetween(
+                startDate.atStartOfDay(),
+                endDate.plusDays(1).atStartOfDay());
+
+        if (goodReceipts.isEmpty()) {
+            return ProductImportStatisticMonthDTO.builder()
+                    .monthOfYear(yearMonth.toString())
+                    .totalProductsImported(0)
+                    .totalCost(BigDecimal.ZERO)
+                    .topImportedProducts(Collections.emptyList())
+                    .allImportedProducts(Collections.emptyList())
+                    .supplierImports(Collections.emptyList())
+                    .build();
+        }
+
+        // Lấy chi tiết phiếu nhập để tính các số liệu
+        List<GoodReceiptDetail> receiptDetails = new ArrayList<>();
+        for (GoodReceipt receipt : goodReceipts) {
+            receiptDetails.addAll(receipt.getGoodReceiptDetails());
+        }
+
+        // Tính tổng số sản phẩm đã nhập
+        int totalProductsImported = receiptDetails.stream()
+                .mapToInt(GoodReceiptDetail::getQuantity)
+                .sum();
+
+        // Tính tổng chi phí nhập hàng
+        BigDecimal totalCost = calculateTotalImportCost(receiptDetails);
+
+        // Lấy top 5 sản phẩm nhập nhiều nhất
+        List<ProductImportDTO> topImportedProducts = getTopImportedProducts(receiptDetails, 5);
+
+        // Lấy tất cả sản phẩm đã nhập
+        List<ProductImportDTO> allImportedProducts = getAllImportedProducts(receiptDetails);
+
+        // Thống kê theo nhà cung cấp
+        List<SupplierImportDTO> supplierImports = getSupplierImports(receiptDetails, totalCost);
+
+        return ProductImportStatisticMonthDTO.builder()
+                .monthOfYear(yearMonth.toString())
+                .totalProductsImported(totalProductsImported)
+                .totalCost(totalCost)
+                .topImportedProducts(topImportedProducts)
+                .allImportedProducts(allImportedProducts)
+                .supplierImports(supplierImports)
+                .build();
+    }
+
+    @Override
+    public ProductImportStatisticYearDTO getProductImportStatisticsByYear(Year year) {
+        LocalDate startDate = year.atDay(1);
+        LocalDate endDate = year.atMonth(12).atEndOfMonth();
+
+        List<GoodReceipt> goodReceipts = goodReceiptRepository.findByCreatedAtBetween(
+                startDate.atStartOfDay(),
+                endDate.plusDays(1).atStartOfDay());
+
+        if (goodReceipts.isEmpty()) {
+            return ProductImportStatisticYearDTO.builder()
+                    .year(year.getValue())
+                    .totalProductsImported(0)
+                    .totalCost(BigDecimal.ZERO)
+                    .monthlyImports(new HashMap<>())
+                    .quarterlyImports(new HashMap<>())
+                    .topImportedProducts(Collections.emptyList())
+                    .allImportedProducts(Collections.emptyList())
+                    .supplierImports(Collections.emptyList())
+                    .build();
+        }
+
+        // Lấy chi tiết phiếu nhập để tính các số liệu
+        List<GoodReceiptDetail> receiptDetails = new ArrayList<>();
+        for (GoodReceipt receipt : goodReceipts) {
+            receiptDetails.addAll(receipt.getGoodReceiptDetails());
+        }
+
+        // Tính tổng số sản phẩm đã nhập
+        int totalProductsImported = receiptDetails.stream()
+                .mapToInt(GoodReceiptDetail::getQuantity)
+                .sum();
+
+        // Tính tổng chi phí nhập hàng
+        BigDecimal totalCost = calculateTotalImportCost(receiptDetails);
+
+        // Lấy top 10 sản phẩm nhập nhiều nhất
+        List<ProductImportDTO> topImportedProducts = getTopImportedProducts(receiptDetails, 10);
+
+        // Lấy tất cả sản phẩm đã nhập
+        List<ProductImportDTO> allImportedProducts = getAllImportedProducts(receiptDetails);
+
+        // Thống kê theo nhà cung cấp
+        List<SupplierImportDTO> supplierImports = getSupplierImports(receiptDetails, totalCost);
+
+        // Thống kê nhập hàng theo tháng trong năm
+        Map<String, Integer> monthlyImports = getMonthlyImports(goodReceipts, year.getValue(), 1, 12);
+
+        // Thống kê nhập hàng theo quý trong năm
+        Map<Integer, Integer> quarterlyImports = getQuarterlyImports(goodReceipts);
+
+        return ProductImportStatisticYearDTO.builder()
+                .year(year.getValue())
+                .totalProductsImported(totalProductsImported)
+                .totalCost(totalCost)
+                .monthlyImports(monthlyImports)
+                .quarterlyImports(quarterlyImports)
+                .topImportedProducts(topImportedProducts)
+                .allImportedProducts(allImportedProducts)
+                .supplierImports(supplierImports)
+                .build();
+    }
+
     // Phương thức hỗ trợ
     private BigDecimal calculateTotalCost(List<BillDetail> billDetails) {
         BigDecimal totalCost = BigDecimal.ZERO;
@@ -974,5 +1097,179 @@ public class ProductStatisticServiceImpl implements ProductStatisticService {
 
     private String formatCurrency(BigDecimal amount) {
         return String.format("%,.0f VNĐ", amount);
+    }
+
+    private BigDecimal calculateTotalImportCost(List<GoodReceiptDetail> receiptDetails) {
+        return receiptDetails.stream()
+                .map(detail -> {
+                    BigDecimal price = detail.getInputPrice();
+                    int quantity = detail.getQuantity();
+                    return price.multiply(new BigDecimal(quantity));
+                })
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private List<ProductImportDTO> getTopImportedProducts(List<GoodReceiptDetail> receiptDetails, int limit) {
+        // Nhóm sản phẩm theo ID
+        Map<Long, ProductImportDTO> productMap = new HashMap<>();
+
+        for (GoodReceiptDetail detail : receiptDetails) {
+            Product product = detail.getProduct();
+            Long productId = product.getId();
+
+            ProductImportDTO productStats = productMap.getOrDefault(productId,
+                    ProductImportDTO.builder()
+                            .id(productId)
+                            .name(product.getName())
+                            .quantityImported(0)
+                            .totalCost(BigDecimal.ZERO)
+                            .build());
+
+            // Cập nhật số liệu
+            int quantity = detail.getQuantity();
+            BigDecimal importPrice = detail.getInputPrice();
+            BigDecimal cost = importPrice.multiply(new BigDecimal(quantity));
+
+            productStats.setQuantityImported(productStats.getQuantityImported() + quantity);
+            productStats.setTotalCost(productStats.getTotalCost().add(cost));
+
+            productMap.put(productId, productStats);
+        }
+
+        // Sắp xếp theo số lượng nhập và lấy top N
+        return productMap.values().stream()
+                .sorted(Comparator.comparing(ProductImportDTO::getQuantityImported).reversed())
+                .limit(limit)
+                .collect(Collectors.toList());
+    }
+
+    private List<SupplierImportDTO> getSupplierImports(List<GoodReceiptDetail> receiptDetails, BigDecimal totalCost) {
+        // Nhóm sản phẩm theo nhà cung cấp
+        Map<Long, SupplierImportDTO> supplierMap = new HashMap<>();
+
+        for (GoodReceiptDetail detail : receiptDetails) {
+            Product product = detail.getProduct();
+            Supplier supplier = product.getSupplier();
+            Long supplierId = supplier.getId();
+
+            SupplierImportDTO supplierStats = supplierMap.getOrDefault(supplierId,
+                    SupplierImportDTO.builder()
+                            .id(supplierId)
+                            .name(supplier.getName())
+                            .quantityImported(0)
+                            .totalCost(BigDecimal.ZERO)
+                            .percentageOfTotal(0)
+                            .build());
+
+            // Cập nhật số liệu
+            int quantity = detail.getQuantity();
+            BigDecimal importPrice = detail.getInputPrice();
+            BigDecimal cost = importPrice.multiply(new BigDecimal(quantity));
+
+            supplierStats.setQuantityImported(supplierStats.getQuantityImported() + quantity);
+            supplierStats.setTotalCost(supplierStats.getTotalCost().add(cost));
+
+            supplierMap.put(supplierId, supplierStats);
+        }
+
+        // Tính phần trăm chi phí trên tổng chi phí
+        if (totalCost.compareTo(BigDecimal.ZERO) > 0) {
+            for (SupplierImportDTO supplier : supplierMap.values()) {
+                double percentage = supplier.getTotalCost()
+                        .multiply(new BigDecimal(100))
+                        .divide(totalCost, 2, RoundingMode.HALF_UP)
+                        .doubleValue();
+                supplier.setPercentageOfTotal(percentage);
+            }
+        }
+
+        // Sắp xếp theo chi phí nhập hàng
+        return supplierMap.values().stream()
+                .sorted(Comparator.comparing(SupplierImportDTO::getTotalCost).reversed())
+                .collect(Collectors.toList());
+    }
+
+    private Map<String, Integer> getMonthlyImports(List<GoodReceipt> goodReceipts, int year, int startMonth,
+            int endMonth) {
+        Map<String, Integer> monthlyImports = new HashMap<>();
+
+        // Khởi tạo tất cả các tháng với giá trị 0
+        for (int i = startMonth; i <= endMonth; i++) {
+            String monthKey = year + "-" + (i < 10 ? "0" + i : i);
+            monthlyImports.put(monthKey, 0);
+        }
+
+        // Tính số lượng sản phẩm nhập theo tháng
+        for (GoodReceipt receipt : goodReceipts) {
+            LocalDate date = receipt.getCreatedAt().toLocalDate();
+            if (date.getYear() == year && date.getMonthValue() >= startMonth && date.getMonthValue() <= endMonth) {
+                String monthKey = year + "-"
+                        + (date.getMonthValue() < 10 ? "0" + date.getMonthValue() : date.getMonthValue());
+
+                int productCount = receipt.getGoodReceiptDetails().stream()
+                        .mapToInt(GoodReceiptDetail::getQuantity)
+                        .sum();
+
+                monthlyImports.put(monthKey, monthlyImports.getOrDefault(monthKey, 0) + productCount);
+            }
+        }
+
+        return monthlyImports;
+    }
+
+    private Map<Integer, Integer> getQuarterlyImports(List<GoodReceipt> goodReceipts) {
+        Map<Integer, Integer> quarterlyImports = new HashMap<>();
+
+        // Khởi tạo tất cả các quý với giá trị 0
+        for (int i = 1; i <= 4; i++) {
+            quarterlyImports.put(i, 0);
+        }
+
+        // Tính số lượng sản phẩm nhập theo quý
+        for (GoodReceipt receipt : goodReceipts) {
+            LocalDate date = receipt.getCreatedAt().toLocalDate();
+            int quarter = (date.getMonthValue() - 1) / 3 + 1;
+
+            int productCount = receipt.getGoodReceiptDetails().stream()
+                    .mapToInt(GoodReceiptDetail::getQuantity)
+                    .sum();
+
+            quarterlyImports.put(quarter, quarterlyImports.getOrDefault(quarter, 0) + productCount);
+        }
+
+        return quarterlyImports;
+    }
+
+    private List<ProductImportDTO> getAllImportedProducts(List<GoodReceiptDetail> receiptDetails) {
+        // Nhóm sản phẩm theo ID
+        Map<Long, ProductImportDTO> productMap = new HashMap<>();
+
+        for (GoodReceiptDetail detail : receiptDetails) {
+            Product product = detail.getProduct();
+            Long productId = product.getId();
+
+            ProductImportDTO productStats = productMap.getOrDefault(productId,
+                    ProductImportDTO.builder()
+                            .id(productId)
+                            .name(product.getName())
+                            .quantityImported(0)
+                            .totalCost(BigDecimal.ZERO)
+                            .build());
+
+            // Cập nhật số liệu
+            int quantity = detail.getQuantity();
+            BigDecimal importPrice = detail.getInputPrice();
+            BigDecimal cost = importPrice.multiply(new BigDecimal(quantity));
+
+            productStats.setQuantityImported(productStats.getQuantityImported() + quantity);
+            productStats.setTotalCost(productStats.getTotalCost().add(cost));
+
+            productMap.put(productId, productStats);
+        }
+
+        // Sắp xếp theo số lượng nhập (giảm dần)
+        return productMap.values().stream()
+                .sorted(Comparator.comparing(ProductImportDTO::getQuantityImported).reversed())
+                .collect(Collectors.toList());
     }
 }

@@ -5,10 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import vn.bookstore.app.dto.response.ProductStatisticMonthDTO;
-import vn.bookstore.app.dto.response.ProductStatisticQuarterDTO;
-import vn.bookstore.app.dto.response.ProductStatisticYearDTO;
-import vn.bookstore.app.dto.response.ResponseDTO;
+import vn.bookstore.app.dto.response.*;
 import vn.bookstore.app.service.ProductStatisticService;
 
 import java.time.Year;
@@ -96,5 +93,26 @@ public class ProductStatisticController {
         String filePath = productStatisticService.generateProductStatisticYearPdf(yearValue);
 
         return ResponseEntity.ok(ResponseDTO.success(true, "Thống kê thành công!", filePath));
+    }
+
+    @Operation(summary = "Thống kê sản phẩm đã nhập theo tháng", description = "Thống kê số lượng sản phẩm đã nhập và chi phí theo tháng")
+    @GetMapping("/imports/month/{year}/{month}")
+    public ResponseEntity<ResponseDTO<ProductImportStatisticMonthDTO>> getProductImportStatisticsByMonth(
+            @PathVariable("year") int year,
+            @PathVariable("month") int month) {
+
+        YearMonth yearMonth = YearMonth.of(year, month);
+        ProductImportStatisticMonthDTO statistics = productStatisticService.getProductImportStatisticsByMonth(yearMonth);
+        return ResponseEntity.ok(ResponseDTO.success(true, "Thống kê thành công!", statistics));
+    }
+
+    @Operation(summary = "Thống kê sản phẩm đã nhập theo năm", description = "Thống kê số lượng sản phẩm đã nhập và chi phí theo năm")
+    @GetMapping("/imports/year/{year}")
+    public ResponseEntity<ResponseDTO<ProductImportStatisticYearDTO>> getProductImportStatisticsByYear(
+            @PathVariable("year") int year) {
+
+        Year yearValue = Year.of(year);
+        ProductImportStatisticYearDTO statistics = productStatisticService.getProductImportStatisticsByYear(yearValue);
+        return ResponseEntity.ok(ResponseDTO.success(true, "Thống kê thành công!", statistics));
     }
 }
