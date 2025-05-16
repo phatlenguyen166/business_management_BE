@@ -83,7 +83,7 @@ public class ContractServiceImpl implements ContractService {
 
     public void updateExpiredContracts() {
         LocalDate today = LocalDate.now();
-            Contract expiredContracts = contractRepository.findByEndDateBeforeAndStatus(today, 1);
+            Contract expiredContracts = contractRepository.findByExpiryDateBeforeAndStatus(today, 1);
         if (expiredContracts != null) {
             expiredContracts.setStatus(2);
             contractRepository.save(expiredContracts);
@@ -94,6 +94,8 @@ public class ContractServiceImpl implements ContractService {
     public ResContractDTO handleUpdatedContract(ReqContractDTO updateContract, Long id) {
         Contract currentContract = this.contractRepository.findContractByIdAndStatus(id, 1).get();
         Contract updatedContract = this.contractMapper.convertToContract(updateContract);
+        updatedContract.setId(currentContract.getId());
+        updatedContract.setStatus(currentContract.getStatus());
         updatedContract.setUser(currentContract.getUser());
         updatedContract.setSeniorityLevel(currentContract.getSeniorityLevel());
         updateExpiredContracts();
