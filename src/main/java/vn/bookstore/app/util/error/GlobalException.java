@@ -48,8 +48,8 @@ public class GlobalException {
         ResponseDTO<Object> res = new ResponseDTO<>();
         res.setStatusCode(CONFLICT.value());
         res.setSuccess(false);
-        res.setError(exception.getMessage());
-        res.setMessage("ExistingIdException");
+        res.setMessage(exception.getMessage());
+        res.setError("ExistingIdException");
         return ResponseEntity.status(HttpStatus.CONFLICT).body(res);
     }
     
