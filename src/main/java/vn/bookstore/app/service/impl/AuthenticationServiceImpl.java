@@ -14,10 +14,12 @@ import vn.bookstore.app.dto.request.ReqChangePasswordDTO;
 import vn.bookstore.app.dto.request.ReqSignInDTO;
 import vn.bookstore.app.dto.response.ResTokenDTO;
 import vn.bookstore.app.mapper.TokenMapper;
+import vn.bookstore.app.model.Contract;
 import vn.bookstore.app.model.Role;
 import vn.bookstore.app.model.Token;
 import vn.bookstore.app.model.User;
 import vn.bookstore.app.service.AuthenticationService;
+import vn.bookstore.app.service.ContractService;
 import vn.bookstore.app.service.EmailService;
 import vn.bookstore.app.service.JwtService;
 import vn.bookstore.app.service.RoleService;
@@ -26,6 +28,10 @@ import vn.bookstore.app.service.UserService;
 import static vn.bookstore.app.util.constant.TokenType.ACCESS_TOKEN;
 import static vn.bookstore.app.util.constant.TokenType.REFRESH_TOKEN;
 import static vn.bookstore.app.util.constant.TokenType.RESET_TOKEN;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 import vn.bookstore.app.util.error.InvalidDataException;
 
 @Slf4j
@@ -40,14 +46,34 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final RoleService roleService;
+    private final ContractService contractService;
 
     @Override
     public ResTokenDTO authenticate(ReqSignInDTO reqSignInDTO) {
+        // Xác thực thông tin đăng nhập
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 reqSignInDTO.getUsername(), reqSignInDTO.getPassword()));
 
+        // Tìm thông tin người dùng
         User user = userService.findByUsernameAndStatus(reqSignInDTO.getUsername(), 1);
 
+        // Tìm hợp đồng của người dùng
+        Contract contract = contractService.findByUsername(reqSignInDTO.getUsername(), 1);
+        log.error("-----------------------------------------------------------0---------------------------------------Hợp đồng của người dùng: " + contract.getStartDate());
+        // Kiểm tra nếu người dùng là nhân viên (không phải ADMIN) và có hợp đồng
+        if (contract != null && !user.getUsername().equals("ADMIN")) {
+            // Lấy ngày hiện tại
+            LocalDate today = LocalDate.now();
+
+            // Kiểm tra nếu ngày bắt đầu làm việc trong hợp đồng sau ngày hiện tại
+            if (contract.getStartDate().isAfter(today)) {
+                throw new InvalidDataException("Tài khoản chưa được kích hoạt. Hợp đồng của bạn sẽ bắt đầu từ ngày "
+                        + contract.getStartDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            
+            }
+        }
+
+        // Tạo token
         String accessToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
 

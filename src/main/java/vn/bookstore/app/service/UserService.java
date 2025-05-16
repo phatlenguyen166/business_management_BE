@@ -2,6 +2,7 @@ package vn.bookstore.app.service;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import jakarta.validation.constraints.NotNull;
@@ -31,7 +32,7 @@ public interface UserService {
     Long saveUser(User user);
 
     User findUserByEmail(String email);
-
+   
     User findByUsernameAndStatus(String username, int status);
 
     User findUserById(Long id);

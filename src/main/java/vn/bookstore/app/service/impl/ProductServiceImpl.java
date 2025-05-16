@@ -26,6 +26,7 @@ import vn.bookstore.app.repository.ProductRepository;
 import vn.bookstore.app.repository.SupplierRepository;
 import vn.bookstore.app.service.CloudinaryService;
 import vn.bookstore.app.service.ProductService;
+import vn.bookstore.app.util.error.ExistingIdException;
 import vn.bookstore.app.util.error.InvalidRequestException;
 import vn.bookstore.app.util.error.ResourceNotFoundException;
 
@@ -103,11 +104,11 @@ public class ProductServiceImpl implements ProductService {
     public ResProductDTO updateProduct(ReqProductDTO reqProductDTO, Long productId, MultipartFile newImageFile)
             throws IOException {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sản phẩm không tồn tại."));
+                .orElseThrow(() -> new ResourceNotFoundException("Sản phẩm không tồn tại."));
 
         if (reqProductDTO.getName() != null && !reqProductDTO.getName().equals(product.getName())
                 && productRepository.existsByName(reqProductDTO.getName())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Tên sản phẩm đã tồn tại!");
+            throw new ExistingIdException("Tên sản phẩm đã tồn tại!");
         }
 
         if (newImageFile != null && !newImageFile.isEmpty()) {

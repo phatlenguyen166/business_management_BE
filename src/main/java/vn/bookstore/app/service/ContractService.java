@@ -28,4 +28,6 @@ public interface ContractService {
     public void handleDeleteContract(Long id);
 
     public List<ResContractDTO> handleGetAllContractsByUser(Long userId);
+    
+    public Contract findByUsername(String username,int status);
 }
