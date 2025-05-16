@@ -90,12 +90,12 @@ public class ContractController {
             throw new NotFoundValidException("Hợp đồng không tồn tại");
         }
         ResContractDTO updatedContract = this.contractService.handleUpdatedContract(contract, id);
-        return ResponseEntity.status(HttpStatus.CREATED).body(
+        return ResponseEntity.ok().body(
                 new ResponseDTO<>(
-                        201,
+                        200,
                         true,
                         null,
-                        "Create contract successfully",
+                        "Update contract successfully",
                         updatedContract
                 )
         );

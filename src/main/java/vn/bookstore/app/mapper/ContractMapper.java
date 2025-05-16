@@ -32,7 +32,6 @@ public interface ContractMapper {
     @Mapping(source = "id", target = "userId")
     ReqContractDTO convertToReqContractDTO(ReqContractUserDTO reqContract, Long id);
 
-    @Mapping(target = "id", ignore = true)
     @Mapping(source = "userId", target = "user.id")
     @Mapping(source = "seniorityId", target = "seniorityLevel.id")
     @Mapping(target = "user.fullName", ignore = true)

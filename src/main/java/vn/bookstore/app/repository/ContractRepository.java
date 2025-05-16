@@ -9,7 +9,6 @@ import vn.bookstore.app.model.Contract;
 import vn.bookstore.app.model.SeniorityLevel;
 import vn.bookstore.app.model.User;
 
-import java.lang.StackWalker.Option;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +34,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long>, JpaSp
         @Query("select c from Contract c where c.user.id = :userId and c.status in (1,2) order by c.startDate desc")
         List<Contract> getAllByUserId(@Param("userId") Long userId);
 
-        Contract findByEndDateBeforeAndStatus(LocalDate expiryDate, int status);
+        Contract findByExpiryDateBeforeAndStatus(LocalDate expiryDate, int status);
 
         @Query("SELECT c FROM Contract c WHERE c.status = :status " +
                         "AND YEAR(c.startDate) = :year " +
