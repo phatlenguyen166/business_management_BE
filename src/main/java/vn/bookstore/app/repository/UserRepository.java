@@ -38,7 +38,6 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     User findByEmail(String email);
 
     User findByUsername(String userName);
-
     @Query("SELECT u FROM User u WHERE u.status = :status " +
             " AND u.username != 'ADMIN' " +
             "AND YEAR(u.createdAt) = :year " +

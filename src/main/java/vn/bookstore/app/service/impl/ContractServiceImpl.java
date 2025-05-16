@@ -155,4 +155,9 @@ public class ContractServiceImpl implements ContractService {
         return "NO_ROLE";
     }
 
+    @Override
+    public Contract findByUsername(String username,int status) {
+        return contractRepository.findByUsername(username,status);
+    }
+
 }
