@@ -62,6 +62,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long>, JpaSp
 
         @Query(value = "SELECT c.* FROM contracts c " +
                         "INNER JOIN users u ON u.id = c.user_id " +
-                        "WHERE u.username = :username AND u.status = :status", nativeQuery = true)
-        Contract findByUsername(String username,int status);
+                        "WHERE u.username = :username AND u.status = :status " +
+                        "ORDER BY c.start_date DESC LIMIT 1", nativeQuery = true)
+        Contract findByUsername(String username, int status);
 }
